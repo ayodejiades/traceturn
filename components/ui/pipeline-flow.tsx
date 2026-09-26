@@ -93,7 +93,7 @@ export function PipelineFlow({
               >
                 {/* Top Badge */}
                 <div className="flex items-center justify-between text-xs font-mono text-[var(--fg-muted,#888)] mb-2">
-                  <span>STEP 0{idx + 1}</span>
+                  <span>STAGE {idx + 1}</span>
                   {stage.metric && (
                     <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-950/40 border border-emerald-800/60 rounded px-1.5 py-0.2">
                       {stage.metric}
