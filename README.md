@@ -13,8 +13,8 @@ Deterministic swarm forensics: causal blame DAG plus claim-lineage independent-d
 
 | Surface | Path / Command | Status |
 | --- | --- | --- |
-| **Public demo (zero-signup / zero-wallet)** | `/dashboard` | **LIVE** |
-| **Inspectable proof & refusal ledger** | `/proof` · [`CLAIM_LEDGER.md`](CLAIM_LEDGER.md) | **LIVE** |
+| **Public demo (zero-signup / zero-wallet)** | [https://traceturn-qphql3v6w-ayodeji-adeseguns-projects.vercel.app/dashboard](https://traceturn-qphql3v6w-ayodeji-adeseguns-projects.vercel.app/dashboard) | **LIVE** |
+| **Inspectable proof & refusal ledger** | [https://traceturn-qphql3v6w-ayodeji-adeseguns-projects.vercel.app/proof](https://traceturn-qphql3v6w-ayodeji-adeseguns-projects.vercel.app/proof) · [`CLAIM_LEDGER.md`](CLAIM_LEDGER.md) | **LIVE** |
 | **Production maturity & boundaries** | [`WHAT_IS_REAL.md`](WHAT_IS_REAL.md) · [`docs/HARD_THING.md`](docs/HARD_THING.md) | **VERIFIED** |
 | **Independent claim verifier** | `pnpm claim:verify` | **PASS** |
 | **Demo walkthrough & video** | [`docs/DEMO_PATH.md`](docs/DEMO_PATH.md) · `docs/demo.mp4` | **READY** |
