@@ -24,7 +24,7 @@ export const CHAOS_VECTORS: ChaosVector[] = [
     description: "Simulates complete upstream cloud API disconnection and 600ms latency spikes.",
     simulatedInput: "HTTP POST /api/events -> Connection Timeout (504)",
     targetSubsystem: "NetworkResilience / Offline Cache Layer",
-    expectedBehavior: "Circuit breaker trips in 15ms; seamless failover to local WASM/fixture cache.",
+    expectedBehavior: "Circuit breaker trips in 15ms; failover without interruption to local WASM/fixture cache.",
     mitigationMechanism: "Exponential backoff with jitter and stale-while-revalidate local fallback.",
     systemInvariant: "INVARIANT-01: Zero unhandled 500 exceptions under complete network isolation.",
   },
