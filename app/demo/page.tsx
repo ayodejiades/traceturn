@@ -84,7 +84,7 @@ export default function GuidedDemoPage() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 font-mono text-xs">
           <div className="flex items-center gap-2">
             <span className="rounded border border-[#2563eb]/30 bg-[#2563eb]/10 px-2 py-0.5 text-[11px] font-medium text-[#2563eb]">
-              STEP 03 · CAUSAL BLAME DAG AND CLAIM LINEAGE
+              CAUSAL BLAME DAG AND CLAIM LINEAGE
             </span>
             <span className="hidden text-[var(--fg-muted,#737373)] md:inline">
               Agents Propose · Deterministic Code Decides

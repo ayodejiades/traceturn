@@ -1,8 +1,8 @@
 {
-  "recordedAt": "2026-09-26T19:12:08.352Z",
+  "recordedAt": "2026-09-26T19:41:02.806+00:00",
   "baseUrl": "http://localhost:3000",
   "demoMode": true,
-  "durationSeconds": 60,
+  "durationSeconds": 13.883333,
   "viewport": {
     "width": 1920,
     "height": 1080
@@ -11,8 +11,103 @@
     {
       "index": 0,
       "atSeconds": 0,
-      "say": "Demo walkthrough"
+      "say": "Two hundred thousand agent turns. One bad belief. An investigator has hours, not weeks. traceturn answers a single question: which turn started it?"
+    },
+    {
+      "index": 1,
+      "atSeconds": 1.574,
+      "say": "Here is the exploit, cited fourteen times across the swarm. Now count how many genuinely independent sources produced it."
+    },
+    {
+      "index": 2,
+      "atSeconds": 2.455,
+      "say": "Fourteen assertions. One origin. Zero independent corroboration. That gap is synthetic consensus, and it is a graph property, not a vibe."
+    },
+    {
+      "index": 3,
+      "atSeconds": 4.403,
+      "say": "Now a control. Three agents measured the harness separately and got the same number. Independent agreement resolves clean, so the tool does not cry wolf."
+    },
+    {
+      "index": 4,
+      "atSeconds": 5.206,
+      "say": "And a restatement that re-cites a single origin is suppressed entirely. Rewording is not corroboration."
+    },
+    {
+      "index": 5,
+      "atSeconds": 5.995,
+      "say": "This one is worse. Eight agents vouch for a proof draft, and every one sources it from another agent inside the same ring. Zero outside checks."
+    },
+    {
+      "index": 6,
+      "atSeconds": 6.781,
+      "say": "An agent here claims it fixed the problem itself. The kernel refuses to close the case, because no independent turn ever confirmed the repair."
+    },
+    {
+      "index": 7,
+      "atSeconds": 7.587,
+      "say": "And when a turn is truncated in the transcript, the kernel abstains rather than inventing a lineage it cannot prove."
+    },
+    {
+      "index": 8,
+      "atSeconds": 8.451,
+      "say": "Thirteen committed fixtures, all passing. No LLM touches attribution, so every verdict reproduces offline. Blame the turn, trace the belief."
     }
   ],
-  "clicks": []
+  "clicks": [
+    {
+      "atSeconds": 1.619,
+      "to": [
+        0.32864583333333336,
+        0.5203703703703704
+      ],
+      "selector": "[data-demo='proof-case-SWARM-01']",
+      "say": "Here is the exploit, cited fourteen times across the swarm. Now count how many genuinely independent sources produced it."
+    },
+    {
+      "atSeconds": 4.426,
+      "to": [
+        0.32864583333333336,
+        0.6018518518518519
+      ],
+      "selector": "[data-demo='proof-case-SWARM-02']",
+      "say": "Now a control. Three agents measured the harness separately and got the same number. Independent agreement resolves clean, so the tool does not cry wolf."
+    },
+    {
+      "atSeconds": 5.215,
+      "to": [
+        0.32864583333333336,
+        0.6833333333333333
+      ],
+      "selector": "[data-demo='proof-case-SWARM-03']",
+      "say": "And a restatement that re-cites a single origin is suppressed entirely. Rewording is not corroboration."
+    },
+    {
+      "atSeconds": 6.005,
+      "to": [
+        0.32864583333333336,
+        0.7648148148148148
+      ],
+      "selector": "[data-demo='proof-case-SWARM-04']",
+      "say": "This one is worse. Eight agents vouch for a proof draft, and every one sources it from another agent inside the same ring. Zero outside checks."
+    },
+    {
+      "atSeconds": 6.802,
+      "to": [
+        0.32864583333333336,
+        0.8462962962962963
+      ],
+      "selector": "[data-demo='proof-case-SWARM-05']",
+      "say": "An agent here claims it fixed the problem itself. The kernel refuses to close the case, because no independent turn ever confirmed the repair."
+    },
+    {
+      "atSeconds": 7.601,
+      "to": [
+        0.32864583333333336,
+        1.0092592592592593
+      ],
+      "selector": "[data-demo='proof-case-SWARM-07']",
+      "say": "And when a turn is truncated in the transcript, the kernel abstains rather than inventing a lineage it cannot prove."
+    }
+  ]
 }

@@ -1,44 +1,43 @@
 {
+  "baseUrl": "${DEPLOY_URL}",
+  "viewport": { "width": 1920, "height": 1080 },
   "steps": [
     {
-      "step": 1,
-      "description": "Open the proof inspector and select the synthetic-consensus fixture: 14 agents assert corroboration but only one independent derivation exists",
+      "say": "Two hundred thousand agent turns. One bad belief. An investigator has hours, not weeks. traceturn answers a single question: which turn started it?",
+      "goto": "/proof"
+    },
+    {
+      "say": "Here is the exploit, cited fourteen times across the swarm. Now count how many genuinely independent sources produced it.",
       "click": "[data-demo='proof-case-SWARM-01']"
     },
     {
-      "step": 2,
-      "description": "Select the circular peer-validation ring: 8 assertions, 0 outside checks, kernel returns MATERIAL_DRIFT_DETECTED",
-      "click": "[data-demo='proof-case-SWARM-04']"
+      "say": "Fourteen assertions. One origin. Zero independent corroboration. That gap is synthetic consensus, and it is a graph property, not a vibe.",
+      "waitMs": 1200
     },
     {
-      "step": 3,
-      "description": "Select the benign restatement: re-cited single origin suppressed to BENIGN_CONTROL_NO_DRIFT, confirming zero false positives",
+      "say": "Now a control. Three agents measured the harness separately and got the same number. Independent agreement resolves clean, so the tool does not cry wolf.",
+      "click": "[data-demo='proof-case-SWARM-02']"
+    },
+    {
+      "say": "And a restatement that re-cites a single origin is suppressed entirely. Rewording is not corroboration.",
       "click": "[data-demo='proof-case-SWARM-03']"
     },
     {
-      "step": 4,
-      "description": "Select the truncated-turn fixture: ambiguous source abstains rather than guessing a lineage",
-      "click": "[data-demo='proof-case-SWARM-07']"
-    },
-    {
-      "step": 5,
-      "description": "Open the live simulator and change observed derivations to show the verdict flip deterministically",
-      "click": "[data-demo='lab-simulator']"
-    },
-    {
-      "step": 6,
-      "description": "AI Village: the SWARM-01 fixture is scored from a real transcript turn, not summarized",
-      "click": "[data-demo='proof-case-SWARM-01']"
-    },
-    {
-      "step": 7,
-      "description": "Grove Research: independent-derivation counting is what flags manufactured agreement",
+      "say": "This one is worse. Eight agents vouch for a proof draft, and every one sources it from another agent inside the same ring. Zero outside checks.",
       "click": "[data-demo='proof-case-SWARM-04']"
     },
     {
-      "step": 8,
-      "description": "Anthropic: attribution resolves identically with no model reachable, DETERMINISTIC_FALLBACK",
-      "click": "[data-demo='proof-case-SWARM-02']"
+      "say": "An agent here claims it fixed the problem itself. The kernel refuses to close the case, because no independent turn ever confirmed the repair.",
+      "click": "[data-demo='proof-case-SWARM-05']"
+    },
+    {
+      "say": "And when a turn is truncated in the transcript, the kernel abstains rather than inventing a lineage it cannot prove.",
+      "click": "[data-demo='proof-case-SWARM-07']"
+    },
+    {
+      "say": "Thirteen committed fixtures, all passing. No LLM touches attribution, so every verdict reproduces offline. Blame the turn, trace the belief.",
+      "goto": "/dashboard/create"
     }
   ]
 }
+
