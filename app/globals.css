@@ -1,35 +1,133 @@
 @import "tailwindcss";
 
 /* terminal (stub) — mono display, dense, green-on-graphite, keyboard hints. */
+/* traceturn — terminal palette, single green accent.
+   One accent only. Cool-neutral greys, green reserved for signal. */
 :root {
-  --bg: #0a0a0a;
-  --fg: #d4f7df;
-  --fg-muted: #758c7f;
-  --surface: #111111;
-  --surface-raised: #181818;
-  --border: #2a2a2a;
+  --bg: #08090a;
+  --bg-elevated: #0e1011;
+  --fg: #e8edeb;
+  --fg-muted: #8b9691;
+  --fg-subtle: #5f6a66;
+  --surface: #0f1211;
+  --surface-raised: #151918;
+  --border: #1f2523;
+  --border-strong: #2b3330;
   --accent: #10b981;
-  --accent-contrast: #04170a;
-  --radius: 0.25rem;
-  --radius-sm: 0.125rem;
-  --shadow: 0 0 0 1px rgba(34, 197, 94, 0.15);
+  --accent-dim: #0d9668;
+  --accent-contrast: #04150c;
+  --warn: #eab308;
+  --danger: #f43f5e;
+  --radius: 0.5rem;
+  --radius-sm: 0.3125rem;
+  --radius-lg: 0.75rem;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+  --ring: 0 0 0 1px var(--border);
+  --ring-accent: 0 0 0 1px rgba(16, 185, 129, 0.4);
 }
 
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--fg);
   --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  border-color: var(--border);
 }
 
 body {
   background: var(--bg);
   color: var(--fg);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display type: tight tracking, balanced wrapping. */
+.h-display {
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.h-section {
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+  font-weight: 500;
+}
+
+.prose-measure {
+  max-width: 65ch;
+  text-wrap: pretty;
+  line-height: 1.65;
+  color: var(--fg-muted);
+}
+
+/* Numeric data reads as data. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono), monospace;
+}
+
+/* Hairline surface lift, used for cards and panels. */
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.surface-raised {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* Focus ring: visible for keyboards, quiet for mouse. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 600;
+  border-radius: 0 0 var(--radius-sm) 0;
+}
+
+.skip-link:focus {
+  left: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

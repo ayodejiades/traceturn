@@ -32,7 +32,7 @@ export function NewRecordForm() {
         });
       }}
     >
-      <Input data-demo="title" name="title" placeholder="Lagos pilot" autoFocus required />
+      <Input data-demo="title" name="title" placeholder="Exploit cited 14x from one origin" autoFocus required />
       <Button data-demo="submit" type="submit" disabled={pending}>
         {pending ? "Saving…" : "Submit"}
       </Button>

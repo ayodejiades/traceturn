@@ -6,27 +6,27 @@ import { usePathname } from "next/navigation";
 
 const NAV_GROUPS = [
   {
-    label: "Operations & Capture",
+    label: "Investigation",
     items: [
-      { href: "/dashboard", label: "Operations overview", badge: "LIVE" },
-      { href: "/dashboard/create", label: "Watch surface", badge: "NEW" },
-      { href: "/dashboard/items", label: "Protected surfaces", badge: "22" },
+      { href: "/dashboard", label: "Case overview", badge: "LIVE" },
+      { href: "/dashboard/create", label: "Lineage simulator", badge: "NEW" },
+      { href: "/dashboard/items", label: "Recorded claims", badge: "07" },
     ],
   },
   {
-    label: "Kernel Assurance",
+    label: "Kernel",
     items: [
-      { href: "/dashboard/operator", label: "Agent fleet & authority", badge: "GATE" },
+      { href: "/dashboard/operator", label: "Blame & authority", badge: "GATE" },
       { href: "/dashboard/sponsors", label: "Sponsor ablation", badge: "SEAMS" },
-      { href: "/lab", label: "Invariant drill range", badge: "RULES" },
+      { href: "/lab", label: "Invariant workbench", badge: "RULES" },
     ],
   },
   {
-    label: "Attestation & Ledger",
+    label: "Evidence",
     items: [
-      { href: "/proof", label: "Evidence & claim ledger", badge: "PASS" },
-      { href: "/verify", label: "Byte tamper verifier", badge: "SHA-256" },
-      { href: "/demo", label: "Interactive walkthrough", badge: "DEMO" },
+      { href: "/proof", label: "Evidence ledger", badge: "PASS" },
+      { href: "/verify", label: "Tamper verifier", badge: "SHA-256" },
+      { href: "/demo", label: "Walkthrough", badge: "DEMO" },
     ],
   },
 ];
