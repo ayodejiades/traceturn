@@ -1,0 +1,7 @@
+# The marketing landing page and root page are generated from the starter template and
+# contain an unevaluated JSX placeholder that gitleaks reads as a curl auth header:
+#   curl -X ${activeEndpoint.method} "https://api.${project.toLowerCase()}.io${...}"
+# These are template strings, not credentials. The deterministic kernel (lib/kernel.ts)
+# is the only code path that touches real data and it is committed clean.
+app/page.tsx:curl-auth-header:141
+app/(marketing)/landing/page.tsx:curl-auth-header:141

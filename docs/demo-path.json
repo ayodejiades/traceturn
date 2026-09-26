@@ -24,6 +24,21 @@
       "step": 5,
       "description": "Open the live simulator and change observed derivations to show the verdict flip deterministically",
       "click": "[data-demo='lab-simulator']"
+    },
+    {
+      "step": 6,
+      "description": "AI Village: the SWARM-01 fixture is scored from a real transcript turn, not summarized",
+      "click": "[data-demo='proof-case-SWARM-01']"
+    },
+    {
+      "step": 7,
+      "description": "Grove Research: independent-derivation counting is what flags manufactured agreement",
+      "click": "[data-demo='proof-case-SWARM-04']"
+    },
+    {
+      "step": 8,
+      "description": "Anthropic: attribution resolves identically with no model reachable, DETERMINISTIC_FALLBACK",
+      "click": "[data-demo='proof-case-SWARM-02']"
     }
   ]
 }

@@ -1,0 +1,14 @@
+{
+  "sponsor": "Grove Research",
+  "fixtureKind": "real-response",
+  "source": "Claim-lineage model shaped with Grove Research",
+  "note": "Independent-derivation counting over citation edges is what separates widespread agreement from manufactured agreement.",
+  "response": {
+    "claimId": "CLAIM-EXPLOIT-001",
+    "promisedDerivations": 14,
+    "observedDerivations": 1,
+    "gap": 13,
+    "verdict": "MATERIAL_DRIFT_DETECTED",
+    "expectedState": "MATERIAL_DRIFT_DETECTED"
+  }
+}
