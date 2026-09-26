@@ -131,7 +131,7 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        {/* Step 1: Role */}
+        {/* Role */}
         {step === 1 && (
           <section className="space-y-6 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6">
             <div>
@@ -192,7 +192,7 @@ export default function OnboardingPage() {
           </section>
         )}
 
-        {/* Step 2: Sponsor Seams */}
+        {/* Sponsor Seams */}
         {step === 2 && (
           <section className="space-y-6 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6">
             <div>
@@ -261,7 +261,7 @@ export default function OnboardingPage() {
           </section>
         )}
 
-        {/* Step 3: Safety Kernel */}
+        {/* Safety Kernel */}
         {step === 3 && (
           <section className="space-y-6 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6">
             <div className="flex items-start justify-between gap-4">
@@ -318,7 +318,7 @@ export default function OnboardingPage() {
           </section>
         )}
 
-        {/* Step 4: Prerequisite Check & Launch */}
+        {/* Prerequisite Check and Launch */}
         {step === 4 && (
           <section className="space-y-6 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6">
             <div>
