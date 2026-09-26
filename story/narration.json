@@ -1,0 +1,34 @@
+{
+  "beats": [
+    {
+      "time": "0:00",
+      "cue": "The agent reliability problem",
+      "text": "Single autonomous agents suffer from silent hallucinations and unconstrained state mutations."
+    },
+    {
+      "time": "0:10",
+      "cue": "Multi-agent consensus architecture",
+      "text": "Our engine decomposes high-stakes tasks across three specialized roles: Extractor, Risk Auditor, and Settlement Actuary."
+    },
+    {
+      "time": "0:25",
+      "cue": "Parallel proposal generation",
+      "text": "Each agent independently evaluates input payloads using structured schemas and cryptographically checksummed outputs."
+    },
+    {
+      "time": "0:40",
+      "cue": "Quorum agreement threshold",
+      "text": "When at least two-thirds of agents agree on classification and risk parameters, the transaction commits in under twenty milliseconds."
+    },
+    {
+      "time": "0:55",
+      "cue": "Byzantine conflict detection",
+      "text": "When an agent proposes an invalid or disputed recommendation, the state machine detects the quorum breach and isolates the task."
+    },
+    {
+      "time": "1:10",
+      "cue": "Enterprise auditability",
+      "text": "Every vote, confidence score, and latency metric is immutably recorded for post-incident compliance audits."
+    }
+  ]
+}

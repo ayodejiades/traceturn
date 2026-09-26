@@ -1,0 +1,68 @@
+[
+  {
+    "id": "tsk-001",
+    "payloadTitle": "Tier-1 Cloud Provider SLA Invoice Reconciliation",
+    "status": "CONSENSUS_REACHED",
+    "consensusScore": 100,
+    "timestamp": "2026-09-21T14:40:00Z",
+    "proposals": [
+      {
+        "agentId": "agent-ext-01",
+        "role": "EXTRACTOR",
+        "confidence": 0.98,
+        "recommendation": "APPROVE",
+        "latencyMs": 18,
+        "checksum": "0x89a1f"
+      },
+      {
+        "agentId": "agent-risk-02",
+        "role": "RISK_AUDITOR",
+        "confidence": 0.94,
+        "recommendation": "APPROVE",
+        "latencyMs": 24,
+        "checksum": "0x4b12c"
+      },
+      {
+        "agentId": "agent-act-03",
+        "role": "SETTLEMENT_ACTUARY",
+        "confidence": 0.96,
+        "recommendation": "APPROVE",
+        "latencyMs": 14,
+        "checksum": "0x918ce"
+      }
+    ]
+  },
+  {
+    "id": "tsk-002",
+    "payloadTitle": "Conflicting Cross-Border Tax Treaty Exemption",
+    "status": "ESCALATED",
+    "consensusScore": 33,
+    "timestamp": "2026-09-21T15:15:00Z",
+    "proposals": [
+      {
+        "agentId": "agent-ext-01",
+        "role": "EXTRACTOR",
+        "confidence": 0.91,
+        "recommendation": "APPROVE",
+        "latencyMs": 19,
+        "checksum": "0x12a9e"
+      },
+      {
+        "agentId": "agent-risk-02",
+        "role": "RISK_AUDITOR",
+        "confidence": 0.88,
+        "recommendation": "REJECT",
+        "latencyMs": 28,
+        "checksum": "0x77c10"
+      },
+      {
+        "agentId": "agent-act-03",
+        "role": "SETTLEMENT_ACTUARY",
+        "confidence": 0.79,
+        "recommendation": "ESCALATE",
+        "latencyMs": 22,
+        "checksum": "0x991aa"
+      }
+    ]
+  }
+]
