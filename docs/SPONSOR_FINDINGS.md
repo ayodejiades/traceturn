@@ -2,30 +2,23 @@
 
 Concrete engineering findings observed while wiring each sponsor seam and how they are guarded in `lib/kernel.ts`.
 
-## OpenAI-Compatible Structured Extraction (`EXTRACTION`)
-- **Finding**: Model paraphrases numeric terms when promotional copy uses prose
-- **Environment**: Structured Outputs API (strict JSON schema), Campaign A/C evaluation run
-- **Observed**: On promotional offers written in prose ('eighteen seventy-five monthly credit'), the model occasionally synthesized '$18.75/mo' in the excerpt field instead of copying the literal prose substring.
-- **Deterministic Fix (`lib/kernel.ts#evaluateSafetyKernel`)**: INV-1 in lib/kernel.ts enforces whitespace-normalized literal substring containment against the raw T0 text and rejects paraphrased excerpts with EXCERPT_NOT_FOUND_IN_T0.
-- **Boundary Honesty (Not Claimed)**: The model never directly mutates database state or marks a dispute resolved; all state transitions are gated by lib/kernel.ts.
+## AI Village (`CAPTURE`)
+- **Finding**: Truncated turns cannot support a lineage claim
+- **Environment**: AI Village transcript slice, SWARM-07 fixture
+- **Observed**: A turn marked '[transcript truncated]' was used by an agent to assert that a library entry had been updated again.
+- **Deterministic Fix (`evidence/campaign-report.json`)**: INV-5 in lib/kernel.ts forces ABSTAIN_AMBIGUOUS_SOURCE whenever the source scope is ambiguous, so a truncated turn can never produce a blame assignment.
+- **Boundary Honesty (Not Claimed)**: traceturn does not claim to have reproduced the Hugging Face incident itself; findings are scoped to committed fixtures only.
 
-## Firecrawl / Immutable Snapshot Capture (`CAPTURE`)
-- **Finding**: Dynamic cookie banners and rotating session footers alter raw page hashes
-- **Environment**: Public offer page captures (T0 vs Tn re-crawl)
-- **Observed**: Two captures of an identical offer page 10 minutes apart produced different raw SHA-256 hashes due to rotating CSRF tokens and cookie consent DOM nodes.
-- **Deterministic Fix (`lib/kernel.ts#computeEvidenceDigest`)**: INV-4 in lib/kernel.ts compares canonicalized integer-cent fact tuples (rateCents, promoCreditCents, durationMonths) rather than raw DOM hashes, achieving 8/8 benign rewrite immunity.
-- **Boundary Honesty (Not Claimed)**: Authenticated behind-login carrier portals are not scraped automatically; users forward or upload those statements directly.
+## Grove Research (`KERNEL_DB`)
+- **Finding**: An agent asserted its own repair without independent proof
+- **Environment**: AI Village transcript slice, SWARM-05 fixture
+- **Observed**: Agent-44 stated the missing derivation was supplied and the premise now held; no later turn contained an independent confirming observation.
+- **Deterministic Fix (`lib/kernel.ts#evaluateDeterministicKernel`)**: INV-3 holds the case in WAITING_TO_VERIFY until subsequentObservationProvesFix is set by a genuinely independent turn.
+- **Boundary Honesty (Not Claimed)**: Absence of a derivation edge is a lower bound, not proof of fabrication. Coordination via side channels is explicitly out of scope.
 
-## Drizzle ORM + PostgreSQL / Convex State Kernel (`KERNEL_DB`)
-- **Finding**: Serverless cold-start connection spikes under parallel eval harness runs
-- **Environment**: PostgreSQL serverless pool during 52-call evaluation campaign
-- **Observed**: Running 52 concurrent evaluation workers exhausted default connection slots when each worker instantiated a fresh client.
-- **Deterministic Fix (`db/schema.ts & db/index.ts`)**: db/index.ts bounds max connections and provides an automatic deterministic fixture store when DATABASE_URL is absent or DEMO_MODE=1.
-- **Boundary Honesty (Not Claimed)**: Multi-region active-active write replication is not enabled in the hackathon deployment.
-
-## AgentMail / Signed Webhook Dispatch Bus (`DISPATCH`)
-- **Finding**: Provider auto-responders ('We resolved your ticket!') arrive before billing cycle closes
-- **Environment**: Inbound support webhook processing
-- **Observed**: Support systems immediately emit a templated 'Your issue is resolved' email upon ticket closure, weeks before the next billing statement is generated.
-- **Deterministic Fix (`app/api/items/route.ts & lib/kernel.ts`)**: INV-3 in lib/kernel.ts locks the item in WAITING_TO_VERIFY upon receiving a provider claim and requires a subsequent billing statement with missingCreditCents === 0 before transitioning to VERIFIED_FIXED.
-- **Boundary Honesty (Not Claimed)**: Autonomous outbound emailing without human click-to-approve is intentionally prohibited by security policy.
+## Anthropic (`EXTRACTION`)
+- **Finding**: LLM assistance is structurally unable to touch the attribution layer
+- **Environment**: DEMO_MODE=1 with no API key configured
+- **Observed**: Every fixture produced byte-identical verdicts, invariants, and digests with no model reachable.
+- **Deterministic Fix (`lib/kernel.ts#evaluateSafetyKernel`)**: The model call is confined to labelling; lib/kernel.ts graph construction and verdict selection are pure functions with no I/O.
+- **Boundary Honesty (Not Claimed)**: The model never participates in attribution or in any state transition. It may only label subtrees the kernel has already flagged.

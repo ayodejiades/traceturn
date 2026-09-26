@@ -2,9 +2,9 @@
 
 Computed from `evidence/campaign-report.json` and `lib/kernel.ts` by `tools/verify-evidence.ts`.
 
-- Generated: 2026-09-26T19:07:00.945Z
+- Generated: 2026-09-26T19:21:54.009Z
 - Mechanism: swarm-forgery-kernel-v1 · mode: NOT_RUN
-- sha256: `a22f63b84f29e3fca005c1a36538a72b620cbd01fcd5d2c53282267eb3d73746`
+- sha256: `13202a7c665c868f6bc59755aa081cc79ce4a666b6d07bb7a4f36ca98386ed83`
 
 ## Executed Fixture Matrix
 
@@ -17,10 +17,3 @@ Computed from `evidence/campaign-report.json` and `lib/kernel.ts` by `tools/veri
 | `SWARM-05` | UNVERIFIED_SELF_REPAIR | `WAITING_TO_VERIFY` | `WAITING_TO_VERIFY` | 5c | `0xe41ebc44cf317eab2f7ddd7492403e16` | PASS |
 | `SWARM-06` | UNBOUND_EXCERPT | `ABSTAIN_UNBOUND_EXCERPT` | `ABSTAIN_UNBOUND_EXCERPT` | 0c | `0xb428cc54d806655e334de5af1a2db6ba` | PASS |
 | `SWARM-07` | AMBIGUOUS_SOURCE | `ABSTAIN_AMBIGUOUS_SOURCE` | `ABSTAIN_AMBIGUOUS_SOURCE` | 7c | `0x596d09460c4e7e5cf9736bb98c8f444b` | PASS |
-
-## Adversarial Defense & Negative Invariant Proof
-
-- **Synthetic Negative Probe**: Rejected (`ABSTAIN_UNBOUND_EXCERPT`)
-- **Negative Invariant**: Kernel/solver strictly rejects tampered, forged, or unbound inputs (verdict !== "ON_TRACK")
-- **Defense Mechanism**: Claim lacks a verbatim substring in the source turn; failed closed.
-- **Proof Status**: PASS (Deterministic fail-closed rejection verified)

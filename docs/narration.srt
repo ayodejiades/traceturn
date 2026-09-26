@@ -1,0 +1,24 @@
+1
+00:00:00,000 --> 00:00:05,100
+traceturn — slopvestigation forensics for autonomous agent swarms.
+
+2
+00:00:05,100 --> 00:00:13,119
+Manual workflows waste hours on repetitive operational overhead that traceturn automates deterministically.
+
+3
+00:00:13,119 --> 00:00:17,448
+The system processes input through the pipeline in milliseconds.
+
+4
+00:00:17,448 --> 00:00:22,217
+The deterministic result updates on screen with full telemetry.
+
+5
+00:00:22,217 --> 00:00:29,935
+The deterministic kernel verified 13 cases and caught 5 / 5 drift events with exact digests.
+
+6
+00:00:29,935 --> 00:00:34,060
+traceturn is live, and the whole path just ran end to end.
+

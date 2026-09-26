@@ -46,7 +46,10 @@ export default function Web2CreateCommitmentPage() {
         </section>
 
         <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          <div className="flex flex-col gap-4 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6 lg:col-span-7">
+          <div
+            className="flex flex-col gap-4 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6 lg:col-span-7"
+            data-demo="lab-simulator"
+          >
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--fg-muted,#737373)]">
               2. Live Excerpt-Binding &amp; Independent-Derivation Simulator
             </div>

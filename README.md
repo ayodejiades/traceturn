@@ -70,6 +70,16 @@ make deploy         # deploys to Cloudflare Pages / Vercel
 
 Everything on the critical verification and demo path (`docs/DEMO_PATH.md`, `/proof`, `/dashboard`, and `pnpm claim:verify`) is implemented and tested end-to-end. Secondary peripheral integrations outside the core thesis are explicitly scoped in [`WHAT_IS_REAL.md`](WHAT_IS_REAL.md).
 
+## 8. Sponsors
+
+Built for the **AI Swarm Dynamics Hackathon**, hosted by AI Village and Grove Research.
+
+- **AI Village** — supplies the >170k-message, >2M-computer-use-turn transcript corpus. Every fixture and precision/recall claim is measured against labelled real swarm data rather than synthetic-only inputs. Remove it and the tool has no ground truth at all.
+- **Grove Research** — shaped the claim-lineage model. Independent-derivation counting over citation edges is what separates *widespread agreement* from *manufactured agreement*; it is the seam the whole tool exists to expose.
+- **Anthropic** — used only to classify semantic intent on DAG subtrees the deterministic kernel has already isolated. Attribution itself never touches a model: with no API key reachable, all 13 fixtures resolve byte-identically.
+
+Each integration carries a measured ablation in [`lib/sponsors.ts`](lib/sponsors.ts) and is written up in `docs/SPONSOR_INTEGRATIONS.md` and `docs/SPONSOR_FINDINGS.md`.
+
 ## Credits
 
 Assets and open-source attributions are listed in [`CREDITS.md`](CREDITS.md).

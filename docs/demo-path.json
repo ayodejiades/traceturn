@@ -2,13 +2,28 @@
   "steps": [
     {
       "step": 1,
-      "description": "Trigger multi-agent quorum evaluation to observe 3-of-3 consensus agreement",
-      "click": "[data-demo='evaluate-consensus']"
+      "description": "Open the proof inspector and select the synthetic-consensus fixture: 14 agents assert corroboration but only one independent derivation exists",
+      "click": "[data-demo='proof-case-SWARM-01']"
     },
     {
       "step": 2,
-      "description": "Inject discordant proposal to observe Byzantine failure detection and automatic escalation",
-      "click": "[data-demo='simulate-conflict']"
+      "description": "Select the circular peer-validation ring: 8 assertions, 0 outside checks, kernel returns MATERIAL_DRIFT_DETECTED",
+      "click": "[data-demo='proof-case-SWARM-04']"
+    },
+    {
+      "step": 3,
+      "description": "Select the benign restatement: re-cited single origin suppressed to BENIGN_CONTROL_NO_DRIFT, confirming zero false positives",
+      "click": "[data-demo='proof-case-SWARM-03']"
+    },
+    {
+      "step": 4,
+      "description": "Select the truncated-turn fixture: ambiguous source abstains rather than guessing a lineage",
+      "click": "[data-demo='proof-case-SWARM-07']"
+    },
+    {
+      "step": 5,
+      "description": "Open the live simulator and change observed derivations to show the verdict flip deterministically",
+      "click": "[data-demo='lab-simulator']"
     }
   ]
 }
