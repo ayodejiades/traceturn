@@ -61,8 +61,8 @@ export default async function Web2ItemsLedgerPage() {
                 </div>
                 <p className="text-xs text-[var(--fg-muted,#737373)]">{item.audit.summary}</p>
                 <div className="flex flex-wrap items-center gap-4 pt-1 font-mono text-[11px] text-[var(--fg-muted,#737373)] num">
-                  <span>Promised: ${(item.promisedCents / 100).toFixed(2)}</span>
-                  <span>Observed: ${(item.observedCents / 100).toFixed(2)}</span>
+                  <span>Promised: {item.promisedDerivations}</span>
+                  <span>Observed: {item.observedDerivations}</span>
                   <span>Evidence Digest: {item.audit.evidenceHash.slice(0, 22)}…</span>
                 </div>
               </div>

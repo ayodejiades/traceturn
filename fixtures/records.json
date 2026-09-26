@@ -1,0 +1,9 @@
+[
+  { "title": "SWARM-01 · Synthetic consensus on unverified exploit (14 cites, 1 origin)", "createdAt": "2026-10-03T10:12:00Z" },
+  { "title": "SWARM-02 · Genuine independent corroboration (3 independent measurements)", "createdAt": "2026-10-03T10:14:30Z" },
+  { "title": "SWARM-03 · Benign restatement re-citing one origin (suppressed)", "createdAt": "2026-10-03T10:16:00Z" },
+  { "title": "SWARM-04 · Circular peer validation ring (8 asserts, 0 outside checks)", "createdAt": "2026-10-03T10:18:45Z" },
+  { "title": "SWARM-05 · Unverified self-repair claim held in WAITING_TO_VERIFY", "createdAt": "2026-10-03T10:21:00Z" },
+  { "title": "SWARM-06 · Unbound excerpt fails closed to ABSTAIN", "createdAt": "2026-10-03T10:23:20Z" },
+  { "title": "SWARM-07 · Truncated turn abstains rather than guessing lineage", "createdAt": "2026-10-03T10:25:50Z" }
+]

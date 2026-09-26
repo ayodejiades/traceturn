@@ -7,20 +7,20 @@ import { evaluateDeterministicKernel } from "@/lib/kernel";
 
 export default function Web2CreateCommitmentPage() {
   const [sourceCaptureT0, setSourceCaptureT0] = useState(
-    "Enterprise Service Agreement #402: Customer is guaranteed a $250.00 monthly SLA credit across 12 billing periods."
+    "Agent-07 records in the shared library that the Lean 4 proof checker accepts incomplete tactic blocks."
   );
   const [extractedExcerpt, setExtractedExcerpt] = useState(
-    "guaranteed a $250.00 monthly SLA credit across 12 billing periods"
+    "the Lean 4 proof checker accepts incomplete tactic blocks"
   );
-  const [promisedCents, setPromisedCents] = useState(25000);
-  const [observedCents, setObservedCents] = useState(10000);
+  const [promisedDerivations, setPromisedDerivations] = useState(14);
+  const [observedDerivations, setObservedDerivations] = useState(1);
 
   const liveDecision = evaluateDeterministicKernel({
     caseId: "live-draft",
     sourceCaptureT0,
     extractedExcerpt,
-    promisedCents,
-    observedCents,
+    promisedDerivations,
+    observedDerivations,
   });
 
   return (
@@ -48,7 +48,7 @@ export default function Web2CreateCommitmentPage() {
         <section className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <div className="flex flex-col gap-4 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6 lg:col-span-7">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--fg-muted,#737373)]">
-              2. Live Excerpt-Binding &amp; Integer-Cent Simulator
+              2. Live Excerpt-Binding &amp; Independent-Derivation Simulator
             </div>
 
             <label className="flex flex-col gap-1.5 text-xs">
@@ -73,20 +73,20 @@ export default function Web2CreateCommitmentPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <label className="flex flex-col gap-1.5 text-xs">
-                <span className="font-medium text-[var(--fg,#171717)]">Promised (Integer Cents)</span>
+                <span className="font-medium text-[var(--fg,#171717)]">Promised Derivations (agents asserting)</span>
                 <input
                   type="number"
-                  value={promisedCents}
-                  onChange={(e) => setPromisedCents(Number(e.target.value) || 0)}
+                  value={promisedDerivations}
+                  onChange={(e) => setPromisedDerivations(Number(e.target.value) || 0)}
                   className="rounded border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-2.5 font-mono text-xs text-[var(--fg,#171717)] num"
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs">
-                <span className="font-medium text-[var(--fg,#171717)]">Observed (Integer Cents)</span>
+                <span className="font-medium text-[var(--fg,#171717)]">Observed Derivations (independent paths)</span>
                 <input
                   type="number"
-                  value={observedCents}
-                  onChange={(e) => setObservedCents(Number(e.target.value) || 0)}
+                  value={observedDerivations}
+                  onChange={(e) => setObservedDerivations(Number(e.target.value) || 0)}
                   className="rounded border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-2.5 font-mono text-xs text-[var(--fg,#171717)] num"
                 />
               </label>

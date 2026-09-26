@@ -52,7 +52,7 @@ const caseResults: Array<{
   category: string;
   expected: string;
   actual: string;
-  deltaCents: number;
+  deltaDerivations: number;
   digest: string;
   pass: boolean;
 }> = [];
@@ -72,7 +72,7 @@ for (const c of campaign.cases as Array<ReconciliationInput & { category: string
 
   const caseDigest = crypto
     .createHash("sha256")
-    .update(JSON.stringify({ caseId: c.caseId, state: decision.state, deltaCents: decision.deltaCents }))
+    .update(JSON.stringify({ caseId: c.caseId, state: decision.state, deltaDerivations: decision.deltaDerivations }))
     .digest("hex");
 
   caseResults.push({
@@ -80,7 +80,7 @@ for (const c of campaign.cases as Array<ReconciliationInput & { category: string
     category: c.category,
     expected: c.expectedState,
     actual: decision.state,
-    deltaCents: decision.deltaCents,
+    deltaDerivations: decision.deltaDerivations,
     digest: `0x${caseDigest.slice(0, 32)}`,
     pass,
   });
@@ -160,7 +160,7 @@ const campaignMd = [
   "|---|---|---|---|---|---|---|",
   ...caseResults.map(
     (r) =>
-      `| \`${r.id}\` | ${r.category} | \`${r.expected}\` | \`${r.actual}\` | ${r.deltaCents}c | \`${r.digest}\` | ${r.pass ? "PASS" : "FAIL"} |`
+      `| \`${r.id}\` | ${r.category} | \`${r.expected}\` | \`${r.actual}\` | ${r.deltaDerivations}c | \`${r.digest}\` | ${r.pass ? "PASS" : "FAIL"} |`
   ),
   "",
 ].join("\n");

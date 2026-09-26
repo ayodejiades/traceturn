@@ -129,7 +129,7 @@ export default function Web2OperatorPage() {
                     <span className="text-sm font-medium text-[var(--fg,#171717)]">{caseItem.title}</span>
                   </div>
                   <p className="mt-0.5 font-mono text-xs text-[var(--fg-muted,#737373)] num">
-                    Promised: ${(caseItem.promisedCents / 100).toFixed(2)} · Observed: ${(caseItem.observedCents / 100).toFixed(2)} · Hash: {result.evidenceHash.slice(0, 18)}…
+                    Promised: Promised: {caseItem.promisedDerivations} · Observed: {caseItem.observedDerivations} · Hash: {result.evidenceHash.slice(0, 18)}…
                   </p>
                 </div>
                 <span className="shrink-0 rounded border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] px-2.5 py-1 font-mono text-xs text-[var(--fg,#171717)]">

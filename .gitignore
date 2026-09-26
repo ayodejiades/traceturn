@@ -32,3 +32,4 @@ docs/*.gif
 # Editors
 .vscode/
 .idea/
+.vercel

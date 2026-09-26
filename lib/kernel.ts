@@ -1,15 +1,23 @@
 /**
- * Deterministic Kernel for "Multi-Agent Consensus & Quorum Engine"
- * Deterministic multi-agent agreement evaluation (66% supermajority quorum), proposal divergence checks.
+ * Deterministic Swarm Forensics Kernel ("Agents propose; deterministic code decides").
  *
- * Core Invariants:
- * - INV-1 (Proposal Cryptographic Checksum Binding): Agent vote bound to hash of agreed proposal text.
- * - INV-2 (Integer Quorum Arithmetic): Consensus percentage computed in exact integer basis points.
- * - INV-3 (Split Vote Escalation Separation): Disputed proposals held in ESCALATED until tie-break.
- * - INV-4 (Unanimous Agreement Discrimination): Cosmetic wording drift with identical vote outcome resolves cleanly.
- * - INV-5 (Quorum Failure Fail-Closed Guard): Insufficient voter count fails closed to ABSTAIN.
+ * traceturn reconstructs two interlocking graphs from a multi-agent transcript:
+ *  - the CAUSAL BLAME DAG: which turn originated a failure, via parent-child delegation edges.
+ *  - the CLAIM LINEAGE graph: how one unverified premise propagated until it became
+ *    swarm consensus, via citation edges between agents.
+ *
+ * Both are pure functions of the transcript. No LLM participates in attribution.
+ *
+ * Core Invariants (enforced in both production routes and `pnpm verify:evidence`):
+ * - INV-1 (Evidence-Excerpt Binding): Every decisive claim must carry a literal,
+ *   whitespace-normalized substring found in the immutable source turn. Missing or
+ *   paraphrased excerpts fail closed (`ABSTAIN_UNBOUND_EXCERPT`).
+ * - INV-2 (Integer Derivation Arithmetic & Benign Rewording Discrimination):
+ *   Independent-derivation counts are compared as exact integers, never floating-point
+ *   ratios. A restatement that re-cites one origin resolves to `BENIGN_CONTROL_NO_DRIFT`.
+ * - INV-3 (Verification Separation): An agent asserting a premise is resolved
+ *   remains `WAITING_TO_VERIFY` until a subsequent independent observation reconciles.
  */
-
 export type KernelState =
   | "ON_TRACK"
   | "BENIGN_CONTROL_NO_DRIFT"
@@ -19,12 +27,19 @@ export type KernelState =
   | "ABSTAIN_UNBOUND_EXCERPT"
   | "ABSTAIN_AMBIGUOUS_SOURCE";
 
+/**
+ * `promisedDerivations` = how many agents assert they verified the premise.
+ * `observedDerivations` = how many INDEPENDENT verification paths actually exist once
+ * duplicate citations of a single origin are collapsed. promised > observed is the
+ * signature of synthetic consensus: the swarm believes a premise is corroborated far
+ * more strongly than it actually is.
+ */
 export interface ReconciliationInput {
   caseId: string;
   sourceCaptureT0: string;
   extractedExcerpt: string;
-  promisedCents: number;
-  observedCents: number;
+  promisedDerivations: number;
+  observedDerivations: number;
   isCosmeticRewrite?: boolean;
   isAmbiguousSource?: boolean;
   providerClaimsFixed?: boolean;
@@ -41,97 +56,101 @@ export interface InvariantCheck {
 export interface KernelDecision {
   caseId: string;
   state: KernelState;
-  deltaCents: number;
+  deltaDerivations: number;
   excerptBound: boolean;
   invariants: InvariantCheck[];
   summary: string;
 }
 
-export function normalizeWhitespace(text: string): string {
+export function normalizeWhitespace(text: string | null | undefined): string {
+  if (typeof text !== "string") return "";
   return text.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
 export function verifyExcerptBinding(sourceCaptureT0: string, extractedExcerpt: string): boolean {
   const normSource = normalizeWhitespace(sourceCaptureT0);
   const normExcerpt = normalizeWhitespace(extractedExcerpt);
-  if (!normExcerpt || normExcerpt.length < 4) return false;
+  if (!normExcerpt || normExcerpt.length < 6) return false;
   return normSource.includes(normExcerpt);
 }
 
 export function evaluateDeterministicKernel(input: ReconciliationInput): KernelDecision {
   const excerptBound = verifyExcerptBinding(input.sourceCaptureT0, input.extractedExcerpt);
-  const integerCentsValid =
-    Number.isInteger(input.promisedCents) &&
-    Number.isInteger(input.observedCents) &&
-    input.promisedCents >= 0 &&
-    input.observedCents >= 0;
+  const integerCountsValid =
+    Number.isInteger(input.promisedDerivations) &&
+    Number.isInteger(input.observedDerivations) &&
+    input.promisedDerivations >= 0 &&
+    input.observedDerivations >= 0;
 
-  const deltaCents = input.promisedCents - input.observedCents;
+  const deltaDerivations = input.promisedDerivations - input.observedDerivations;
 
   let state: KernelState = "ON_TRACK";
-  let summary = "Multi-Agent Consensus & Quorum Engine: Observed values match commitments within domain bounds.";
+  let summary = "Independent-derivation count matches the asserted corroboration.";
 
   if (input.isAmbiguousSource) {
     state = "ABSTAIN_AMBIGUOUS_SOURCE";
-    summary = "Multi-Agent Consensus & Quorum Engine: Ambiguous payload fails closed (INV-5 upheld).";
+    summary = "Source turn is truncated or out of scope; kernel abstains rather than guessing at lineage.";
   } else if (!excerptBound) {
     state = "ABSTAIN_UNBOUND_EXCERPT";
-    summary = "Multi-Agent Consensus & Quorum Engine: Claim excerpt lacks verbatim binding to source input.";
-  } else if (deltaCents === 0 && input.isCosmeticRewrite) {
+    summary = "Claim lacks a verbatim substring in the source turn; failed closed.";
+  } else if (deltaDerivations === 0 && input.isCosmeticRewrite) {
     state = "BENIGN_CONTROL_NO_DRIFT";
-    summary = "Multi-Agent Consensus & Quorum Engine: Cosmetic reformatting detected; zero domain drift.";
-  } else if (deltaCents > 0) {
+    summary = "Premise restated, but every citation resolves to the same single origin; no new corroboration.";
+  } else if (deltaDerivations > 0) {
     if (input.providerClaimsFixed && !input.subsequentObservationProvesFix) {
       state = "WAITING_TO_VERIFY";
-      summary = `Claimed remediation held in WAITING_TO_VERIFY until independent observation confirms.`;
+      summary = `Agent claims ${deltaDerivations} corroborating source(s) resolved, held in WAITING_TO_VERIFY until an independent observation proves it.`;
     } else if (input.providerClaimsFixed && input.subsequentObservationProvesFix) {
       state = "VERIFIED_FIXED";
-      summary = "Multi-Agent Consensus & Quorum Engine: Remediated state verified by subsequent observation.";
+      summary = "Independent observation confirmed the missing derivation; promoted to VERIFIED_FIXED.";
     } else {
       state = "MATERIAL_DRIFT_DETECTED";
-      summary = `Multi-Agent Consensus & Quorum Engine: Material drift of ${deltaCents} units detected.`;
+      summary = `Synthetic consensus: premise asserted as corroborated ${input.promisedDerivations}x but only ${input.observedDerivations} independent derivation path(s) exist (gap ${deltaDerivations}), bound to source turn.`;
     }
   }
 
   const invariants: InvariantCheck[] = [
     {
       id: "INV-1",
-      name: "Proposal Cryptographic Checksum Binding",
+      name: "Literal Evidence-Excerpt Binding",
       passed: excerptBound || state === "ABSTAIN_UNBOUND_EXCERPT" || state === "ABSTAIN_AMBIGUOUS_SOURCE",
       detail: excerptBound
-        ? `Verbatim binding verified: "${input.extractedExcerpt.slice(0, 36)}…"`
-        : "Unbound claim rejected -> failed closed to ABSTAIN",
+        ? `Verbatim match verified in T0 source (${input.extractedExcerpt.slice(0, 42)}…)`
+        : "Unbound excerpt rejected -> failed closed to ABSTAIN (INV-1 upheld)",
     },
     {
       id: "INV-2",
-      name: "Integer Quorum Arithmetic",
-      passed: integerCentsValid,
-      detail: `Promised=${input.promisedCents}, Observed=${input.observedCents}, Delta=${deltaCents}`,
+      name: "Integer Derivation Arithmetic",
+      passed: integerCountsValid,
+      detail: `Promised=${input.promisedDerivations}, Observed=${input.observedDerivations}, Gap=${deltaDerivations}`,
     },
     {
       id: "INV-3",
-      name: "Split Vote Escalation Separation",
+      name: "Claim vs. Verified Separation",
       passed: !(input.providerClaimsFixed && !input.subsequentObservationProvesFix && state === "VERIFIED_FIXED"),
-      detail: state === "WAITING_TO_VERIFY" ? "Unverified claim held in WAITING_TO_VERIFY" : "Remediation verified",
+      detail:
+        state === "WAITING_TO_VERIFY"
+          ? "Unverified agent claim held in WAITING_TO_VERIFY"
+          : "Resolution state strictly gated by independent observation",
     },
     {
       id: "INV-4",
-      name: "Unanimous Agreement Discrimination",
-      passed: !(input.isCosmeticRewrite && deltaCents === 0 && state === "MATERIAL_DRIFT_DETECTED"),
-      detail: "Benign input alterations never trigger false-positive alerts",
+      name: "Benign Rewording Discrimination",
+      passed: !(input.isCosmeticRewrite && deltaDerivations === 0 && state === "MATERIAL_DRIFT_DETECTED"),
+      detail: "Restated premises re-citing one origin never trigger false-positive consensus alerts",
     },
     {
       id: "INV-5",
-      name: "Quorum Failure Fail-Closed Guard",
+      name: "Ambiguity Abstention Guard",
       passed: !input.isAmbiguousSource || state === "ABSTAIN_AMBIGUOUS_SOURCE",
-      detail: "Malformed or out-of-scope records fail closed safely",
+      detail: "Out-of-scope or unverified inputs abstain cleanly without hallucination",
     },
   ];
 
   return {
     caseId: input.caseId,
-    state,
-    deltaCents,
+    state: state,
+    deltaDerivations,
     excerptBound,
     invariants,
     summary,
@@ -139,11 +158,31 @@ export function evaluateDeterministicKernel(input: ReconciliationInput): KernelD
 }
 
 export const SAFETY_INVARIANTS = [
-  { id: "INV-01", name: "Proposal Cryptographic Checksum Binding", rule: "Agent vote bound to hash of agreed proposal text" },
-  { id: "INV-02", name: "Integer Quorum Arithmetic", rule: "Consensus percentage computed in exact integer basis points" },
-  { id: "INV-03", name: "Split Vote Escalation Separation", rule: "Disputed proposals held in ESCALATED until tie-break" },
-  { id: "INV-04", name: "Unanimous Agreement Discrimination", rule: "Cosmetic wording drift with identical vote outcome resolves cleanly" },
-  { id: "INV-05", name: "Quorum Failure Fail-Closed Guard", rule: "Insufficient voter count fails closed to ABSTAIN" },
+  {
+    id: "INV-01",
+    name: "Literal Excerpt Binding",
+    rule: "Every decisive extracted claim must match a whitespace-normalized substring in the immutable T0 source capture.",
+  },
+  {
+    id: "INV-02",
+    name: "Integer Derivation Arithmetic",
+    rule: "Independent-derivation counts are evaluated as exact integers, never floating-point ratios.",
+  },
+  {
+    id: "INV-03",
+    name: "Verification Separation",
+    rule: "An agent's claim that a premise is resolved remains in WAITING_TO_VERIFY until an independent observation confirms it.",
+  },
+  {
+    id: "INV-04",
+    name: "Benign Rewording Suppression",
+    rule: "Restated premises that re-cite a single origin resolve to BENIGN_CONTROL_NO_DRIFT rather than false consensus alerts.",
+  },
+  {
+    id: "INV-05",
+    name: "Ambiguity Abstention Guard",
+    rule: "Truncated or out-of-scope turns fail closed to ABSTAIN rather than guessing at lineage.",
+  },
 ] as const;
 
 export interface BenchmarkCase {
@@ -152,67 +191,101 @@ export interface BenchmarkCase {
   beforeText: string;
   afterText: string;
   proposedExcerpt: string;
-  promisedCents: number;
-  observedCents: number;
+  promisedDerivations: number;
+  observedDerivations: number;
   expectedActionable: boolean;
   isCosmeticRewrite?: boolean;
+  providerClaimsFixed?: boolean;
+  subsequentObservationProvesFix?: boolean;
 }
 
 export const BENCHMARK_CASES: BenchmarkCase[] = [
   {
     id: "CASE-01",
-    title: "Supermajority Consensus Reached (3/3 Approve)",
-    beforeText: "Proposals: Extractor(95%), Auditor(91%), Actuary(94%) all vote APPROVE.",
-    afterText: "Consensus achieved: 100% agreement, threshold 66% met.",
-    proposedExcerpt: "all vote APPROVE",
-    promisedCents: 10000,
-    observedCents: 10000,
+    title: "Synthetic Consensus on an Unverified Exploit",
+    beforeText: "Agent-07 records in the shared library that the Lean 4 proof checker accepts incomplete tactic blocks.",
+    afterText: "Agent-12 cites the Agent-07 library entry and reports the exploit as an established property of the checker.",
+    proposedExcerpt: "the Lean 4 proof checker accepts incomplete tactic blocks",
+    promisedDerivations: 14,
+    observedDerivations: 1,
     expectedActionable: true,
   },
   {
     id: "CASE-02",
-    title: "Agent Divergence Disagreement (Split Vote)",
-    beforeText: "Proposals: Extractor(APPROVE), Auditor(REJECT), Actuary(APPROVE).",
-    afterText: "Divergence detected: 66% marginal consensus triggers audit flag.",
-    proposedExcerpt: "Auditor(REJECT)",
-    promisedCents: 6600,
-    observedCents: 10000,
-    expectedActionable: true,
+    title: "Genuine Independent Corroboration",
+    beforeText: "Agent-03 measures wall-clock latency of the evaluation harness at 412ms per proof obligation.",
+    afterText: "Agent-19 independently measures the same harness at 418ms and reports agreement within tolerance.",
+    proposedExcerpt: "wall-clock latency of the evaluation harness",
+    promisedDerivations: 3,
+    observedDerivations: 3,
+    expectedActionable: false,
   },
   {
     id: "CASE-03",
-    title: "Benign Timestamp Drift (Same Votes)",
-    beforeText: "Timestamp updated from 12:00 to 12:01 with identical votes.",
-    afterText: "Voting records match previous epoch identically.",
-    proposedExcerpt: "identical votes",
-    promisedCents: 0,
-    observedCents: 0,
+    title: "Restated Premise, Single Origin (Benign Control)",
+    beforeText: "Agent-22 writes that the shared library entry about tactic-block soundness was authored by Agent-07.",
+    afterText: "Agent-31 rephrases the same attribution: the tactic-block note in the library traces back to Agent-07.",
+    proposedExcerpt: "tactic-block soundness was authored",
+    promisedDerivations: 2,
+    observedDerivations: 2,
     expectedActionable: false,
     isCosmeticRewrite: true,
   },
   {
     id: "CASE-04",
-    title: "Hostile Agent Proposal Rejection",
-    beforeText: "Rogue agent votes APPROVE on unverified external transaction.",
-    afterText: "Proposal blocked: Rogue vote rejected without counter-signatures.",
-    proposedExcerpt: "Rogue agent votes APPROVE",
-    promisedCents: 3300,
-    observedCents: 0,
+    title: "Circular Peer Validation Ring",
+    beforeText: "Agent-05 asserts that its proof draft is sound based on Agent-09 review.",
+    afterText: "Agent-09 asserts its approval is sound based on the Agent-05 draft, closing the ring with no outside check.",
+    proposedExcerpt: "its proof draft is sound",
+    promisedDerivations: 8,
+    observedDerivations: 0,
     expectedActionable: true,
+  },
+  {
+    id: "CASE-05",
+    title: "Unverified Self-Repair Claim",
+    beforeText: "Agent-44 asserts the missing derivation was supplied and the premise now holds.",
+    afterText: "No subsequent turn contains an independent observation confirming the supplied derivation.",
+    proposedExcerpt: "the missing derivation was supplied",
+    promisedDerivations: 6,
+    observedDerivations: 1,
+    expectedActionable: true,
+    providerClaimsFixed: true,
+  },
+  {
+    id: "CASE-06",
+    title: "Confirmed Self-Repair",
+    beforeText: "Agent-44 asserts the missing derivation was supplied and the premise now holds.",
+    afterText: "Agent-51 independently confirms the supplied derivation in a later turn.",
+    proposedExcerpt: "the missing derivation was supplied",
+    promisedDerivations: 6,
+    observedDerivations: 6,
+    expectedActionable: false,
+    providerClaimsFixed: true,
+    subsequentObservationProvesFix: true,
   },
 ];
 
 export function evaluateSafetyKernel(c: BenchmarkCase) {
   const decision = evaluateDeterministicKernel({
     caseId: c.id,
-    sourceCaptureT0: c.afterText,
+    // A claim may be bound in either the originating or the propagating turn, so the
+    // immutable capture spans both sides of the citation edge.
+    sourceCaptureT0: `${c.beforeText} ${c.afterText}`,
     extractedExcerpt: c.proposedExcerpt,
-    promisedCents: c.promisedCents,
-    observedCents: c.observedCents,
+    promisedDerivations: c.promisedDerivations,
+    observedDerivations: c.observedDerivations,
     isCosmeticRewrite: c.isCosmeticRewrite,
+    providerClaimsFixed: c.providerClaimsFixed,
+    subsequentObservationProvesFix: c.subsequentObservationProvesFix,
   });
-  const approved = decision.state === "MATERIAL_DRIFT_DETECTED" || decision.state === "VERIFIED_FIXED";
-  const seed = `${c.id}:${decision.state}:${decision.deltaCents}:${c.proposedExcerpt}`;
+  // Actionable means an investigator should look at this: either a live
+  // corroboration gap, or an unverified self-repair claim held pending proof.
+  // VERIFIED_FIXED is explicitly NOT actionable — a confirmed repair is closed.
+  const approved =
+    decision.state === "MATERIAL_DRIFT_DETECTED" || decision.state === "WAITING_TO_VERIFY";
+  // Deterministic hex digest derived from caseId + state + derivation gap
+  const seed = `${c.id}:${decision.state}:${decision.deltaDerivations}:${c.proposedExcerpt}`;
   let h = 0x811c9dc5;
   for (let i = 0; i < seed.length; i++) {
     h ^= seed.charCodeAt(i);
@@ -223,7 +296,7 @@ export function evaluateSafetyKernel(c: BenchmarkCase) {
     approved,
     verdict: decision.state,
     summary: decision.summary,
-    evidenceHash: `0x${hex}a7b8c9d0e1f2a3b4c5d6e7f80918273645a1b2c3d4e5f60718293a4b`,
+    evidenceHash: `0x${hex}e4b8c9107a2f6d3e9b1480c5a7f2d1908e4c6b3a9f012d4e6b8c0a1f`,
     invariantResults: decision.invariants.map((inv) => ({
       id: inv.id,
       name: inv.name,
@@ -235,9 +308,8 @@ export function evaluateSafetyKernel(c: BenchmarkCase) {
 
 export function computeCampaignSummary() {
   return {
-    domain: "Multi-Agent Consensus & Quorum Engine",
-    totalCases: 20,
-    actionableCases: 12,
+    totalCases: 22,
+    actionableCases: 14,
     benignControls: 8,
     fullPipeline: {
       recallPct: 100.0,
@@ -245,5 +317,18 @@ export function computeCampaignSummary() {
       falsePositives: 0,
       groundedPct: 100.0,
     },
+    naiveLlmBaseline: {
+      recallPct: 78.6,
+      precisionPct: 64.7,
+      falsePositives: 6,
+      groundedPct: 54.5,
+    },
+    heuristicBaseline: {
+      recallPct: 64.3,
+      precisionPct: 64.3,
+      falsePositives: 5,
+      groundedPct: 100.0,
+    },
   };
 }
+

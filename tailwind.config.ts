@@ -4,7 +4,7 @@
 const theme = {
   "name": "terminal",
   "mode": "dark",
-  "accent": "#f59e0b",
+  "accent": "#10b981",
   "accentContrast": "#04170A",
   "surfaces": {
     "bg": "#0A0A0A",

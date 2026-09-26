@@ -5,4 +5,5 @@ Maintained automatically by `apply-theme.py` and `add-illustration.py` — do no
 the generated lines below this point.
 
 <!-- kit:credits:start -->
+- 55 illustration(s) from undraw — MIT — https://undraw.co/illustrations
 <!-- kit:credits:end -->

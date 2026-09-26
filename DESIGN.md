@@ -1,4 +1,4 @@
-# traceturn — Style Reference
+# . — Style Reference
 > green-on-black, keyboard-first
 
 **Theme:** dark
@@ -15,7 +15,7 @@ Terminal is a developer-tool aesthetic that borrows directly from the command li
 | Grid Line | `#2A2A2A` | `--border` | Thin border on cards, tables and dividers — sharp, no softness |
 | Phosphor Mint | `#D4F7DF` | `--fg` | Primary text — a soft green-tinted white, echoing a CRT phosphor glow |
 | Dim Gray-Green | `#758C7F` | `--fg-muted` | Secondary text, muted labels, inactive nav items |
-| Terminal Green | `#f59e0b` | `--accent` | The single signal color — primary actions, focus glow, active state, success text |
+| Terminal Green | `#10b981` | `--accent` | The single signal color — primary actions, focus glow, active state, success text |
 | Deep Green Ink | `#04170A` | `--accent-contrast` | Text/icon color placed on a filled Terminal Green surface |
 
 ## Tokens — Typography
@@ -193,7 +193,7 @@ No illustration, no gradients, no photography. Visual interest comes entirely fr
 - text (muted): #758C7F
 - background: #0A0A0A
 - border: #2A2A2A
-- accent / primary action: #f59e0b
+- accent / primary action: #10b981
 
 ## Example Component Prompts
 

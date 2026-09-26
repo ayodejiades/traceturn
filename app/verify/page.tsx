@@ -22,9 +22,9 @@ export default function VerifyPage() {
     {
       caseId: canonicalCase.id,
       title: canonicalCase.title,
-      promisedCents: canonicalCase.promisedCents,
-      observedCents: canonicalCase.observedCents,
-      deltaCents: canonicalCase.promisedCents - canonicalCase.observedCents,
+      promisedDerivations: canonicalCase.promisedDerivations,
+      observedDerivations: canonicalCase.observedDerivations,
+      deltaDerivations: canonicalCase.promisedDerivations - canonicalCase.observedDerivations,
       proposedExcerpt: canonicalCase.proposedExcerpt,
       afterText: canonicalCase.afterText,
       verdict: canonicalEval.verdict,
@@ -55,7 +55,7 @@ export default function VerifyPage() {
   const verified = parsedOk && actualDigest === expectedDigest && excerptBound;
 
   function tamperOneByte() {
-    const mutated = canonicalPayload.replace('"observedCents": 10000', '"observedCents": 10001');
+    const mutated = canonicalPayload.replace('"observedDerivations": 10000', '"observedDerivations": 10001');
     setPayloadText(mutated);
     setTampered(true);
   }
