@@ -1,0 +1,105 @@
+{
+  "checks": [
+    {
+      "id": 1,
+      "name": "README names every chosen sponsor",
+      "status": "PASS",
+      "detail": "-",
+      "fixStep": "-"
+    },
+    {
+      "id": 2,
+      "name": "docs/BOUNTIES.md chosen bounties filled",
+      "status": "PASS",
+      "detail": "-",
+      "fixStep": "-"
+    },
+    {
+      "id": 3,
+      "name": "demo-path.json has >= 2 steps, DEMO_PATH.md generated",
+      "status": "PASS",
+      "detail": "9 steps",
+      "fixStep": "-"
+    },
+    {
+      "id": 4,
+      "name": "demo video exists, in range, 1080p h264/aac",
+      "status": "PASS",
+      "detail": "87.766667s",
+      "fixStep": "-"
+    },
+    {
+      "id": 5,
+      "name": "demo.gif, cover.png, fallback.mp4 exist",
+      "status": "PASS",
+      "detail": "-",
+      "fixStep": "-"
+    },
+    {
+      "id": 6,
+      "name": "health endpoint answers ok:true (deployed + demo mode)",
+      "status": "SKIP",
+      "detail": "no DEPLOY_URL in .env and no local server reachable",
+      "fixStep": "deploy"
+    },
+    {
+      "id": 7,
+      "name": "git: clean, >15 commits, no .env, gitleaks clean",
+      "status": "PASS",
+      "detail": "17 commits",
+      "fixStep": "-"
+    },
+    {
+      "id": 8,
+      "name": "repo public if required; LICENSE if required",
+      "status": "PASS",
+      "detail": "-",
+      "fixStep": "-"
+    },
+    {
+      "id": 9,
+      "name": "chosen sponsors satisfy integration contract",
+      "status": "PASS",
+      "detail": "-",
+      "fixStep": "-"
+    },
+    {
+      "id": 10,
+      "name": "CREDITS.md lists every attributed asset",
+      "status": "PASS",
+      "detail": "-",
+      "fixStep": "-"
+    },
+    {
+      "id": 11,
+      "name": "AI disclosure line (not required for this event)",
+      "status": "SKIP",
+      "detail": "aiDisclosureRequired is false",
+      "fixStep": "-"
+    },
+    {
+      "id": 12,
+      "name": "docs/EVIDENCE.md and docs/HARD_THING.md generated",
+      "status": "PASS",
+      "detail": "-",
+      "fixStep": "-"
+    },
+    {
+      "id": 13,
+      "name": "no leaked builder phrases or anti-slop copy",
+      "status": "PASS",
+      "detail": "-",
+      "fixStep": "-"
+    },
+    {
+      "id": 14,
+      "name": "live testnet contract & transaction verified",
+      "status": "SKIP",
+      "detail": "web2 or non-crypto track",
+      "fixStep": "-"
+    }
+  ],
+  "pass": 11,
+  "fail": 0,
+  "skip": 3
+}
