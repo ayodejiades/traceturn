@@ -1,0 +1,12 @@
+{
+  "videoMaxSeconds": 180,
+  "videoMinSeconds": 0,
+  "repoMustBePublic": true,
+  "requiresOssLicense": false,
+  "aiDisclosureRequired": false,
+  "maxTeam": 4,
+  "minTeam": 1,
+  "requiredLicense": "MIT",
+  "source": "rules",
+  "videoTargetSeconds": 153
+}

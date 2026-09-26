@@ -1,0 +1,67 @@
+{
+  "project": "traceturn",
+  "idea": "Deterministic swarm forensics: causal blame DAG plus claim-lineage independent-derivation counting over multi-agent JSONL transcripts",
+  "track": "web2",
+  "team": 1,
+  "event": {
+    "name": "AI Swarm Dynamics Hackathon",
+    "start": "2026-10-03T09:00:00-07:00",
+    "end": "2026-10-04T21:00:00-07:00",
+    "tz": "America/Los_Angeles",
+    "submissionUrl": null
+  },
+  "limits": {
+    "videoMaxSeconds": 180,
+    "videoMinSeconds": 0,
+    "repoMustBePublic": true,
+    "requiresOssLicense": false,
+    "aiDisclosureRequired": false,
+    "maxTeam": 4,
+    "minTeam": 1,
+    "requiredLicense": "MIT",
+    "source": "rules",
+    "videoTargetSeconds": 153
+  },
+  "sponsors": [],
+  "theme": "terminal",
+  "accent": "#F59E0B",
+  "illustrations": "none",
+  "source": "heuristic",
+  "unknown": [
+    "limits.maxTeam",
+    "limits.minTeam",
+    "limits.repoMustBePublic",
+    "limits.requiresOssLicense",
+    "limits.aiDisclosureRequired",
+    "event.submissionUrl",
+    "sponsors"
+  ],
+  "wedge": {
+    "title": "traceturn",
+    "sector": "WEB2 · Deterministic swarm forensics: causal bl",
+    "target_user": "MLOps engineer auditing autonomous agent spend decisions under a bounded daily budget with zero unchecked disbursements",
+    "painful_moment": "Facing a critical operational failure in Deterministic swarm forensics: causal blame DAG plus claim-lineage independent-d... with cascading downstream consequences and a deadline measured in minutes, not days.",
+    "unusual_constraint": "Zero unhandled exceptions under upstream service failure with deterministic fallback for Deterministic swarm forensics: causal bl",
+    "proof_metric": "Processes 100 Deterministic cases in under 2 seconds with 0 false positives",
+    "essential_sponsor": "Neon Postgres",
+    "essential_sponsor_role": "Isolated branching and instant rollback for state mutations.",
+    "adversarial_critique": {
+      "why_generic_risk": "Judges may see 'Deterministic swarm forensics:...' as a generic web2 wrapper; must prove the deterministic kernel handles domain edge cases that a naive LLM cannot.",
+      "obvious_competitor": "Existing web2 tools or horizontal LLM wrappers that claim similar Deterministic capabilities without domain-specific invariant enforcement.",
+      "unprovable_claim_risk": "Claims of 100% accuracy across all edge cases for Deterministic swarm forensics:...; scope proof to the committed fixture set and be honest about boundaries.",
+      "superficial_sponsor_risk": "Using Neon Postgres as a simple key-value store rather than exercising its core differentiating primitive (Isolated branching and instant rollback for state ...).",
+      "hour_8_kill_criterion": "The core deterministic kernel for Deterministic swarm forensics:... must execute end-to-end against 4+ fixtures with honest PASS/FAIL verdicts by hour 8."
+    },
+    "demand_signals": [
+      {
+        "source_type": "organizer_spec",
+        "source_url": "https://hackops.dev/spec",
+        "date": "2026-09-01",
+        "direct_quote": "Judged on verifiable technical depth, domain-specific invariant enforcement, and load-bearing Neon Postgres adoption.",
+        "provenance_confidence": "high",
+        "notes": ""
+      }
+    ],
+    "archetype": "workflow-tool"
+  }
+}

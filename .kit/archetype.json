@@ -1,0 +1,5 @@
+{
+  "archetype": "developer-console",
+  "project": "traceturn",
+  "tagline": "Deterministic swarm forensics: causal blame DAG plus claim-lineage independent-derivation counting over multi-agent JSONL transcripts"
+}

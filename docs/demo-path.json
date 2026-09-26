@@ -1,0 +1,10 @@
+{
+  "baseUrl": "${DEPLOY_URL}",
+  "viewport": { "width": 1920, "height": 1080 },
+  "steps": [
+    { "say": "Welcome to the overview", "goto": "/" },
+    { "say": "Launch the live demo workspace", "click": "[data-demo='launch-demo']", "waitFor": "[data-demo='list']" },
+    { "say": "Create a new record", "click": "[data-demo='new']", "fill": { "[data-demo='title']": "Lagos pilot" } },
+    { "say": "Submit and verify real-time state", "click": "[data-demo='submit']", "waitFor": "[data-demo='row']" }
+  ]
+}

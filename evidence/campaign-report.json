@@ -1,0 +1,11 @@
+{
+  "generatedAt": null,
+  "mechanismVersion": "deterministic-kernel-v2",
+  "extractionModel": "structured-schema-strict",
+  "verificationMode": "NOT_RUN",
+  "summary": {
+    "status": "NOT_GENERATED",
+    "note": "Run `pnpm verify:evidence` after implementing idea-specific cases in this file and domain logic in lib/kernel.ts"
+  },
+  "cases": []
+}

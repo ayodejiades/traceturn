@@ -1,0 +1,21 @@
+{
+  "project": "web2",
+  "archetype": "workflow-tool",
+  "target_user_moment": "Primary operator handling urgent task execution in web2.",
+  "visual_metaphor": "High-throughput industrial pipeline with batch status queues and clear stage transitions",
+  "signature_interaction": "1-click scenario execution populated with high-density realistic seed data.",
+  "evidence_to_foreground": "Ablation benchmark comparison and live sponsor RPC telemetry trace.",
+  "anti_comp": [
+    "Must NOT look like a generic purple-gradient SaaS landing page.",
+    "Zero floating decorative emoji chips or announcement pill badges above headlines.",
+    "Zero asymmetric border-l-4 stripes; enforce 4-sided hairline borders.",
+    "Zero fake precision metrics (e.g. 99.99%); use organic domain measurements.",
+    "Zero unmotivated particle animations or ambient glowing blobs."
+  ],
+  "typography": {
+    "primary": "Geist",
+    "telemetry": "Geist Mono",
+    "editorial_fallback": "Source Serif"
+  },
+  "palette_stance": "Flat neutral zinc (#09090b) with exactly ONE saturated accent color."
+}
