@@ -64,7 +64,7 @@ export default function OnboardingPage() {
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 font-mono text-xs">
           <div className="flex items-center gap-2">
             <span className="rounded border border-[#16a34a]/30 bg-[#16a34a]/10 px-2 py-0.5 text-[11px] font-medium text-[#16a34a]">
-              STEP 02 · ONBOARDING &amp; POLICY WIZARD
+              ONBOARDING AND POLICY WIZARD
             </span>
             <span className="hidden text-[var(--fg-muted,#737373)] sm:inline">
               Synthetic + Public Benchmark Corpus · Zero External Credentials Required
