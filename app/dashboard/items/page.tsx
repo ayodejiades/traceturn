@@ -46,14 +46,14 @@ export default async function Web2ItemsLedgerPage() {
               <div key={item.id} className="flex flex-col gap-2 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs font-semibold text-[#2563eb]">{item.id}</span>
+                    <span className="font-mono text-xs font-semibold text-[var(--info)]">{item.id}</span>
                     <span className="text-sm font-medium text-[var(--fg)]">{item.title}</span>
                   </div>
                   <span
                     className={`rounded px-2.5 py-0.5 font-mono text-[11px] font-medium ${
                       item.audit.verdict === "MATERIAL_DRIFT_DETECTED"
-                        ? "border border-[#dc2626]/30 bg-[#dc2626]/10 text-[#dc2626]"
-                        : "border border-[#16a34a]/30 bg-[#16a34a]/10 text-[#16a34a]"
+                        ? "border border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]"
+                        : "border border-[var(--ok)]/30 bg-[var(--ok)]/10 text-[var(--ok)]"
                     }`}
                   >
                     {item.audit.verdict}

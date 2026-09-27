@@ -99,14 +99,14 @@ export default function Web2CreateCommitmentPage() {
           <div className="flex flex-col justify-between gap-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 lg:col-span-5">
             <div>
               <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#2563eb]">
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--info)]">
                   Live Kernel Verdict
                 </span>
                 <span
                   className={`rounded px-2 py-0.5 font-mono text-[11px] font-medium ${
                     liveDecision.excerptBound
-                      ? "border border-[#16a34a]/30 bg-[#16a34a]/10 text-[#16a34a]"
-                      : "border border-[#dc2626]/30 bg-[#dc2626]/10 text-[#dc2626]"
+                      ? "border border-[var(--ok)]/30 bg-[var(--ok)]/10 text-[var(--ok)]"
+                      : "border border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]"
                   }`}
                 >
                   {liveDecision.excerptBound ? "INV-1 BOUND" : "UNBOUND -> REFUSED"}
@@ -123,7 +123,7 @@ export default function Web2CreateCommitmentPage() {
                     <span className="text-[var(--fg)]">
                       <strong>{inv.id}</strong> · {inv.name}
                     </span>
-                    <span className={inv.passed ? "text-[#16a34a]" : "text-[#dc2626]"}>
+                    <span className={inv.passed ? "text-[var(--ok)]" : "text-[var(--danger)]"}>
                       {inv.passed ? "PASS" : "BLOCK"}
                     </span>
                   </div>

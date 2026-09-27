@@ -40,28 +40,28 @@ export function CodeDiff({
   };
 
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-[var(--border,#262626)] bg-[var(--bg,#0a0a0a)] shadow-xl font-mono text-xs">
+    <div className="w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg)] shadow-xl font-mono text-xs">
       {/* Terminal Titlebar */}
-      <div className="flex items-center justify-between border-b border-[var(--border,#262626)] bg-[var(--surface,#121212)] px-[var(--page-pad)] py-2.5">
+      <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-[var(--page-pad)] py-2.5">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--warn)/80]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent-dim)/80]" />
           </div>
           <span className="ml-2 font-medium text-[var(--fg)]">{title}</span>
         </div>
 
         <button
           onClick={handleCopy}
-          className="rounded border border-[var(--border,#262626)] bg-[var(--surface-raised,#1f1f1f)] px-2.5 py-1 text-[11px] text-[var(--fg-muted,#888)] hover:text-[var(--fg)] transition-colors"
+          className="rounded border border-[var(--border)] bg-[var(--surface-raised)] px-2.5 py-1 text-[11px] text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors"
         >
           {copied ? "Copied" : "Copy Output"}
         </button>
       </div>
 
       {/* Split Code View */}
-      <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border,#262626)]">
+      <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border)]">
         {/* Left: Before */}
         <div className="flex flex-col bg-red-950/5 p-4">
           <div className="flex items-center justify-between text-[11px] text-red-400 font-semibold mb-2">
@@ -70,20 +70,20 @@ export function CodeDiff({
               RAW / UNCHECKED
             </span>
           </div>
-          <pre className="overflow-x-auto text-[var(--fg-muted,#888)] leading-relaxed">
+          <pre className="overflow-x-auto text-[var(--fg-muted)] leading-relaxed">
             <code>{beforeCode}</code>
           </pre>
         </div>
 
         {/* Right: After */}
-        <div className="flex flex-col bg-emerald-950/5 p-4">
-          <div className="flex items-center justify-between text-[11px] text-emerald-400 font-semibold mb-2">
+        <div className="flex flex-col bg-[color-mix(in srgb, var(--accent) 10%, transparent)/5] p-4">
+          <div className="flex items-center justify-between text-[11px] text-[var(--accent)] font-semibold mb-2">
             <span>{afterTitle}</span>
-            <span className="rounded bg-emerald-900/30 px-1.5 py-0.5 border border-emerald-800/40 text-[10px]">
+            <span className="rounded bg-[color-mix(in srgb, var(--accent) 18%, transparent)/30] px-1.5 py-0.5 border border-[color-mix(in srgb, var(--accent) 30%, transparent)/40] text-[10px]">
               VERIFIED / SANITIZED
             </span>
           </div>
-          <pre className="overflow-x-auto text-emerald-200/90 leading-relaxed">
+          <pre className="overflow-x-auto text-[var(--accent)/90] leading-relaxed">
             <code>{afterCode}</code>
           </pre>
         </div>

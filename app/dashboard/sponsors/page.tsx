@@ -37,7 +37,7 @@ export default function Web2SponsorsPage() {
             <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--fg-muted)]">
               Safety Kernel Status
             </div>
-            <div className="mt-0.5 font-semibold text-[#16a34a] num">
+            <div className="mt-0.5 font-semibold text-[var(--ok)] num">
               {kernelAudit.invariantResults.filter((i) => i.passed).length}/{kernelAudit.invariantResults.length} INVARIANTS INTACT ({anyDisabled ? "ABLATED FALLBACK" : "FULL PIPELINE"})
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function Web2SponsorsPage() {
                 key={s.id}
                 onClick={() => setSelectedSponsorId(s.id)}
                 className={`cursor-pointer bg-[var(--surface)] p-5 transition-colors ${
-                  isSelected ? "ring-1 ring-inset ring-[#2563eb]" : "hover:bg-[var(--bg)]/60"
+                  isSelected ? "ring-1 ring-inset ring-[var(--info)]" : "hover:bg-[var(--bg)]/60"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -71,8 +71,8 @@ export default function Web2SponsorsPage() {
                     }}
                     className={`rounded px-2.5 py-1 font-mono text-[11px] font-medium transition-colors ${
                       isOff
-                        ? "border border-[#dc2626]/30 bg-[#dc2626]/10 text-[#dc2626]"
-                        : "border border-[#16a34a]/30 bg-[#16a34a]/10 text-[#16a34a]"
+                        ? "border border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]"
+                        : "border border-[var(--ok)]/30 bg-[var(--ok)]/10 text-[var(--ok)]"
                     }`}
                   >
                     {isOff ? "ABLATED (OFF)" : "LIVE SEAM (ON)"}
@@ -84,7 +84,7 @@ export default function Web2SponsorsPage() {
                 <div className="mt-4 grid grid-cols-2 gap-2 rounded border border-[var(--border)] bg-[var(--bg)] p-3 font-mono text-xs">
                   <div>
                     <div className="text-[10px] uppercase text-[var(--fg-muted)]">Active Metric</div>
-                    <div className={`mt-0.5 font-medium num ${isOff ? "text-[#dc2626]" : "text-[var(--fg)]"}`}>
+                    <div className={`mt-0.5 font-medium num ${isOff ? "text-[var(--danger)]" : "text-[var(--fg)]"}`}>
                       {isOff ? s.ablation.removedMetric : s.ablation.fullSystemMetric}
                     </div>
                   </div>
@@ -97,7 +97,7 @@ export default function Web2SponsorsPage() {
                 <div className="mt-3 text-xs text-[var(--fg-muted)]">
                   {isOff ? (
                     <span>
-                      <strong className="font-medium text-[#dc2626]">Degraded capability:</strong> {s.ablation.whatDisappears}{" "}
+                      <strong className="font-medium text-[var(--danger)]">Degraded capability:</strong> {s.ablation.whatDisappears}{" "}
                       <strong className="font-medium text-[var(--fg)]">Still guaranteed:</strong> {s.ablation.whatRemains}
                     </span>
                   ) : (
@@ -116,7 +116,7 @@ export default function Web2SponsorsPage() {
           <section className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-4">
               <div>
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#2563eb]">
+                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--info)]">
                   Integrator Field Report · docs/SPONSOR_FINDINGS.md
                 </span>
                 <h3 className="mt-0.5 text-lg font-medium text-[var(--fg)]">
@@ -136,7 +136,7 @@ export default function Web2SponsorsPage() {
                 <p className="mt-1.5 text-xs leading-relaxed text-[var(--fg)]">
                   {activeSponsor.finding.observed}
                 </p>
-                <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#dc2626]">
+                <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--danger)]">
                   Unmitigated Impact
                 </div>
                 <p className="mt-1 text-xs leading-relaxed text-[var(--fg-muted)]">
@@ -145,7 +145,7 @@ export default function Web2SponsorsPage() {
               </div>
 
               <div className="rounded border border-[var(--border)] bg-[var(--bg)] p-4">
-                <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#16a34a]">
+                <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--ok)]">
                   Deterministic Guard in {activeSponsor.codePath}
                 </div>
                 <p className="mt-1.5 text-xs leading-relaxed text-[var(--fg)]">

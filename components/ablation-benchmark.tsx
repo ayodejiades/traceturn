@@ -51,21 +51,21 @@ export function AblationBenchmark() {
       <div className="overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)] shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]">
         <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--border)] px-5 py-4">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
               Empirical campaign benchmark
             </p>
             <h3 className="mt-0.5 text-[17px] font-semibold tracking-[-0.01em] text-[var(--fg)]">
               Measured across 22 corpus cases (14 material drift · 8 benign controls)
             </h3>
           </div>
-          <Link href="/proof" className="font-mono text-[12px] font-medium text-[#2563eb] hover:underline">
+          <Link href="/proof" className="font-mono text-[12px] font-medium text-[var(--info)] hover:underline">
             Inspect full campaign report (/proof) →
           </Link>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-[13px]">
-            <thead className="border-b border-[var(--border)] bg-[var(--bg)] font-mono text-[11px] uppercase text-[var(--fg-muted,#525252)]">
+            <thead className="border-b border-[var(--border)] bg-[var(--bg)] font-mono text-[11px] uppercase text-[var(--fg-muted)]">
               <tr>
                 <th className="py-2.5 px-4 font-medium">Architecture arm</th>
                 <th className="py-2.5 px-4 font-medium">Recall</th>
@@ -89,14 +89,14 @@ export function AblationBenchmark() {
                       className={`rounded-full border px-2 py-0.5 text-[11px] ${
                         row.highlight
                           ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] text-[var(--accent)]"
-                          : "border-[#fecaca] bg-[#fef2f2] text-[#991b1b]"
+                          : "border-[var(--danger-surface)] bg-[var(--danger-surface)] text-[var(--danger)]"
                       }`}
                     >
                       {row.falsePositives}
                     </span>
                   </td>
                   <td className="py-3 px-4 font-mono text-[12px]">{row.grounded}</td>
-                  <td className="py-3 px-4 text-right text-[12px] text-[var(--fg-muted,#525252)]">
+                  <td className="py-3 px-4 text-right text-[12px] text-[var(--fg-muted)]">
                     {row.verdict}
                   </td>
                 </tr>
@@ -110,7 +110,7 @@ export function AblationBenchmark() {
       <div className="space-y-3">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
               Load-bearing sponsor seams
             </p>
             <h3 className="mt-0.5 text-[17px] font-semibold tracking-[-0.01em] text-[var(--fg)]">
@@ -119,7 +119,7 @@ export function AblationBenchmark() {
           </div>
           <Link
             href="/dashboard/sponsors"
-            className="font-mono text-[12px] font-medium text-[#2563eb] hover:underline"
+            className="font-mono text-[12px] font-medium text-[var(--info)] hover:underline"
           >
             Open interactive sponsor kill-switch (/dashboard/sponsors) →
           </Link>
@@ -133,18 +133,18 @@ export function AblationBenchmark() {
             >
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between font-mono text-[10px]">
-                  <span className="text-[#2563eb] font-semibold">{sp.layer}</span>
+                  <span className="text-[var(--info)] font-semibold">{sp.layer}</span>
                   <span className="rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[var(--accent)]">
                     LIVE SEAM
                   </span>
                 </div>
                 <h4 className="text-[14px] font-semibold text-[var(--fg)]">{sp.name}</h4>
-                <p className="text-[12px] leading-snug text-[var(--fg-muted,#525252)]">{sp.role}</p>
+                <p className="text-[12px] leading-snug text-[var(--fg-muted)]">{sp.role}</p>
               </div>
 
               <div className="space-y-1 border-t border-[var(--border)] pt-2.5 font-mono text-[11px]">
                 <div className="text-[var(--accent)]">Full: {sp.ablation.fullSystemMetric}</div>
-                <div className="text-[#9a3412]">Removed: {sp.ablation.removedMetric}</div>
+                <div className="text-[var(--warn-strong)]">Removed: {sp.ablation.removedMetric}</div>
                 <div className="text-[10px] text-[var(--fg-muted)] pt-1">
                   Not claimed: {sp.notClaimed}
                 </div>
@@ -158,14 +158,14 @@ export function AblationBenchmark() {
       <div className="overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-5">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div>
-            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#9a3412]">
+            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--warn-strong)]">
               Disclosed boundary conditions
             </span>
             <h4 className="text-[15px] font-semibold text-[var(--fg)]">
               Where this system does not help (and abstains rather than guessing)
             </h4>
           </div>
-          <Link href="/verify" className="font-mono text-[12px] text-[#2563eb] hover:underline">
+          <Link href="/verify" className="font-mono text-[12px] text-[var(--info)] hover:underline">
             Test 1-byte tamper in /verify →
           </Link>
         </div>
@@ -177,9 +177,9 @@ export function AblationBenchmark() {
             >
               <div className="flex items-center justify-between font-mono text-[11px]">
                 <span className="font-semibold text-[var(--fg)]">{b.cohort}</span>
-                <span className="text-[#9a3412]">{b.uplift}</span>
+                <span className="text-[var(--warn-strong)]">{b.uplift}</span>
               </div>
-              <p className="mt-1 text-[var(--fg-muted,#525252)]">{b.behavior}</p>
+              <p className="mt-1 text-[var(--fg-muted)]">{b.behavior}</p>
             </div>
           ))}
         </div>

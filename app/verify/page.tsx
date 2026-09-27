@@ -78,14 +78,14 @@ export default function VerifyPage() {
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)] antialiased">
       {/* Top Header */}
       <header className="border-b border-[var(--border)] bg-[var(--surface)]">
-        <div className="mx-auto flex max-w-[1080px] flex-wrap items-center justify-between gap-4 px-6 py-3.5">
+        <div className="mx-auto flex max-w-[var(--content-max)] flex-wrap items-center justify-between gap-4 px-[var(--page-pad)] py-3.5">
           <div className="flex items-center gap-3">
             <Link href="/" className="inline-flex items-center gap-2 font-semibold text-[14px] text-[var(--fg)]">
-              <span className="h-2 w-2 rounded-full bg-[#2563eb]" />
+              <span className="h-2 w-2 rounded-full bg-[var(--info)]" />
               <span>traceturn</span>
             </Link>
-            <span className="text-[#a3a3a3]">/</span>
-            <span className="font-mono text-[12px] text-[var(--fg-muted,#525252)]">06 · Independent Verifier</span>
+            <span className="text-[var(--fg-subtle)]">/</span>
+            <span className="font-mono text-[12px] text-[var(--fg-muted)]">06 · Independent Verifier</span>
           </div>
           <div className="flex items-center gap-2">
             <Link
@@ -104,15 +104,15 @@ export default function VerifyPage() {
         </div>
       </header>
 
-      <main id="main" className="mx-auto max-w-[1080px] px-6 py-10 space-y-8">
+      <main id="main" className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-10 space-y-8">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
             Independent verification · Zero credentials required
           </p>
           <h1 className="display mt-1.5 text-[34px] font-medium tracking-[-0.03em] text-[var(--fg)]">
             Check the evidence without trusting us.
           </h1>
-          <p className="mt-2.5 max-w-[68ch] text-[15px] leading-relaxed text-[var(--fg-muted,#525252)]">
+          <p className="mt-2.5 max-w-[68ch] text-[15px] leading-relaxed text-[var(--fg-muted)]">
             Every completed record produces a canonical JSON manifest carrying the authoritative snapshot, integer-cent commitment delta, and verbatim source excerpt. Mutate a single byte below to verify that the digest and invariant gates fail closed immediately.
           </p>
         </div>
@@ -123,14 +123,14 @@ export default function VerifyPage() {
           className={`rounded-[12px] border p-5 flex flex-wrap items-center justify-between gap-4 ${
             verified
               ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]/60 text-[var(--accent)]"
-              : "border-[#fecaca] bg-[#fef2f2] text-[#991b1b]"
+              : "border-[var(--danger-surface)] bg-[var(--danger-surface)] text-[var(--danger)]"
           }`}
         >
           <div className="space-y-1">
             <div className="flex items-center gap-2 font-mono text-[12px] font-semibold uppercase">
               <span
                 className={`h-2 w-2 rounded-full ${
-                  verified ? "bg-[#16a34a]" : "bg-[#dc2626]"
+                  verified ? "bg-[var(--ok)]" : "bg-[var(--danger)]"
                 }`}
               />
               <span>
@@ -153,7 +153,7 @@ export default function VerifyPage() {
               type="button"
               data-demo="tamper-byte"
               onClick={tamperOneByte}
-              className="rounded-[8px] border border-[#dc2626] bg-[var(--surface)] px-3.5 py-2 font-mono text-[12px] font-medium text-[#dc2626] hover:bg-[#fef2f2]"
+              className="rounded-[8px] border border-[var(--danger)] bg-[var(--surface)] px-3.5 py-2 font-mono text-[12px] font-medium text-[var(--danger)] hover:bg-[var(--danger-surface)]"
             >
               Tamper 1 byte (10000 → 10001)
             </button>
@@ -161,7 +161,7 @@ export default function VerifyPage() {
               type="button"
               data-demo="tamper-excerpt"
               onClick={injectHallucinatedExcerpt}
-              className="rounded-[8px] border border-[#9a3412] bg-[var(--surface)] px-3.5 py-2 font-mono text-[12px] font-medium text-[#9a3412] hover:bg-[#fff7ed]"
+              className="rounded-[8px] border border-[var(--warn-strong)] bg-[var(--surface)] px-3.5 py-2 font-mono text-[12px] font-medium text-[var(--warn-strong)] hover:bg-[var(--surface-raised)]"
             >
               Inject ungrounded excerpt (INV-01)
             </button>
@@ -180,12 +180,12 @@ export default function VerifyPage() {
 
         {/* Interactive Manifest Inspector */}
         <div className="grid gap-6 lg:grid-cols-12">
-          <div className="lg:col-span-7 rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-5 space-y-3">
+          <div className="min-w-0 rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-5 space-y-3 lg:col-span-7">
             <div className="flex items-center justify-between">
               <h2 className="text-[14px] font-semibold text-[var(--fg)]">
                 Canonical JSON Manifest (Editable for Fault Injection)
               </h2>
-              <span className="font-mono text-[11px] text-[var(--fg-muted,#525252)]">
+              <span className="font-mono text-[11px] text-[var(--fg-muted)]">
                 evidence/campaign-report.json
               </span>
             </div>
@@ -196,11 +196,11 @@ export default function VerifyPage() {
                 setTampered(e.target.value !== canonicalPayload);
               }}
               rows={14}
-              className="w-full rounded-[8px] border border-[var(--border)] bg-[var(--bg)] p-3.5 font-mono text-[12px] leading-relaxed text-[var(--fg)] focus:outline-none focus:border-[#2563eb]"
+              className="w-full rounded-[8px] border border-[var(--border)] bg-[var(--bg)] p-3.5 font-mono text-[12px] leading-relaxed text-[var(--fg)] focus:outline-none focus:border-[var(--info)]"
             />
           </div>
 
-          <div className="lg:col-span-5 space-y-4">
+          <div className="min-w-0 space-y-4 lg:col-span-5">
             <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-5 space-y-3">
               <h2 className="text-[14px] font-semibold text-[var(--fg)]">
                 Cryptographic &amp; Invariant Checks
@@ -214,7 +214,7 @@ export default function VerifyPage() {
                   <div className="text-[10px] text-[var(--fg-muted)]">RECOMPUTED LIVE DIGEST</div>
                   <div
                     className={`mt-0.5 truncate font-semibold ${
-                      actualDigest === expectedDigest ? "text-[var(--accent)]" : "text-[#dc2626]"
+                      actualDigest === expectedDigest ? "text-[var(--accent)]" : "text-[var(--danger)]"
                     }`}
                   >
                     {actualDigest}
@@ -222,7 +222,7 @@ export default function VerifyPage() {
                 </div>
                 <div className="rounded-[8px] border border-[var(--border)] bg-[var(--bg)] p-3 flex items-center justify-between">
                   <span>INV-01 Substring Grounding</span>
-                  <span className={excerptBound ? "text-[var(--accent)] font-semibold" : "text-[#dc2626] font-semibold"}>
+                  <span className={excerptBound ? "text-[var(--accent)] font-semibold" : "text-[var(--danger)] font-semibold"}>
                     {excerptBound ? "PASS ✓" : "REFUSED ✗"}
                   </span>
                 </div>
@@ -238,7 +238,7 @@ pnpm claim:verify
 
 # Or run the evidence verifier directly:
 pnpm verify:evidence`}</pre>
-              <p className="text-[12px] text-[var(--fg-muted,#525252)]">
+              <p className="text-[12px] text-[var(--fg-muted)]">
                 No API keys or network connection required. Any tampered byte or broken link exits non-zero.
               </p>
             </div>

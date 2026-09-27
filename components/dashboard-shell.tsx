@@ -62,15 +62,15 @@ export function DashboardShell({
           <div className="flex items-center gap-3">
             <Link href="/" className="inline-flex items-center gap-2">
               <span className="relative inline-grid h-3.5 w-3.5 place-items-center" aria-hidden>
-                <span className="absolute inset-0 rounded-full border border-[#2563eb]/40" />
-                <span className="h-1.5 w-1.5 rounded-full bg-[#2563eb]" />
+                <span className="absolute inset-0 rounded-full border border-[var(--info)]/40" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--info)]" />
               </span>
-              <span className="text-[14px] font-semibold tracking-[-0.01em] text-[#0a0a0a]">
+              <span className="text-[14px] font-semibold tracking-[-0.01em] text-[var(--bg)]">
                 {project || "Operations Console"}
               </span>
             </Link>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2.5 py-0.5 font-mono text-[11px] font-medium text-[var(--accent)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--ok)]" />
               Verifier PASS · Invariants Active
             </span>
           </div>
@@ -162,7 +162,7 @@ export function DashboardShell({
                   className="flex items-center justify-between rounded-[8px] px-3 py-2 text-[13px] text-[var(--fg)] hover:bg-[var(--bg-elevated)]"
                 >
                   <span>{item.label}</span>
-                  <span className="font-mono text-[11px] text-[#2563eb]">{item.href}</span>
+                  <span className="font-mono text-[11px] text-[var(--info)]">{item.href}</span>
                 </Link>
               ))}
             </div>

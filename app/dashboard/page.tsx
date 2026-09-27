@@ -57,7 +57,7 @@ export default async function DashboardPage() {
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--fg-muted)]">
               Excerpt-Bound Precision
             </div>
-            <div className="mt-1 font-mono text-xl font-semibold text-[#16a34a] num">
+            <div className="mt-1 font-mono text-xl font-semibold text-[var(--ok)] num">
               {summary.fullPipeline.precisionPct.toFixed(1)}%
             </div>
           </div>
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--fg-muted)]">
               Unchecked Agent Writes
             </div>
-            <div className="mt-1 font-mono text-xl font-semibold text-[#2563eb] num">
+            <div className="mt-1 font-mono text-xl font-semibold text-[var(--info)] num">
               0
             </div>
           </div>
@@ -94,7 +94,7 @@ export default async function DashboardPage() {
             <h2 className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--fg)]">
               Deterministic Reconciliation Kernel (lib/kernel.ts)
             </h2>
-            <Link href="/dashboard/items" className="font-mono text-xs text-[#2563eb] hover:underline">
+            <Link href="/dashboard/items" className="font-mono text-xs text-[var(--info)] hover:underline">
               Full Ledger &rarr;
             </Link>
           </div>
@@ -109,8 +109,8 @@ export default async function DashboardPage() {
                 <span
                   className={`rounded px-2.5 py-0.5 font-mono text-[11px] font-medium ${
                     c.audit.verdict === "MATERIAL_DRIFT_DETECTED"
-                      ? "border border-[#dc2626]/30 bg-[#dc2626]/10 text-[#dc2626]"
-                      : "border border-[#16a34a]/30 bg-[#16a34a]/10 text-[#16a34a]"
+                      ? "border border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]"
+                      : "border border-[var(--ok)]/30 bg-[var(--ok)]/10 text-[var(--ok)]"
                   }`}
                 >
                   {c.audit.verdict}

@@ -29,17 +29,17 @@ export function TelemetryTile({
     .join(" ");
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-[var(--border,#262626)] bg-[var(--surface,#121212)] p-4 shadow-sm">
-      <div className="flex items-center justify-between text-xs font-mono text-[var(--fg-muted,#888)]">
+    <div className="flex flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm">
+      <div className="flex items-center justify-between text-xs font-mono text-[var(--fg-muted)]">
         <span className="uppercase tracking-wider">{label}</span>
         <div className="flex items-center gap-1.5">
           <span
             className={`h-1.5 w-1.5 rounded-full ${
               status === "live"
-                ? "bg-emerald-400 animate-pulse"
+                ? "bg-[var(--accent)] animate-pulse"
                 : status === "warning"
-                ? "bg-amber-400"
-                : "bg-blue-400"
+                ? "bg-[var(--warn)]"
+                : "bg-[var(--info)]"
             }`}
           />
           <span className="text-[10px] uppercase font-mono">{status}</span>
@@ -52,7 +52,7 @@ export function TelemetryTile({
             {value}
           </span>
           {unit && (
-            <span className="text-xs font-mono text-[var(--fg-muted,#888)]">{unit}</span>
+            <span className="text-xs font-mono text-[var(--fg-muted)]">{unit}</span>
           )}
         </div>
 
@@ -61,7 +61,7 @@ export function TelemetryTile({
           <svg width={width} height={height} className="overflow-visible">
             <polyline
               fill="none"
-              stroke="var(--accent,#F59E0B)"
+              stroke="var(--accent)"
               strokeWidth="1.75"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -71,8 +71,8 @@ export function TelemetryTile({
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-[11px] font-mono text-[var(--fg-muted,#888)] pt-1 border-t border-[var(--border,#262626)]">
-        <span className="text-emerald-400">{delta}</span>
+      <div className="flex items-center justify-between text-[11px] font-mono text-[var(--fg-muted)] pt-1 border-t border-[var(--border)]">
+        <span className="text-[var(--accent)]">{delta}</span>
         <span>rolling window</span>
       </div>
     </div>

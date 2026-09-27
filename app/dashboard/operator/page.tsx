@@ -53,7 +53,7 @@ export default function Web2OperatorPage() {
             <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--fg-muted)]">
               Unchecked Agent Write Authority
             </div>
-            <div className="mt-0.5 font-semibold text-[#16a34a] num">0 DIRECT MUTATIONS</div>
+            <div className="mt-0.5 font-semibold text-[var(--ok)] num">0 DIRECT MUTATIONS</div>
           </div>
         </div>
 
@@ -81,7 +81,7 @@ export default function Web2OperatorPage() {
                     <td className="px-4 py-3.5 font-medium text-[var(--fg)]">{seat.name}</td>
                     <td className="px-4 py-3.5 text-[var(--fg-muted)]">{seat.readAccess}</td>
                     <td className="px-4 py-3.5 font-mono text-[11px] text-[var(--fg)]">{seat.proposeAccess}</td>
-                    <td className="px-4 py-3.5 font-mono text-[11px] font-medium text-[#16a34a]">{seat.writeAuthority}</td>
+                    <td className="px-4 py-3.5 font-mono text-[11px] font-medium text-[var(--ok)]">{seat.writeAuthority}</td>
                     <td className="px-4 py-3.5 text-[var(--fg-muted)]">{seat.failureMode}</td>
                   </tr>
                 ))}
@@ -101,11 +101,11 @@ export default function Web2OperatorPage() {
             {SAFETY_INVARIANTS.map((inv) => (
               <div key={inv.id} className="flex flex-col justify-between gap-2 px-5 py-3.5 sm:flex-row sm:items-center">
                 <div>
-                  <span className="font-mono text-xs font-semibold text-[#2563eb]">{inv.id}</span>
+                  <span className="font-mono text-xs font-semibold text-[var(--info)]">{inv.id}</span>
                   <span className="ml-2 text-sm font-medium text-[var(--fg)]">{inv.name}</span>
                   <p className="mt-0.5 text-xs text-[var(--fg-muted)]">{inv.rule}</p>
                 </div>
-                <span className="shrink-0 rounded border border-[#16a34a]/30 bg-[#16a34a]/10 px-2.5 py-1 font-mono text-[11px] font-medium text-[#16a34a]">
+                <span className="shrink-0 rounded border border-[var(--ok)]/30 bg-[var(--ok)]/10 px-2.5 py-1 font-mono text-[11px] font-medium text-[var(--ok)]">
                   ENFORCED · FAIL-CLOSED
                 </span>
               </div>

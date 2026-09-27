@@ -4,8 +4,8 @@
  * Self-walking Hero Console Tour + Interactive 3-Mode Pipeline Topology Graph
  * + 3-Seat "Who This Is For" Operational Role Strip.
  *
- * Uses the Editorial Rice-Paper & Swiss-Grid Design System (#ffffff canvas, #f5f5f5 mist,
- * 1px #e5e5e5 hairlines, weight-500 display type, tabular numerals, semantic refusal red).
+ * Warm umber canvas with a single green signal accent. Every colour reads from
+ * globals.css tokens; nothing in this file hardcodes a hex.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -61,11 +61,11 @@ export function ConsoleTour() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 space-y-10 text-[var(--fg)]">
+    <section className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-8 space-y-10 text-[var(--fg)]">
       {/* Live Verifier Stamp Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-1.5 shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--ok)]" />
           <span className="font-mono text-[11px] font-medium uppercase text-[#1e40af] tabular-nums">
             {headlineCase.id} · actionable drift · {summary.totalCases}/{summary.totalCases} reconciled · verifier PASS
           </span>
@@ -101,10 +101,10 @@ export function ConsoleTour() {
               const isCurrent = idx === active;
               const dotClass =
                 stop.tone === "green"
-                  ? "bg-[#16a34a]"
+                  ? "bg-[var(--ok)]"
                   : stop.tone === "orange"
-                  ? "bg-[#ea580c]"
-                  : "bg-[#2563eb]";
+                  ? "bg-[var(--warn)]"
+                  : "bg-[var(--info)]";
               return (
                 <button
                   key={stop.id}
@@ -117,7 +117,7 @@ export function ConsoleTour() {
                       : "text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)]/60 border border-transparent"
                   }`}
                 >
-                  <span className={`h-1.5 w-1.5 rounded-full ${isCurrent ? dotClass : "bg-[#a3a3a3]"}`} />
+                  <span className={`h-1.5 w-1.5 rounded-full ${isCurrent ? dotClass : "bg-[var(--fg-subtle)]"}`} />
                   <span>{stop.label}</span>
                 </button>
               );
@@ -134,14 +134,14 @@ export function ConsoleTour() {
             <div className="space-y-5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <div>
-                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
                     Estate & verification health
                   </p>
                   <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Every candidate diff is checked against five deterministic invariants before state commits
                   </h3>
                 </div>
-                <Link href="/dashboard" className="text-[13px] font-medium text-[#2563eb] hover:underline">
+                <Link href="/dashboard" className="text-[13px] font-medium text-[var(--info)] hover:underline">
                   Open console →
                 </Link>
               </div>
@@ -194,7 +194,7 @@ export function ConsoleTour() {
                       >
                         <span
                           className={`h-1.5 w-1.5 rounded-full ${
-                            c.expectedActionable ? "bg-[#16a34a]" : "bg-[#a3a3a3]"
+                            c.expectedActionable ? "bg-[var(--ok)]" : "bg-[var(--fg-subtle)]"
                           }`}
                         />
                         {c.expectedActionable ? "COMMITTED" : "SUPPRESSED"}
@@ -210,7 +210,7 @@ export function ConsoleTour() {
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
                     Ablation topology
                   </p>
                   <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
@@ -245,29 +245,29 @@ export function ConsoleTour() {
                 </div>
               </div>
 
-              <div key={replayTick} className="rounded-[12px] border border-[var(--border)] bg-[#fafafa] p-4">
+              <div key={replayTick} className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-elevated)] p-4">
                 <svg viewBox="0 0 820 200" className="w-full h-auto">
                   <path
                     d="M 175 100 L 295 100"
-                    stroke={pipelineMode === "NAIVE_LLM" ? "#ea580c" : "#2563eb"}
+                    stroke={pipelineMode === "NAIVE_LLM" ? "var(--warn)" : "var(--info)"}
                     strokeWidth="2"
                     strokeDasharray={pipelineMode === "NAIVE_LLM" ? "5 4" : "none"}
                   />
                   <path
                     d="M 470 100 L 580 60"
-                    stroke={pipelineMode === "FULL_KERNEL" ? "#16a34a" : "#dc2626"}
+                    stroke={pipelineMode === "FULL_KERNEL" ? "var(--ok)" : "var(--danger)"}
                     strokeWidth="2"
                   />
                   <path
                     d="M 470 100 L 580 145"
-                    stroke="#a3a3a3"
+                    stroke="var(--fg-subtle)"
                     strokeWidth="1.5"
                     strokeDasharray="4 4"
                   />
 
                   <g transform="translate(20, 55)">
-                    <rect width="155" height="88" rx="10" fill="var(--surface-raised)" stroke="#d4d4d4" strokeWidth="1.5" />
-                    <text x="14" y="26" fill="#2563eb" fontSize="10" fontFamily="monospace">01 CAPTURE SEAM</text>
+                    <rect width="155" height="88" rx="10" fill="var(--surface-raised)" stroke="var(--fg-muted)" strokeWidth="1.5" />
+                    <text x="14" y="26" fill="var(--info)" fontSize="10" fontFamily="monospace">01 CAPTURE SEAM</text>
                     <text x="14" y="48" fill="var(--fg)" fontSize="13" fontWeight="600">Rendered DOM</text>
                     <text x="14" y="68" fill="var(--fg-subtle)" fontSize="11" fontFamily="monospace">22 corpus snapshots</text>
                   </g>
@@ -278,10 +278,10 @@ export function ConsoleTour() {
                       height="98"
                       rx="10"
                       fill="var(--surface-raised)"
-                      stroke={pipelineMode === "FULL_KERNEL" ? "#2563eb" : "#ea580c"}
+                      stroke={pipelineMode === "FULL_KERNEL" ? "var(--info)" : "var(--warn)"}
                       strokeWidth="1.5"
                     />
-                    <text x="14" y="25" fill="#525252" fontSize="10" fontFamily="monospace">02 EXTRACTION + GATE</text>
+                    <text x="14" y="25" fill="var(--fg-muted)" fontSize="10" fontFamily="monospace">02 EXTRACTION + GATE</text>
                     <text x="14" y="46" fill="var(--fg)" fontSize="13" fontWeight="600">
                       {pipelineMode === "NAIVE_LLM"
                         ? "Unchecked Prompt"
@@ -292,7 +292,7 @@ export function ConsoleTour() {
                     <text
                       x="14"
                       y="66"
-                      fill={pipelineMode === "FULL_KERNEL" ? "#16a34a" : "#dc2626"}
+                      fill={pipelineMode === "FULL_KERNEL" ? "var(--ok)" : "var(--danger)"}
                       fontSize="11"
                       fontFamily="monospace"
                     >
@@ -313,7 +313,7 @@ export function ConsoleTour() {
                       height="78"
                       rx="10"
                       fill="var(--surface-raised)"
-                      stroke={pipelineMode === "FULL_KERNEL" ? "#16a34a" : "#dc2626"}
+                      stroke={pipelineMode === "FULL_KERNEL" ? "var(--ok)" : "var(--danger)"}
                       strokeWidth="1.5"
                     />
                     <text x="14" y="24" fill="#166534" fontSize="10" fontFamily="monospace">03 VERIFIED RECEIPT</text>
@@ -324,14 +324,14 @@ export function ConsoleTour() {
                         ? "9 caught · 5 false alarms"
                         : "11 caught · 6 false alarms"}
                     </text>
-                    <text x="14" y="63" fill="#525252" fontSize="11" fontFamily="monospace">
+                    <text x="14" y="63" fill="var(--fg-muted)" fontSize="11" fontFamily="monospace">
                       Precision: {pipelineMode === "FULL_KERNEL" ? "100.0%" : pipelineMode === "HEURISTIC_DIFF" ? "64.3%" : "64.7%"}
                     </text>
                   </g>
 
                   <g transform="translate(580, 108)">
-                    <rect width="220" height="76" rx="10" fill="var(--surface-raised)" stroke="#d4d4d4" strokeWidth="1.5" />
-                    <text x="14" y="24" fill="#9a3412" fontSize="10" fontFamily="monospace">04 REFUSAL LEDGER</text>
+                    <rect width="220" height="76" rx="10" fill="var(--surface-raised)" stroke="var(--fg-muted)" strokeWidth="1.5" />
+                    <text x="14" y="24" fill="var(--warn-strong)" fontSize="10" fontFamily="monospace">04 REFUSAL LEDGER</text>
                     <text x="14" y="44" fill="var(--fg)" fontSize="12" fontWeight="600">
                       {pipelineMode === "FULL_KERNEL"
                         ? "8/8 benign edits suppressed"
@@ -350,14 +350,14 @@ export function ConsoleTour() {
             <div className="space-y-4">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
                     Authority boundary
                   </p>
                   <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Five hard invariants enforced by `lib/kernel.ts` before any state transition
                   </h3>
                 </div>
-                <Link href="/dashboard/operator" className="text-[13px] font-medium text-[#2563eb] hover:underline">
+                <Link href="/dashboard/operator" className="text-[13px] font-medium text-[var(--info)] hover:underline">
                   See authority matrix →
                 </Link>
               </div>
@@ -368,7 +368,7 @@ export function ConsoleTour() {
                     className="border-r border-b sm:border-b-0 border-[var(--border)] last:border-r-0 p-4 flex flex-col justify-between"
                   >
                     <div>
-                      <span className="font-mono text-[11px] font-semibold text-[#2563eb]">{inv.id}</span>
+                      <span className="font-mono text-[11px] font-semibold text-[var(--info)]">{inv.id}</span>
                       <div className="mt-1 text-[13px] font-semibold text-[var(--fg)]">{inv.name}</div>
                       <p className="mt-1 text-[12px] leading-snug text-[var(--fg-muted)]">{inv.rule}</p>
                     </div>
@@ -386,14 +386,14 @@ export function ConsoleTour() {
             <div className="space-y-4">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
                     Sponsor seam ablation
                   </p>
                   <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Measured degradation when each sponsor seam is removed from the loop
                   </h3>
                 </div>
-                <Link href="/dashboard/sponsors" className="text-[13px] font-medium text-[#2563eb] hover:underline">
+                <Link href="/dashboard/sponsors" className="text-[13px] font-medium text-[var(--info)] hover:underline">
                   Open kill-switch simulator →
                 </Link>
               </div>
@@ -404,14 +404,14 @@ export function ConsoleTour() {
                     className="border-r border-b lg:border-b-0 border-[var(--border)] last:border-r-0 p-4 space-y-2"
                   >
                     <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#2563eb]">{sp.seam}</span>
+                      <span className="text-[var(--info)]">{sp.seam}</span>
                       <span className="rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[var(--accent)]">LIVE</span>
                     </div>
                     <div className="text-[14px] font-semibold text-[var(--fg)]">{sp.name}</div>
                     <div className="font-mono text-[11px] text-[var(--accent)]">
                       Full: {sp.ablation.fullSystemMetric}
                     </div>
-                    <div className="font-mono text-[11px] text-[#9a3412]">
+                    <div className="font-mono text-[11px] text-[var(--warn-strong)]">
                       Ablated: {sp.ablation.removedMetric}
                     </div>
                   </div>
@@ -424,14 +424,14 @@ export function ConsoleTour() {
             <div className="space-y-4">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
                     Independent verification
                   </p>
                   <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Check the evidence without trusting us — recompute offline or flip a byte in `/verify`
                   </h3>
                 </div>
-                <Link href="/verify" className="text-[13px] font-medium text-[#2563eb] hover:underline">
+                <Link href="/verify" className="text-[13px] font-medium text-[var(--info)] hover:underline">
                   Open byte verifier →
                 </Link>
               </div>
@@ -446,7 +446,7 @@ export function ConsoleTour() {
             <span>
               A worker restart replayed one receipt, not a duplicate side effect. An ungrounded excerpt was refused by INV-01.
             </span>
-            <div className="flex items-center gap-4 font-medium text-[#2563eb]">
+            <div className="flex items-center gap-4 font-medium text-[var(--info)]">
               <Link href="/demo" className="hover:underline">Walkthrough (/demo) →</Link>
               <Link href="/proof" className="hover:underline">Claim ledger (/proof) →</Link>
               <Link href="/verify" className="hover:underline">Byte verifier (/verify) →</Link>
@@ -458,7 +458,7 @@ export function ConsoleTour() {
       {/* Who This Is For — 3-Seat Hairline Grid */}
       <div className="space-y-3">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
+          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
             Who this is for
           </p>
           <h2 className="mt-1 text-[24px] font-medium tracking-[-0.02em] text-[var(--fg)]">
@@ -495,7 +495,7 @@ export function ConsoleTour() {
               className="border-r border-b sm:border-b-0 border-[var(--border)] last:border-r-0 p-5 flex flex-col justify-between bg-[var(--surface)]"
             >
               <div>
-                <p className="font-mono text-[11px] tracking-[0.08em] text-[#2563eb] uppercase">
+                <p className="font-mono text-[11px] tracking-[0.08em] text-[var(--info)] uppercase">
                   {seat.when}
                 </p>
                 <h3 className="mt-1.5 text-[15px] font-semibold text-[var(--fg)]">{seat.role}</h3>
@@ -503,7 +503,7 @@ export function ConsoleTour() {
               </div>
               <Link
                 href={seat.href}
-                className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-[#2563eb] hover:underline"
+                className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-[var(--info)] hover:underline"
               >
                 {seat.cta} <span aria-hidden>→</span>
               </Link>

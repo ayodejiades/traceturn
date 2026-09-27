@@ -35,20 +35,43 @@ const STATS = [
 export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-[var(--bg)] text-[var(--fg)] font-sans selection:bg-[var(--accent)] selection:text-[var(--accent-contrast)]">
-      {/* Hero Painted Landscape Background with Soft Fade to Dark Canvas */}
+      {/* Hero Painted Landscape Background with Soft Fade to Dark Canvas.
+          The scrim is the warm canvas colour, not neutral black, so the painting
+          dissolves into the page instead of being masked by a cold grey veil. */}
       <div className="absolute inset-x-0 top-0 h-[640px] sm:h-[780px] md:h-[860px] overflow-hidden pointer-events-none -z-0">
         <img
           src="/hero-landscape.jpg"
           alt="Atmospheric pastel landscape painting of mountains, winding river, and glowing sunset clouds"
-          className="h-full w-full object-cover object-top filter brightness-[0.92] contrast-[1.05]"
+          className="h-full w-full object-cover object-top"
         />
-        {/* Soft gradient fade into dark theme canvas */}
+        {/* Two scrims, both in the warm canvas colour. The vertical one dissolves
+            the painting into the page; the horizontal one darkens the left and
+            right thirds so the nav labels keep contrast against a bright sky.
+            Without it, "Evidence" sat on near-white cloud. */}
         <div
           aria-hidden
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(8,9,10,0) 0%, rgba(8,9,10,0.1) 25%, rgba(8,9,10,0.45) 50%, rgba(8,9,10,0.82) 75%, var(--bg) 95%, var(--bg) 100%)",
+              "linear-gradient(to bottom, rgba(16,13,10,0) 0%, rgba(16,13,10,0.06) 30%, rgba(16,13,10,0.34) 52%, rgba(16,13,10,0.72) 74%, rgba(16,13,10,0.94) 90%, var(--bg) 100%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to right, rgba(16,13,10,0.58) 0%, rgba(16,13,10,0.14) 20%, rgba(16,13,10,0) 40%, rgba(16,13,10,0.10) 66%, rgba(16,13,10,0.45) 100%)",
+          }}
+        />
+        {/* A whisper of warm light at the top keeps the sky's own colour visible;
+            without it the upper band greys out against the dark header. */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-40"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(219,199,183,0.14) 0%, rgba(219,199,183,0) 100%)",
           }}
         />
       </div>
@@ -57,8 +80,8 @@ export default function HomePage() {
 
       <main id="main" className="relative z-10 flex-1">
         {/* Hero Content Section */}
-        <section className="pt-28 sm:pt-32 md:pt-36 pb-10 sm:pb-14 px-6 text-center">
-          <div className="mx-auto max-w-4xl">
+        <section className="pt-28 sm:pt-32 md:pt-36 pb-10 sm:pb-14 px-[var(--page-pad)] text-center">
+          <div className="mx-auto max-w-[var(--measure)]">
 
             {/* Display Headline */}
             <h1 className="h-display text-4xl sm:text-6xl md:text-[4.25rem] font-semibold tracking-tight text-white leading-[1.08] text-balance">
@@ -67,8 +90,9 @@ export default function HomePage() {
               summary can&rsquo;t answer
             </h1>
 
-            {/* Subtitle */}
-            <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg text-[var(--fg-muted)] leading-relaxed text-pretty">
+            {/* Subtitle. Sits on its own soft scrim because the sky behind it can
+                be near-white, and muted warm grey alone drops below 4.5:1 there. */}
+            <p className="mx-auto mt-5 max-w-2xl text-base text-white sm:text-lg leading-relaxed text-pretty [text-shadow:0_1px_12px_rgba(16,13,10,0.9)]">
               Which turn started it. How one premise became consensus.
             </p>
 
@@ -84,7 +108,7 @@ export default function HomePage() {
               <Link
                 href="/dashboard"
                 data-demo="launch-demo"
-                className="rounded-full border border-white/20 bg-[var(--accent)]/40 px-6 py-3 text-sm font-medium text-[var(--accent-contrast)] backdrop-blur-md transition-all hover:bg-[var(--accent)]/70 hover:border-white/40"
+                className="rounded-full border border-white/25 bg-[var(--bg)]/50 px-6 py-3 text-sm font-medium text-white backdrop-blur-md transition-all hover:border-white/45 hover:bg-[var(--bg)]/70"
               >
                 Open console
               </Link>
@@ -219,7 +243,7 @@ export default function HomePage() {
 
         {/* Clean Dark Mode CTA Section — NO picture as requested */}
         <section className="border-t border-[var(--border)] bg-[var(--bg-elevated)] py-14 sm:py-16 px-[var(--page-pad)]">
-          <div className="mx-auto max-w-4xl text-center">
+          <div className="mx-auto max-w-[var(--measure)] text-center">
             <span className="eyebrow mb-3 inline-block rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-1.5 text-[var(--accent)]">
               DETERMINISTIC VERIFICATION KERNEL
             </span>

@@ -1,53 +1,56 @@
 @import "tailwindcss";
-
-/* terminal (stub) — mono display, dense, green-on-graphite, keyboard hints. */
-/* traceturn — terminal palette, single green accent.
-   One accent only. Cool-neutral greys, green reserved for signal. */
 :root {
-  --bg: #08090a;
-  --bg-elevated: #0e1011;
-  --fg: #e8edeb;
-  --fg-muted: #8b9691;
-  --fg-subtle: #5f6a66;
-  --surface: #0f1211;
-  --surface-raised: #151918;
-  --border: #1f2523;
-  --border-strong: #2b3330;
+  --bg: #100d0a;
+  --bg-elevated: #17130f;
+  --fg: #f0e8dd;
+  --fg-muted: #a89b8c;
+  --fg-subtle: #7d7164;
+  --surface: #17130f;
+  --surface-raised: #201a15;
+  --border: #2e2620;
+  --border-strong: #40352c;
+
+  /* Accent stays green: it carries meaning (flagged / corroborated) and must not
+     drift toward the painting's amber, or a warning stops reading as one. */
   --accent: #10b981;
   --accent-dim: #0d9668;
   --accent-contrast: #04150c;
-  --warn: #eab308;
-  --danger: #f43f5e;
+
+  --warn: #d9a441;
+  --warn-strong: #9a3412;
+  /* Art-direction washes, sampled from the hero's own amber and umber. Applied
+     over the footer painting, which is natively a cool blue twilight. */
+  --art-warm-multiply: #8a6234;
+  --art-warm-softlight: #c98a3c;
+  --danger: #e2694f;
+  /* Translucent tints, not solid light fills: these sit on the dark warm canvas,
+     so a near-white background would read as a hole punched in the page. */
+  --danger-surface: rgba(226, 105, 79, 0.12);
+  --info: #4b8fd6;
+  --ok: #16a34a;
   --radius: 0.5rem;
   --radius-sm: 0.3125rem;
   --radius-lg: 0.75rem;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px -12px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.5), 0 24px 48px -24px rgba(0, 0, 0, 0.85);
   --ring: 0 0 0 1px var(--border);
   --ring-accent: 0 0 0 1px rgba(16, 185, 129, 0.4);
 
   /* Layout scale. Both the marketing pages and the dashboard shell read these, so
      the content edge lands in the same place on every route. */
   --content-max: 1440px;
+  /* Reading measure for centred headline/CTA copy. Deliberately narrower than
+     --content-max: long-form centred text past ~56rem is hard to track back from. */
+  --measure: 56rem;
   --sidebar-w: 248px;
   --page-pad: 1.5rem;
   --gutter: 1.25rem;
 }
 
-/* Fonts are injected by next/font in app/layout.tsx as --font-sans / --font-mono.
-   Do NOT declare them in :root — a self-referential `--font-sans: var(--font-sans)`
-   resolves to the fallback and silently overrides Geist with a system stack
-   (previously one containing Roboto/Arial, both banned by DESIGN.md). The @theme
-   block below passes them through to Tailwind so `font-sans` resolves to Geist. */
 
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--fg);
-  /* Deliberately NOT mapped to --font-sans/--font-mono. Those names are owned by
-     next/font's injected variables on <html>. Re-declaring them here -- even as
-     `var(--font-sans)` -- makes Tailwind's `font-sans` utility resolve to a
-     self-reference and fall back to the system stack, which silently overrides
-     Geist. The `.font-sans` / `.font-mono` utilities are defined below instead. */
 }
 
 /* Mirror the next/font variables into Tailwind's font utilities, resolving to the
