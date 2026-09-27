@@ -121,6 +121,20 @@ body {
   left: 0;
 }
 
+/* Hero backdrop: a faint grid that fades out, so the page has depth without
+   competing with the type. Pure CSS, no image request. */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 0%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 0%, transparent 78%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

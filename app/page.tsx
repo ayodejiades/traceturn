@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SiteHeader, SiteFooter } from "@/components/site-shell";
+import { LineageGraph } from "@/components/lineage-graph";
 import { BENCHMARK_CASES, evaluateSafetyKernel, SAFETY_INVARIANTS } from "@/lib/kernel";
 
 const CAPABILITIES = [
@@ -81,41 +82,50 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main id="main" className="flex-1">
-        <section className="mx-auto w-full max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
-          <div className="eyebrow mb-6 flex items-center gap-2">
-            <span className="h-1 w-1 rounded-full bg-[var(--accent)]" />
-            Incident response for AI swarms
-          </div>
-          <h1 className="h-display max-w-3xl text-[2.75rem] sm:text-6xl">
-            Blame the turn.
-            <br />
-            <span className="text-[var(--fg-muted)]">Trace the belief.</span>
-          </h1>
-          <p className="prose-measure mt-7 text-base sm:text-lg">
-            Two hundred thousand agent turns. One bad premise. An investigator has hours, not
-            weeks. traceturn answers two questions a summary cannot: which turn started it, and
-            how a single unverified claim convinced the whole swarm it was legitimate.
-          </p>
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link
-              href="/proof"
-              data-demo="launch-demo"
-              className="rounded-[var(--radius-sm)] bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]"
-            >
-              Inspect the evidence
-            </Link>
-            <Link
-              href="/demo"
-              className="rounded-[var(--radius-sm)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-medium transition-colors hover:border-[var(--fg-subtle)] hover:bg-[var(--surface-raised)]"
-            >
-              Watch the walkthrough
-            </Link>
-            <Link
-              href="https://github.com/ayodejiades/traceturn"
-              className="px-2 py-2.5 font-mono text-sm text-[var(--fg-muted)] transition-colors hover:text-[var(--accent)]"
-            >
-              github.com/ayodejiades/traceturn →
-            </Link>
+        <section className="relative mx-auto w-full max-w-6xl overflow-hidden px-6 pb-16 pt-20 sm:pt-28">
+          <div className="hero-grid" aria-hidden />
+          <div className="relative grid items-center gap-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+            <div>
+              <div className="eyebrow mb-6 flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-[var(--accent)]" />
+                Incident response for AI swarms
+              </div>
+              <h1 className="h-display max-w-3xl text-[2.75rem] sm:text-6xl">
+                Blame the turn.
+                <br />
+                <span className="text-[var(--fg-muted)]">Trace the belief.</span>
+              </h1>
+              <p className="prose-measure mt-7 text-base sm:text-lg">
+                Two hundred thousand agent turns. One bad premise. An investigator has hours, not
+                weeks. traceturn answers two questions a summary cannot: which turn started it, and
+                how a single unverified claim convinced the whole swarm it was legitimate.
+              </p>
+              <div className="mt-9 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/proof"
+                  data-demo="launch-demo"
+                  className="rounded-[var(--radius-sm)] bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]"
+                >
+                  Inspect the evidence
+                </Link>
+                <Link
+                  href="/demo"
+                  className="rounded-[var(--radius-sm)] border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-medium transition-colors hover:border-[var(--fg-subtle)] hover:bg-[var(--surface-raised)]"
+                >
+                  Watch the walkthrough
+                </Link>
+                <Link
+                  href="https://github.com/ayodejiades/traceturn"
+                  className="px-2 py-2.5 font-mono text-sm text-[var(--fg-muted)] transition-colors hover:text-[var(--accent)]"
+                >
+                  github.com/ayodejiades/traceturn →
+                </Link>
+              </div>
+            </div>
+
+            <div className="lg:pl-4">
+              <LineageGraph />
+            </div>
           </div>
         </section>
         <section className="mx-auto w-full max-w-6xl px-6 pb-20">
