@@ -125,7 +125,7 @@ export default function HomePage() {
             <div className="mb-8 text-center">
               <div className="mx-auto max-w-[var(--measure)]">
                 <div className="eyebrow mb-2">
-                  BENCHMARK SWARM-01 · MATERIAL_DRIFT_DETECTED
+                  THE BENCHMARK FINDING
                 </div>
                 <h2 className="h-section text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--fg)]">
                   14 assertions trace to 1 independent origin
