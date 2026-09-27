@@ -104,7 +104,7 @@ export default function VerifyPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1080px] px-6 py-10 space-y-8">
+      <main id="main" className="mx-auto max-w-[1080px] px-6 py-10 space-y-8">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
             Independent verification · Zero credentials required

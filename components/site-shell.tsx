@@ -139,7 +139,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               title="Summarize with Claude"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white transition-all hover:bg-white/40 hover:scale-105"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface)]/20 backdrop-blur-md text-white transition-all hover:bg-[var(--surface)]/40 hover:scale-105"
             >
               <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
                 <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
@@ -150,7 +150,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               title="Summarize with ChatGPT"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white transition-all hover:bg-white/40 hover:scale-105"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface)]/20 backdrop-blur-md text-white transition-all hover:bg-[var(--surface)]/40 hover:scale-105"
             >
               <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
                 <path d="M20.5 10.5a4.5 4.5 0 0 0-3.5-4.4V5a5 5 0 0 0-8.8-3.2A4.5 4.5 0 0 0 4.5 5.5v1.1A4.5 4.5 0 0 0 3 14a4.5 4.5 0 0 0 3.5 4.4V19a5 5 0 0 0 8.8 3.2A4.5 4.5 0 0 0 19.5 18.5v-1.1A4.5 4.5 0 0 0 21 10a4.5 4.5 0 0 0-.5-.5z" />
@@ -161,7 +161,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               title="Summarize with Gemini"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-white transition-all hover:bg-white/40 hover:scale-105"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface)]/20 backdrop-blur-md text-white transition-all hover:bg-[var(--surface)]/40 hover:scale-105"
             >
               <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
                 <path d="M12 2C12 7.5 7.5 12 2 12C7.5 12 12 16.5 12 22C12 16.5 16.5 12 22 12C16.5 12 12 7.5 12 2Z" />

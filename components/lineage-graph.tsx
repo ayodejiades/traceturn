@@ -70,7 +70,7 @@ export function LineageGraph() {
       />
 
       <div className="relative overflow-hidden rounded-[14px] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[var(--shadow-lg)]">
-        <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-2.5">
+        <div className="flex items-center gap-2 border-b border-[var(--border)] px-[var(--page-pad)] py-2.5">
           <span aria-hidden className="h-2 w-2 rounded-full bg-[var(--border-strong)]" />
           <span aria-hidden className="h-2 w-2 rounded-full bg-[var(--border-strong)]" />
           <span aria-hidden className="h-2 w-2 rounded-full bg-[var(--border-strong)]" />

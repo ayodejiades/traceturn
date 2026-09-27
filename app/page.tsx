@@ -84,7 +84,7 @@ export default function HomePage() {
               <Link
                 href="/dashboard"
                 data-demo="launch-demo"
-                className="rounded-full border border-white/20 bg-black/40 px-6 py-3 text-sm font-medium text-white backdrop-blur-md transition-all hover:bg-black/70 hover:border-white/40"
+                className="rounded-full border border-white/20 bg-[var(--accent)]/40 px-6 py-3 text-sm font-medium text-[var(--accent-contrast)] backdrop-blur-md transition-all hover:bg-[var(--accent)]/70 hover:border-white/40"
               >
                 Open console
               </Link>
