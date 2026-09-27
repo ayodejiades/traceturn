@@ -56,7 +56,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable} h-full antialiased font-sans`}>
       <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--fg)]">
         <a href="#main" className="skip-link">
           Skip to content

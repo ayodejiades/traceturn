@@ -34,6 +34,12 @@
   --gutter: 1.25rem;
 }
 
+/* Fonts are injected by next/font in app/layout.tsx as --font-sans / --font-mono.
+   Do NOT declare them in :root — a self-referential `--font-sans: var(--font-sans)`
+   resolves to the fallback and silently overrides Geist with a system stack
+   (previously one containing Roboto/Arial, both banned by DESIGN.md). The @theme
+   block below passes them through to Tailwind so `font-sans` resolves to Geist. */
+
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--fg);
