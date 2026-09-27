@@ -57,7 +57,7 @@ export default function HomePage() {
 
       <main id="main" className="relative z-10 flex-1">
         {/* Hero Content Section */}
-        <section className="pt-20 sm:pt-32 md:pt-40 pb-16 sm:pb-24 px-6 text-center">
+        <section className="pt-28 sm:pt-32 md:pt-36 pb-10 sm:pb-14 px-6 text-center">
           <div className="mx-auto max-w-4xl">
 
             {/* Display Headline */}
@@ -68,12 +68,12 @@ export default function HomePage() {
             </h1>
 
             {/* Subtitle */}
-            <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg text-[var(--fg-muted)] leading-relaxed text-pretty">
+            <p className="mx-auto mt-5 max-w-2xl text-base sm:text-lg text-[var(--fg-muted)] leading-relaxed text-pretty">
               Which turn started it. How one premise became consensus.
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/proof"
                 data-demo="launch-demo"
@@ -92,9 +92,9 @@ export default function HomePage() {
           </div>
 
           {/* Interactive Forensic Telemetry Showcase Card */}
-          <div className="mx-auto mt-16 sm:mt-24 max-w-5xl">
-            <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl p-4 sm:p-8">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-4 text-left">
+          <div className="mx-auto mt-12 sm:mt-16 max-w-5xl">
+            <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl p-4 sm:p-6">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-4 text-left">
                 <div>
                   <div className="eyebrow text-[11px] text-[var(--fg-subtle)]">
                     ACTIVE SWARM AUDIT · BENCHMARK SWARM-01
@@ -110,7 +110,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg)] p-4 sm:p-6 shadow-inner">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg)] p-3 sm:p-5 shadow-inner">
                 <LineageGraph />
               </div>
             </div>
@@ -119,11 +119,11 @@ export default function HomePage() {
 
         {/* Stats Row */}
         <section className="border-y border-[var(--border)] bg-[var(--bg-elevated)]">
-          <div className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-16">
-            <p className="eyebrow text-center mb-12 text-[var(--fg-subtle)]">
+          <div className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-12">
+            <p className="eyebrow text-center mb-8 text-[var(--fg-subtle)]">
               MEASURED, NOT ESTIMATED
             </p>
-            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
               {STATS.map((s) => (
                 <div key={s.label} className="border-l border-[var(--border)] pl-6">
                   <div className="tnum text-4xl sm:text-5xl font-semibold tracking-tight text-[var(--fg)]">
@@ -138,8 +138,8 @@ export default function HomePage() {
         </section>
 
         {/* Capabilities Grid */}
-        <section className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-20 sm:py-24">
-          <div className="mb-16 max-w-2xl">
+        <section className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-14 sm:py-16">
+          <div className="mb-10 max-w-2xl">
             <div className="eyebrow mb-3">AI BUILT FOR FORENSICS</div>
             <h2 className="h-section text-3xl sm:text-5xl font-semibold tracking-tight text-[var(--fg)] leading-tight">
               Agents propose. Deterministic code decides.
@@ -149,11 +149,11 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             {CAPABILITIES.map((c, i) => (
               <div
                 key={c.title}
-                className="group relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 transition-all hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
+                className="group relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 transition-all hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
               >
                 <div className="font-mono text-xs text-[var(--accent)] mb-2 font-medium">
                   0{i + 1} / {c.subtitle}
@@ -167,7 +167,7 @@ export default function HomePage() {
 
         {/* Testimonial Quote Block */}
         <section className="border-y border-[var(--border)] bg-[var(--bg-elevated)]">
-          <div className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-24 sm:py-28">
+          <div className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-16 sm:py-20">
             <blockquote className="max-w-3xl">
               <p className="h-section text-2xl sm:text-3xl font-medium leading-snug text-[var(--fg)]">
                 &ldquo;A hundred agents were told to prove theorems. One found an exploit in the
@@ -184,8 +184,8 @@ export default function HomePage() {
         </section>
 
         {/* Five Safety Invariants Section */}
-        <section className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-20 sm:py-24">
-          <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
+        <section className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-14 sm:py-16">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="eyebrow mb-2">AUDITABLE BY DEFAULT</div>
               <h2 className="h-section text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--fg)]">
@@ -207,7 +207,7 @@ export default function HomePage() {
             {SAFETY_INVARIANTS.map((inv) => (
               <div
                 key={inv.id}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 transition-all hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
+                className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 transition-all hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
               >
                 <div className="mb-2 text-xs font-mono text-[var(--accent)] font-semibold">{inv.id}</div>
                 <h3 className="text-base font-semibold text-[var(--fg)]">{inv.name}</h3>
@@ -218,7 +218,7 @@ export default function HomePage() {
         </section>
 
         {/* Clean Dark Mode CTA Section — NO picture as requested */}
-        <section className="border-t border-[var(--border)] bg-[var(--bg-elevated)] py-20 sm:py-24 px-[var(--page-pad)]">
+        <section className="border-t border-[var(--border)] bg-[var(--bg-elevated)] py-14 sm:py-16 px-[var(--page-pad)]">
           <div className="mx-auto max-w-4xl text-center">
             <span className="eyebrow mb-3 inline-block rounded-full border border-[var(--border)] bg-[var(--surface)] px-4 py-1.5 text-[var(--accent)]">
               DETERMINISTIC VERIFICATION KERNEL
@@ -229,7 +229,7 @@ export default function HomePage() {
             <p className="mx-auto mt-4 max-w-xl text-base text-[var(--fg-muted)] leading-relaxed">
               No setup, no API key, no model in the loop.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/proof"
                 data-demo="launch-demo"
