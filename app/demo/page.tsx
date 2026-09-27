@@ -105,7 +105,7 @@ export default function GuidedDemoPage() {
               Interactive State Machine Walkthrough
             </p>
             <h1 className="text-2xl font-medium tracking-[-0.02em] text-[var(--fg)] md:text-3xl">
-              5-Stage Evidence Lifecycle (`Record &rarr; Watch &rarr; Detect &rarr; Resolve &rarr; Receipt`)
+              5-Stage Evidence Lifecycle
             </h1>
             <p className="mt-1 text-sm text-[var(--fg-muted)]">
               Step through a complete lifecycle or switch scenarios to watch the deterministic kernel refuse hallucinated excerpts.

@@ -19,7 +19,7 @@ export default function Web2ProofPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
-      <header className="flex h-16 items-center justify-between border-b border-[var(--border)] px-6 max-w-[var(--content-max)] mx-auto w-full">
+      <header className="mx-auto flex h-16 w-full max-w-[var(--content-max)] items-center justify-between border-b border-[var(--border)] px-[var(--page-pad)]">
         <div className="flex items-center gap-3">
           <Link href="/" className="text-lg font-bold tracking-tight text-[var(--fg)]">
             traceturn
@@ -38,15 +38,15 @@ export default function Web2ProofPage() {
         </nav>
       </header>
 
-      <main id="main" className="max-w-[var(--content-max)] mx-auto px-6 py-12 flex flex-col gap-12">
+      <main id="main" className="mx-auto w-full max-w-[var(--content-max)] px-[var(--page-pad)] py-12 flex flex-col gap-12">
         {/* Headline Measured Proof Banner */}
         <section className="flex flex-col gap-4 border border-[var(--border)] bg-[var(--surface)] p-6 rounded-lg">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <span className="text-xs font-mono uppercase tracking-wider text-[var(--accent)]">
-                Inspectable Production & Campaign Proof (No Signup Required)
+              <span className="eyebrow mb-2 block">
+                Inspectable Production &amp; Campaign Proof (No Signup Required)
               </span>
-              <h1 className="text-2xl font-semibold tracking-tight mt-1">
+              <h1 className="h-display text-3xl font-semibold text-[var(--fg)]">
                 AI Extracts; Deterministic Code Decides.
               </h1>
               <p className="text-sm text-[var(--fg-muted)] mt-1 max-w-3xl">

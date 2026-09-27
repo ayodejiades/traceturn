@@ -109,7 +109,7 @@ export default function VerifyPage() {
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--info)]">
             Independent verification · Zero credentials required
           </p>
-          <h1 className="display mt-1.5 text-[34px] font-medium tracking-[-0.03em] text-[var(--fg)]">
+          <h1 className="h-display mt-1.5 text-[34px] font-semibold text-[var(--fg)]">
             Check the evidence without trusting us.
           </h1>
           <p className="mt-2.5 max-w-[68ch] text-[15px] leading-relaxed text-[var(--fg-muted)]">
