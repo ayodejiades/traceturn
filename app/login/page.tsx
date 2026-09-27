@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[var(--bg,#0a0a0a)] text-[var(--fg,#ededed)]">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[var(--bg,#0a0a0a)] text-[var(--fg)]">
       <div className="w-full max-w-md flex flex-col gap-6">
         <div className="flex flex-col items-center text-center gap-2">
           <Link href="/" className="text-xl font-bold tracking-tight text-[var(--fg)] hover:opacity-80 transition-opacity">

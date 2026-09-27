@@ -61,10 +61,10 @@ export function ConsoleTour() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 space-y-10 text-[#171717]">
+    <section className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 space-y-10 text-[var(--fg)]">
       {/* Live Verifier Stamp Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-[#e5e5e5] bg-white px-3.5 py-1.5 shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3.5 py-1.5 shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
           <span className="font-mono text-[11px] font-medium uppercase text-[#1e40af] tabular-nums">
             {headlineCase.id} · actionable drift · {summary.totalCases}/{summary.totalCases} reconciled · verifier PASS
@@ -74,13 +74,13 @@ export function ConsoleTour() {
           <button
             type="button"
             onClick={() => setPaused((p) => !p)}
-            className="rounded-[8px] border border-[#e5e5e5] bg-white px-3 py-1.5 text-[12px] font-medium text-[#404040] hover:bg-[#f5f5f5]"
+            className="rounded-[8px] border border-[var(--border)] bg-white px-3 py-1.5 text-[12px] font-medium text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)]"
           >
             {paused ? "Resume tour" : "Hold screen"}
           </button>
           <Link
             href="/verify"
-            className="rounded-[8px] bg-black px-3.5 py-1.5 text-[12px] font-medium text-white hover:bg-[#171717]"
+            className="rounded-[8px] bg-black px-3.5 py-1.5 text-[12px] font-medium text-white hover:bg-[var(--accent)]"
           >
             Verify the proof →
           </Link>
@@ -95,7 +95,7 @@ export function ConsoleTour() {
         className="overflow-hidden rounded-[16px] border border-[#d4d4d4] bg-white shadow-[0_12px_36px_rgba(10,10,10,0.06)]"
       >
         {/* Top Console Rail */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e5e5e5] bg-[#f5f5f5] px-4 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2.5">
           <div className="flex flex-wrap items-center gap-1">
             {stops.map((stop, idx) => {
               const isCurrent = idx === active;
@@ -113,8 +113,8 @@ export function ConsoleTour() {
                   onClick={() => selectStop(idx)}
                   className={`inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-[12px] font-medium transition-colors ${
                     isCurrent
-                      ? "bg-white text-[#171717] border border-[#d4d4d4] shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]"
-                      : "text-[#525252] hover:text-[#171717] hover:bg-white/60 border border-transparent"
+                      ? "bg-white text-[var(--fg)] border border-[#d4d4d4] shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]"
+                      : "text-[#525252] hover:text-[var(--fg)] hover:bg-white/60 border border-transparent"
                   }`}
                 >
                   <span className={`h-1.5 w-1.5 rounded-full ${isCurrent ? dotClass : "bg-[#a3a3a3]"}`} />
@@ -123,7 +123,7 @@ export function ConsoleTour() {
               );
             })}
           </div>
-          <span className="font-mono text-[11px] text-[#737373] hidden md:inline">
+          <span className="font-mono text-[11px] text-[var(--fg-muted)] hidden md:inline">
             Live data from deterministic corpus · Hover to hold a screen, or click any step
           </span>
         </div>
@@ -137,7 +137,7 @@ export function ConsoleTour() {
                   <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
                     Estate & verification health
                   </p>
-                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[#171717]">
+                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Every candidate diff is checked against five deterministic invariants before state commits
                   </h3>
                 </div>
@@ -147,7 +147,7 @@ export function ConsoleTour() {
               </div>
 
               {/* Collapsed Hairline Metric Strip */}
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-0 overflow-hidden rounded-[12px] border border-[#e5e5e5] bg-white">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] bg-white">
                 {[
                   { label: "Scored corpus", val: `${summary.totalCases}`, sub: "14 drift · 8 benign" },
                   { label: "Recall", val: `${summary.fullPipeline.recallPct}%`, sub: "14/14 caught" },
@@ -157,20 +157,20 @@ export function ConsoleTour() {
                 ].map((m) => (
                   <div
                     key={m.label}
-                    className="border-r border-b sm:border-b-0 border-[#e5e5e5] last:border-r-0 p-4"
+                    className="border-r border-b sm:border-b-0 border-[var(--border)] last:border-r-0 p-4"
                   >
                     <div className="text-[12px] text-[#525252]">{m.label}</div>
-                    <div className="mt-1 font-mono text-[22px] font-semibold tracking-[-0.02em] text-[#171717] tabular-nums">
+                    <div className="mt-1 font-mono text-[22px] font-semibold tracking-[-0.02em] text-[var(--fg)] tabular-nums">
                       {m.val}
                     </div>
-                    <div className="mt-0.5 font-mono text-[11px] text-[#737373]">{m.sub}</div>
+                    <div className="mt-0.5 font-mono text-[11px] text-[var(--fg-muted)]">{m.sub}</div>
                   </div>
                 ))}
               </div>
 
               {/* Sample Cases Table */}
-              <div className="overflow-hidden rounded-[12px] border border-[#e5e5e5]">
-                <div className="grid grid-cols-12 border-b border-[#e5e5e5] bg-[#f5f5f5] px-4 py-2 font-mono text-[11px] text-[#525252]">
+              <div className="overflow-hidden rounded-[12px] border border-[var(--border)]">
+                <div className="grid grid-cols-12 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2 font-mono text-[11px] text-[#525252]">
                   <div className="col-span-2">Case</div>
                   <div className="col-span-5">Surface & clause</div>
                   <div className="col-span-3">Kernel check</div>
@@ -179,17 +179,17 @@ export function ConsoleTour() {
                 {BENCHMARK_CASES.slice(0, 3).map((c) => (
                   <div
                     key={c.id}
-                    className="grid grid-cols-12 items-center border-b border-[#e5e5e5] last:border-b-0 bg-white px-4 py-2.5 text-[13px]"
+                    className="grid grid-cols-12 items-center border-b border-[var(--border)] last:border-b-0 bg-white px-4 py-2.5 text-[13px]"
                   >
-                    <div className="col-span-2 font-mono text-[12px] text-[#171717]">{c.id}</div>
-                    <div className="col-span-5 truncate pr-3 font-medium text-[#171717]">{c.title}</div>
+                    <div className="col-span-2 font-mono text-[12px] text-[var(--fg)]">{c.id}</div>
+                    <div className="col-span-5 truncate pr-3 font-medium text-[var(--fg)]">{c.title}</div>
                     <div className="col-span-3 font-mono text-[11px] text-[#525252]">5/5 invariants pass</div>
                     <div className="col-span-2 text-right">
                       <span
                         className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
                           c.expectedActionable
                             ? "border-[#bbf7d0] bg-[#dcfce7] text-[#166534]"
-                            : "border-[#e5e5e5] bg-[#f5f5f5] text-[#404040]"
+                            : "border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--fg-muted)]"
                         }`}
                       >
                         <span
@@ -213,7 +213,7 @@ export function ConsoleTour() {
                   <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
                     Ablation topology
                   </p>
-                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[#171717]">
+                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Switch between Naive LLM, Heuristic Diff, and the Grounded Safety Kernel
                   </h3>
                 </div>
@@ -229,7 +229,7 @@ export function ConsoleTour() {
                       className={`rounded-[8px] border px-2.5 py-1 font-mono text-[11px] font-medium transition-colors ${
                         pipelineMode === m
                           ? "border-black bg-black text-white"
-                          : "border-[#e5e5e5] bg-white text-[#404040] hover:bg-[#f5f5f5]"
+                          : "border-[var(--border)] bg-white text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)]"
                       }`}
                     >
                       {m}
@@ -238,14 +238,14 @@ export function ConsoleTour() {
                   <button
                     type="button"
                     onClick={() => setReplayTick((t) => t + 1)}
-                    className="rounded-[8px] border border-[#e5e5e5] bg-[#f5f5f5] px-2.5 py-1 font-mono text-[11px] text-[#171717] hover:bg-[#e5e5e5]"
+                    className="rounded-[8px] border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 font-mono text-[11px] text-[var(--fg)] hover:bg-[var(--surface-raised)]"
                   >
                     ↻ Replay
                   </button>
                 </div>
               </div>
 
-              <div key={replayTick} className="rounded-[12px] border border-[#e5e5e5] bg-[#fafafa] p-4">
+              <div key={replayTick} className="rounded-[12px] border border-[var(--border)] bg-[#fafafa] p-4">
                 <svg viewBox="0 0 820 200" className="w-full h-auto">
                   <path
                     d="M 175 100 L 295 100"
@@ -266,10 +266,10 @@ export function ConsoleTour() {
                   />
 
                   <g transform="translate(20, 55)">
-                    <rect width="155" height="88" rx="10" fill="#ffffff" stroke="#d4d4d4" strokeWidth="1.5" />
+                    <rect width="155" height="88" rx="10" fill="var(--surface-raised)" stroke="#d4d4d4" strokeWidth="1.5" />
                     <text x="14" y="26" fill="#2563eb" fontSize="10" fontFamily="monospace">01 CAPTURE SEAM</text>
-                    <text x="14" y="48" fill="#171717" fontSize="13" fontWeight="600">Rendered DOM</text>
-                    <text x="14" y="68" fill="#737373" fontSize="11" fontFamily="monospace">22 corpus snapshots</text>
+                    <text x="14" y="48" fill="var(--fg)" fontSize="13" fontWeight="600">Rendered DOM</text>
+                    <text x="14" y="68" fill="var(--fg-subtle)" fontSize="11" fontFamily="monospace">22 corpus snapshots</text>
                   </g>
 
                   <g transform="translate(295, 50)">
@@ -277,12 +277,12 @@ export function ConsoleTour() {
                       width="175"
                       height="98"
                       rx="10"
-                      fill="#ffffff"
+                      fill="var(--surface-raised)"
                       stroke={pipelineMode === "FULL_KERNEL" ? "#2563eb" : "#ea580c"}
                       strokeWidth="1.5"
                     />
                     <text x="14" y="25" fill="#525252" fontSize="10" fontFamily="monospace">02 EXTRACTION + GATE</text>
-                    <text x="14" y="46" fill="#171717" fontSize="13" fontWeight="600">
+                    <text x="14" y="46" fill="var(--fg)" fontSize="13" fontWeight="600">
                       {pipelineMode === "NAIVE_LLM"
                         ? "Unchecked Prompt"
                         : pipelineMode === "HEURISTIC_DIFF"
@@ -302,7 +302,7 @@ export function ConsoleTour() {
                         ? "5 false alarms leaked"
                         : "100% byte-grounded"}
                     </text>
-                    <text x="14" y="84" fill="#737373" fontSize="10" fontFamily="monospace">
+                    <text x="14" y="84" fill="var(--fg-subtle)" fontSize="10" fontFamily="monospace">
                       {pipelineMode === "FULL_KERNEL" ? "INV-01..05 enforced" : "No substring verification"}
                     </text>
                   </g>
@@ -312,12 +312,12 @@ export function ConsoleTour() {
                       width="220"
                       height="78"
                       rx="10"
-                      fill="#ffffff"
+                      fill="var(--surface-raised)"
                       stroke={pipelineMode === "FULL_KERNEL" ? "#16a34a" : "#dc2626"}
                       strokeWidth="1.5"
                     />
                     <text x="14" y="24" fill="#166534" fontSize="10" fontFamily="monospace">03 VERIFIED RECEIPT</text>
-                    <text x="14" y="44" fill="#171717" fontSize="12" fontWeight="600">
+                    <text x="14" y="44" fill="var(--fg)" fontSize="12" fontWeight="600">
                       {pipelineMode === "FULL_KERNEL"
                         ? "14/14 actionable · 0 false alarms"
                         : pipelineMode === "HEURISTIC_DIFF"
@@ -330,14 +330,14 @@ export function ConsoleTour() {
                   </g>
 
                   <g transform="translate(580, 108)">
-                    <rect width="220" height="76" rx="10" fill="#ffffff" stroke="#d4d4d4" strokeWidth="1.5" />
+                    <rect width="220" height="76" rx="10" fill="var(--surface-raised)" stroke="#d4d4d4" strokeWidth="1.5" />
                     <text x="14" y="24" fill="#9a3412" fontSize="10" fontFamily="monospace">04 REFUSAL LEDGER</text>
-                    <text x="14" y="44" fill="#171717" fontSize="12" fontWeight="600">
+                    <text x="14" y="44" fill="var(--fg)" fontSize="12" fontWeight="600">
                       {pipelineMode === "FULL_KERNEL"
                         ? "8/8 benign edits suppressed"
                         : "Hallucinations reach operator"}
                     </text>
-                    <text x="14" y="62" fill="#737373" fontSize="10" fontFamily="monospace">
+                    <text x="14" y="62" fill="var(--fg-subtle)" fontSize="10" fontFamily="monospace">
                       Deterministic reason code logged
                     </text>
                   </g>
@@ -353,7 +353,7 @@ export function ConsoleTour() {
                   <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
                     Authority boundary
                   </p>
-                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[#171717]">
+                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Five hard invariants enforced by `lib/kernel.ts` before any state transition
                   </h3>
                 </div>
@@ -361,18 +361,18 @@ export function ConsoleTour() {
                   See authority matrix →
                 </Link>
               </div>
-              <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[#e5e5e5] sm:grid-cols-5 bg-white">
+              <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] sm:grid-cols-5 bg-white">
                 {SAFETY_INVARIANTS.map((inv) => (
                   <div
                     key={inv.id}
-                    className="border-r border-b sm:border-b-0 border-[#e5e5e5] last:border-r-0 p-4 flex flex-col justify-between"
+                    className="border-r border-b sm:border-b-0 border-[var(--border)] last:border-r-0 p-4 flex flex-col justify-between"
                   >
                     <div>
                       <span className="font-mono text-[11px] font-semibold text-[#2563eb]">{inv.id}</span>
-                      <div className="mt-1 text-[13px] font-semibold text-[#171717]">{inv.name}</div>
+                      <div className="mt-1 text-[13px] font-semibold text-[var(--fg)]">{inv.name}</div>
                       <p className="mt-1 text-[12px] leading-snug text-[#525252]">{inv.rule}</p>
                     </div>
-                    <div className="mt-3 pt-2 border-t border-[#e5e5e5] flex items-center justify-between font-mono text-[10px] text-[#166534]">
+                    <div className="mt-3 pt-2 border-t border-[var(--border)] flex items-center justify-between font-mono text-[10px] text-[#166534]">
                       <span>KERNEL</span>
                       <span>ENFORCED</span>
                     </div>
@@ -389,7 +389,7 @@ export function ConsoleTour() {
                   <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
                     Sponsor seam ablation
                   </p>
-                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[#171717]">
+                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Measured degradation when each sponsor seam is removed from the loop
                   </h3>
                 </div>
@@ -397,17 +397,17 @@ export function ConsoleTour() {
                   Open kill-switch simulator →
                 </Link>
               </div>
-              <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[#e5e5e5] sm:grid-cols-2 lg:grid-cols-4 bg-white">
+              <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] sm:grid-cols-2 lg:grid-cols-4 bg-white">
                 {SPONSORS.map((sp) => (
                   <div
                     key={sp.id}
-                    className="border-r border-b lg:border-b-0 border-[#e5e5e5] last:border-r-0 p-4 space-y-2"
+                    className="border-r border-b lg:border-b-0 border-[var(--border)] last:border-r-0 p-4 space-y-2"
                   >
                     <div className="flex items-center justify-between font-mono text-[10px]">
                       <span className="text-[#2563eb]">{sp.seam}</span>
                       <span className="rounded-full bg-[#dcfce7] px-2 py-0.5 text-[#166534]">LIVE</span>
                     </div>
-                    <div className="text-[14px] font-semibold text-[#171717]">{sp.name}</div>
+                    <div className="text-[14px] font-semibold text-[var(--fg)]">{sp.name}</div>
                     <div className="font-mono text-[11px] text-[#166534]">
                       Full: {sp.ablation.fullSystemMetric}
                     </div>
@@ -427,7 +427,7 @@ export function ConsoleTour() {
                   <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
                     Independent verification
                   </p>
-                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[#171717]">
+                  <h3 className="mt-1 text-[18px] font-medium tracking-[-0.02em] text-[var(--fg)]">
                     Check the evidence without trusting us — recompute offline or flip a byte in `/verify`
                   </h3>
                 </div>
@@ -435,14 +435,14 @@ export function ConsoleTour() {
                   Open byte verifier →
                 </Link>
               </div>
-              <pre className="overflow-x-auto rounded-[8px] border border-[#e5e5e5] bg-[#f5f5f5] p-4 font-mono text-[12px] leading-relaxed text-[#171717]">{`$ pnpm claim:verify
+              <pre className="overflow-x-auto rounded-[8px] border border-[var(--border)] bg-[var(--bg-elevated)] p-4 font-mono text-[12px] leading-relaxed text-[var(--fg)]">{`$ pnpm claim:verify
 [PASS] 22/22 deterministic corpus cases verified · 0 false positives
 [PASS] 4/4 sponsor seams verified · 0 dead links · RESULT: VERIFIED (Exit 0)`}</pre>
             </div>
           )}
 
           {/* Footnote */}
-          <div className="mt-6 pt-3 border-t border-[#e5e5e5] flex flex-wrap items-center justify-between gap-2 text-[12px] text-[#737373]">
+          <div className="mt-6 pt-3 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2 text-[12px] text-[var(--fg-muted)]">
             <span>
               A worker restart replayed one receipt, not a duplicate side effect. An ungrounded excerpt was refused by INV-01.
             </span>
@@ -461,12 +461,12 @@ export function ConsoleTour() {
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[#2563eb]">
             Who this is for
           </p>
-          <h2 className="mt-1 text-[24px] font-medium tracking-[-0.02em] text-[#171717]">
+          <h2 className="mt-1 text-[24px] font-medium tracking-[-0.02em] text-[var(--fg)]">
             Three people touch a change event, and each sees only what their seat requires
           </h2>
         </div>
 
-        <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[#e5e5e5] bg-white sm:grid-cols-3">
+        <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] bg-white sm:grid-cols-3">
           {[
             {
               when: "When a vendor silently edits terms",
@@ -492,13 +492,13 @@ export function ConsoleTour() {
           ].map((seat) => (
             <div
               key={seat.role}
-              className="border-r border-b sm:border-b-0 border-[#e5e5e5] last:border-r-0 p-5 flex flex-col justify-between bg-white"
+              className="border-r border-b sm:border-b-0 border-[var(--border)] last:border-r-0 p-5 flex flex-col justify-between bg-white"
             >
               <div>
                 <p className="font-mono text-[11px] tracking-[0.08em] text-[#2563eb] uppercase">
                   {seat.when}
                 </p>
-                <h3 className="mt-1.5 text-[15px] font-semibold text-[#171717]">{seat.role}</h3>
+                <h3 className="mt-1.5 text-[15px] font-semibold text-[var(--fg)]">{seat.role}</h3>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-[#525252]">{seat.body}</p>
               </div>
               <Link

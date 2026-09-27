@@ -49,12 +49,12 @@ export function CodeDiff({
             <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
           </div>
-          <span className="ml-2 font-medium text-[var(--fg,#ededed)]">{title}</span>
+          <span className="ml-2 font-medium text-[var(--fg)]">{title}</span>
         </div>
 
         <button
           onClick={handleCopy}
-          className="rounded border border-[var(--border,#262626)] bg-[var(--surface-raised,#1f1f1f)] px-2.5 py-1 text-[11px] text-[var(--fg-muted,#888)] hover:text-[var(--fg,#ededed)] transition-colors"
+          className="rounded border border-[var(--border,#262626)] bg-[var(--surface-raised,#1f1f1f)] px-2.5 py-1 text-[11px] text-[var(--fg-muted,#888)] hover:text-[var(--fg)] transition-colors"
         >
           {copied ? "Copied" : "Copy Output"}
         </button>

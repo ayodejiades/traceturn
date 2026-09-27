@@ -78,45 +78,45 @@ export default function GuidedDemoPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--bg,#f5f5f5)] text-[var(--fg,#171717)]">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       {/* Top Judge Bar */}
-      <div className="border-b border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] px-6 py-2.5">
+      <div className="border-b border-[var(--border)] bg-[var(--surface)] px-6 py-2.5">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 font-mono text-xs">
           <div className="flex items-center gap-2">
             <span className="rounded border border-[#2563eb]/30 bg-[#2563eb]/10 px-2 py-0.5 text-[11px] font-medium text-[#2563eb]">
               CAUSAL BLAME DAG AND CLAIM LINEAGE
             </span>
-            <span className="hidden text-[var(--fg-muted,#737373)] md:inline">
+            <span className="hidden text-[var(--fg-muted)] md:inline">
               Agents Propose · Deterministic Code Decides
             </span>
           </div>
-          <div className="flex items-center gap-3 text-[var(--fg-muted,#737373)]">
-            <Link href="/" className="hover:text-[var(--fg,#171717)]">01 Overview</Link>
+          <div className="flex items-center gap-3 text-[var(--fg-muted)]">
+            <Link href="/" className="hover:text-[var(--fg)]">01 Overview</Link>
             <span>&rarr;</span>
-            <Link href="/onboarding" className="hover:text-[var(--fg,#171717)]">02 Onboarding</Link>
+            <Link href="/onboarding" className="hover:text-[var(--fg)]">02 Onboarding</Link>
             <span>&rarr;</span>
             <Link href="/demo" className="font-semibold text-[#2563eb]">03 Guided Demo</Link>
             <span>&rarr;</span>
-            <Link href="/dashboard" className="hover:text-[var(--fg,#171717)]">04 Console</Link>
+            <Link href="/dashboard" className="hover:text-[var(--fg)]">04 Console</Link>
             <span>&rarr;</span>
-            <Link href="/proof" className="hover:text-[var(--fg,#171717)]">05 Proof</Link>
+            <Link href="/proof" className="hover:text-[var(--fg)]">05 Proof</Link>
             <span>&rarr;</span>
-            <Link href="/verify" className="hover:text-[var(--fg,#171717)]">06 Verify</Link>
+            <Link href="/verify" className="hover:text-[var(--fg)]">06 Verify</Link>
           </div>
         </div>
       </div>
 
       <div className="mx-auto max-w-6xl space-y-8 px-6 py-10">
         {/* Header */}
-        <div className="flex flex-col justify-between gap-4 border-b border-[var(--border,#e5e5e5)] pb-6 md:flex-row md:items-center">
+        <div className="flex flex-col justify-between gap-4 border-b border-[var(--border)] pb-6 md:flex-row md:items-center">
           <div>
             <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.14em] text-[#2563eb]">
               Interactive State Machine Walkthrough
             </p>
-            <h1 className="text-2xl font-medium tracking-[-0.02em] text-[var(--fg,#171717)] md:text-3xl">
+            <h1 className="text-2xl font-medium tracking-[-0.02em] text-[var(--fg)] md:text-3xl">
               5-Stage Evidence Lifecycle (`Record &rarr; Watch &rarr; Detect &rarr; Resolve &rarr; Receipt`)
             </h1>
-            <p className="mt-1 text-sm text-[var(--fg-muted,#737373)]">
+            <p className="mt-1 text-sm text-[var(--fg-muted)]">
               Step through a complete lifecycle or switch scenarios to watch the deterministic kernel refuse hallucinated excerpts.
             </p>
           </div>
@@ -125,13 +125,13 @@ export default function GuidedDemoPage() {
               type="button"
               data-demo="advance-stage"
               onClick={advanceStage}
-              className="rounded-md bg-[#171717] px-4 py-2.5 font-mono text-xs font-medium text-white transition-colors hover:bg-[#171717]/90"
+              className="rounded-md bg-[var(--accent)] px-4 py-2.5 font-mono text-xs font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]"
             >
               Advance Lifecycle Stage ({stageIndex + 1}/5) &rarr;
             </button>
             <Link
               href="/dashboard"
-              className="rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] px-4 py-2.5 font-mono text-xs text-[var(--fg,#171717)] hover:border-[#171717]"
+              className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 font-mono text-xs text-[var(--fg)] hover:border-[var(--fg-muted)]"
             >
               Open Full Console &rarr;
             </Link>
@@ -151,24 +151,24 @@ export default function GuidedDemoPage() {
               }}
               className={`rounded-lg border p-4 text-left transition-all ${
                 selectedCaseIndex === idx
-                  ? "border-[#2563eb] bg-[var(--surface,#ffffff)] ring-1 ring-inset ring-[#2563eb]"
-                  : "border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] hover:border-[#171717]/40"
+                  ? "border-[#2563eb] bg-[var(--surface)] ring-1 ring-inset ring-[#2563eb]"
+                  : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--fg-muted)]/40"
               }`}
             >
               <div className="mb-1 flex items-center justify-between gap-2">
                 <span className="font-mono text-xs font-semibold text-[#2563eb]">{sc.caseData.id}</span>
-                <span className="rounded border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] px-2 py-0.5 font-mono text-[10px] text-[var(--fg-muted,#737373)]">
+                <span className="rounded border border-[var(--border)] bg-[var(--bg)] px-2 py-0.5 font-mono text-[10px] text-[var(--fg-muted)]">
                   {sc.badge}
                 </span>
               </div>
-              <div className="text-sm font-medium text-[var(--fg,#171717)]">{sc.label}</div>
-              <p className="mt-1 truncate text-xs text-[var(--fg-muted,#737373)]">{sc.caseData.title}</p>
+              <div className="text-sm font-medium text-[var(--fg)]">{sc.label}</div>
+              <p className="mt-1 truncate text-xs text-[var(--fg-muted)]">{sc.caseData.title}</p>
             </button>
           ))}
         </div>
 
         {/* 5-Stage Pipeline Stepper */}
-        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--border,#e5e5e5)] md:grid-cols-5">
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] md:grid-cols-5">
           {STAGES.map((st, idx) => {
             const isCurrent = idx === stageIndex;
             const isPassed = idx < stageIndex;
@@ -179,18 +179,18 @@ export default function GuidedDemoPage() {
                 onClick={() => setStageIndex(idx)}
                 className={`p-3.5 text-left transition-all ${
                   isCurrent
-                    ? "bg-[var(--surface,#ffffff)] ring-1 ring-inset ring-[#2563eb]"
-                    : "bg-[var(--surface,#ffffff)] hover:bg-[var(--bg,#f5f5f5)]"
+                    ? "bg-[var(--surface)] ring-1 ring-inset ring-[#2563eb]"
+                    : "bg-[var(--surface)] hover:bg-[var(--bg)]"
                 }`}
               >
                 <div className="mb-1 flex items-center justify-between font-mono text-[10px]">
-                  <span className="text-[var(--fg-muted,#737373)]">STAGE 0{st.step}</span>
-                  <span className={isCurrent ? "font-semibold text-[#2563eb]" : isPassed ? "text-[#16a34a]" : "text-[var(--fg-muted,#737373)]"}>
+                  <span className="text-[var(--fg-muted)]">STAGE 0{st.step}</span>
+                  <span className={isCurrent ? "font-semibold text-[#2563eb]" : isPassed ? "text-[#16a34a]" : "text-[var(--fg-muted)]"}>
                     {isCurrent ? "ACTIVE" : isPassed ? "DONE" : "PENDING"}
                   </span>
                 </div>
-                <div className="mb-1 text-xs font-medium text-[var(--fg,#171717)]">{st.title}</div>
-                <div className="font-mono text-[10px] text-[var(--fg-muted,#737373)]">{st.seam}</div>
+                <div className="mb-1 text-xs font-medium text-[var(--fg)]">{st.title}</div>
+                <div className="font-mono text-[10px] text-[var(--fg-muted)]">{st.seam}</div>
               </button>
             );
           })}
@@ -199,12 +199,12 @@ export default function GuidedDemoPage() {
         {/* Main Inspection Grid */}
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Left 7 Cols: Live Stage Payload */}
-          <div className="space-y-5 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6 lg:col-span-7">
-            <div className="flex items-center justify-between border-b border-[var(--border,#e5e5e5)] pb-4">
+          <div className="space-y-5 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 lg:col-span-7">
+            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
               <div>
                 <span className="font-mono text-[11px] uppercase text-[#2563eb]">{currentStage.seam}</span>
-                <h2 className="mt-0.5 text-lg font-medium text-[var(--fg,#171717)]">{currentStage.title}</h2>
-                <p className="mt-0.5 text-xs text-[var(--fg-muted,#737373)]">{currentStage.summary}</p>
+                <h2 className="mt-0.5 text-lg font-medium text-[var(--fg)]">{currentStage.title}</h2>
+                <p className="mt-0.5 text-xs text-[var(--fg-muted)]">{currentStage.summary}</p>
               </div>
               <span
                 className={`rounded px-3 py-1 font-mono text-xs font-medium ${
@@ -218,25 +218,25 @@ export default function GuidedDemoPage() {
             </div>
 
             <div className="space-y-3">
-              <div className="rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-3.5">
-                <div className="mb-1 font-mono text-[10px] uppercase text-[var(--fg-muted,#737373)]">
+              <div className="rounded-md border border-[var(--border)] bg-[var(--bg)] p-3.5">
+                <div className="mb-1 font-mono text-[10px] uppercase text-[var(--fg-muted)]">
                   Baseline Snapshot (`beforeText`)
                 </div>
-                <p className="font-mono text-xs leading-relaxed text-[var(--fg,#171717)]">
+                <p className="font-mono text-xs leading-relaxed text-[var(--fg)]">
                   {activeScenario.caseData.beforeText}
                 </p>
               </div>
 
-              <div className="rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-3.5">
-                <div className="mb-1 font-mono text-[10px] uppercase text-[var(--fg-muted,#737373)]">
+              <div className="rounded-md border border-[var(--border)] bg-[var(--bg)] p-3.5">
+                <div className="mb-1 font-mono text-[10px] uppercase text-[var(--fg-muted)]">
                   Captured Live DOM (`afterText`)
                 </div>
-                <p className="font-mono text-xs leading-relaxed text-[var(--fg,#171717)]">
+                <p className="font-mono text-xs leading-relaxed text-[var(--fg)]">
                   {activeScenario.caseData.afterText}
                 </p>
               </div>
 
-              <div className="rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-3.5">
+              <div className="rounded-md border border-[var(--border)] bg-[var(--bg)] p-3.5">
                 <div className="mb-1 flex items-center justify-between font-mono text-[10px] uppercase">
                   <span className="text-[#2563eb]">Agent Proposed Literal Excerpt (`proposedExcerpt`)</span>
                   <span
@@ -251,39 +251,39 @@ export default function GuidedDemoPage() {
                       : "SUBSTRING MISMATCH"}
                   </span>
                 </div>
-                <p className="font-mono text-xs text-[var(--fg,#171717)]">
+                <p className="font-mono text-xs text-[var(--fg)]">
                   &ldquo;{activeScenario.caseData.proposedExcerpt}&rdquo;
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-3.5 font-mono text-xs">
-              <span className="text-[var(--fg-muted,#737373)]">Deterministic Receipt SHA-256:</span>
-              <span className="max-w-[320px] truncate text-[var(--fg,#171717)]">{evaluation.evidenceHash}</span>
+            <div className="flex items-center justify-between rounded-md border border-[var(--border)] bg-[var(--bg)] p-3.5 font-mono text-xs">
+              <span className="text-[var(--fg-muted)]">Deterministic Receipt SHA-256:</span>
+              <span className="max-w-[320px] truncate text-[var(--fg)]">{evaluation.evidenceHash}</span>
             </div>
           </div>
 
           {/* Right 5 Cols: 5-Invariant Kernel Verdict */}
           <div className="space-y-6 lg:col-span-5">
-            <div className="space-y-4 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-6">
+            <div className="space-y-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6">
               <div className="flex items-center justify-between">
-                <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--fg,#171717)]">
+                <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--fg)]">
                   5-Invariant Safety Kernel Gate
                 </h3>
-                <span className="font-mono text-xs text-[var(--fg-muted,#737373)]">lib/kernel.ts</span>
+                <span className="font-mono text-xs text-[var(--fg-muted)]">lib/kernel.ts</span>
               </div>
 
               <div className="space-y-2">
                 {evaluation.invariantResults.map((inv) => (
                   <div
                     key={inv.id}
-                    className="flex items-start justify-between gap-3 rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-3"
+                    className="flex items-start justify-between gap-3 rounded-md border border-[var(--border)] bg-[var(--bg)] p-3"
                   >
                     <div>
-                      <div className="font-mono text-xs font-semibold text-[var(--fg,#171717)]">
+                      <div className="font-mono text-xs font-semibold text-[var(--fg)]">
                         {inv.id} · {inv.name}
                       </div>
-                      <div className="mt-0.5 text-[11px] text-[var(--fg-muted,#737373)]">{inv.reason}</div>
+                      <div className="mt-0.5 text-[11px] text-[var(--fg-muted)]">{inv.reason}</div>
                     </div>
                     <span
                       className={`shrink-0 rounded px-2 py-0.5 font-mono text-[10px] ${
@@ -299,26 +299,26 @@ export default function GuidedDemoPage() {
               </div>
             </div>
 
-            <div className="space-y-3 rounded-lg border border-[var(--border,#e5e5e5)] bg-[var(--surface,#ffffff)] p-5">
-              <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--fg-muted,#737373)]">
+            <div className="space-y-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5">
+              <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--fg-muted)]">
                 Continue Judge Evaluation Path
               </div>
               <div className="grid grid-cols-2 gap-2.5 font-mono text-xs">
                 <Link
                   href="/dashboard/sponsors"
-                  className="rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-3 text-[var(--fg,#171717)] hover:border-[#171717]"
+                  className="rounded-md border border-[var(--border)] bg-[var(--bg)] p-3 text-[var(--fg)] hover:border-[var(--fg-muted)]"
                 >
                   Sponsor Kill-Switch &rarr;
                 </Link>
                 <Link
                   href="/proof"
-                  className="rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-3 text-[var(--fg,#171717)] hover:border-[#171717]"
+                  className="rounded-md border border-[var(--border)] bg-[var(--bg)] p-3 text-[var(--fg)] hover:border-[var(--fg-muted)]"
                 >
                   Proof &amp; Ledger (/proof) &rarr;
                 </Link>
                 <Link
                   href="/verify"
-                  className="col-span-2 rounded-md border border-[var(--border,#e5e5e5)] bg-[var(--bg,#f5f5f5)] p-3 text-[#2563eb] hover:border-[#2563eb]"
+                  className="col-span-2 rounded-md border border-[var(--border)] bg-[var(--bg)] p-3 text-[#2563eb] hover:border-[#2563eb]"
                 >
                   1-Byte Tamper &amp; Receipt Verifier (/verify) &rarr;
                 </Link>

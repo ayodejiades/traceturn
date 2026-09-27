@@ -48,7 +48,7 @@ export function TelemetryTile({
 
       <div className="flex items-baseline justify-between gap-4">
         <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-semibold tracking-tight font-mono text-[var(--fg,#ededed)]">
+          <span className="text-2xl font-semibold tracking-tight font-mono text-[var(--fg)]">
             {value}
           </span>
           {unit && (

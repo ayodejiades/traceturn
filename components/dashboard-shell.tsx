@@ -55,9 +55,9 @@ export function DashboardShell({
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] text-[#171717] antialiased">
+    <div className="min-h-screen bg-[var(--bg-elevated)] text-[var(--fg)] antialiased">
       {/* Top Header */}
-      <header className="border-b border-[#e5e5e5] bg-white px-4 py-2.5">
+      <header className="border-b border-[var(--border)] bg-white px-4 py-2.5">
         <div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link href="/" className="inline-flex items-center gap-2">
@@ -79,7 +79,7 @@ export function DashboardShell({
             <button
               type="button"
               onClick={() => setCmdOpen(true)}
-              className="inline-flex items-center gap-2 rounded-[8px] border border-[#e5e5e5] bg-[#f5f5f5] px-2.5 py-1 text-[12px] font-medium text-[#404040] hover:bg-[#e5e5e5]/60"
+              className="inline-flex items-center gap-2 rounded-[8px] border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 text-[12px] font-medium text-[var(--fg-muted)] hover:bg-[var(--surface-raised)]"
             >
               <span>Quick jump</span>
               <kbd className="rounded border border-[#d4d4d4] bg-white px-1.5 py-0.5 font-mono text-[10px] text-[#525252]">
@@ -88,13 +88,13 @@ export function DashboardShell({
             </button>
             <Link
               href="/proof"
-              className="rounded-[8px] border border-[#e5e5e5] bg-white px-3 py-1 text-[12px] font-medium text-[#171717] hover:bg-[#f5f5f5]"
+              className="rounded-[8px] border border-[var(--border)] bg-white px-3 py-1 text-[12px] font-medium text-[var(--fg)] hover:bg-[var(--bg-elevated)]"
             >
               Proof Ledger
             </Link>
             <Link
               href="/verify"
-              className="rounded-[8px] bg-black px-3 py-1 text-[12px] font-medium text-white hover:bg-[#171717]"
+              className="rounded-[8px] bg-black px-3 py-1 text-[12px] font-medium text-white hover:bg-[var(--accent)]"
             >
               Verify Receipts
             </Link>
@@ -104,11 +104,11 @@ export function DashboardShell({
 
       {/* 2-Column Sticky Operator Layout */}
       <div className="mx-auto flex max-w-[1480px] gap-4 p-3 lg:gap-5 lg:p-5">
-        <aside className="sticky top-5 hidden h-[calc(100vh-4.5rem)] w-[248px] shrink-0 flex-col justify-between rounded-2xl border border-[#e5e5e5] bg-white px-4 py-5 shadow-[rgba(0,0,0,0.05)_0px_1px_2px_0px] lg:flex">
+        <aside className="sticky top-5 hidden h-[calc(100vh-4.5rem)] w-[248px] shrink-0 flex-col justify-between rounded-2xl border border-[var(--border)] bg-white px-4 py-5 shadow-[rgba(0,0,0,0.05)_0px_1px_2px_0px] lg:flex">
           <div className="space-y-5 overflow-y-auto">
             {NAV_GROUPS.map((group) => (
               <div key={group.label}>
-                <p className="px-2 pb-1.5 font-mono text-[10px] tracking-[0.1em] text-[#737373] uppercase">
+                <p className="px-2 pb-1.5 font-mono text-[10px] tracking-[0.1em] text-[var(--fg-muted)] uppercase">
                   {group.label}
                 </p>
                 <div className="flex flex-col gap-0.5">
@@ -121,7 +121,7 @@ export function DashboardShell({
                         className={`flex items-center justify-between rounded-[8px] px-2.5 py-1.5 text-[13px] font-medium transition-colors ${
                           active
                             ? "bg-[#dbeafe] text-[#1e40af]"
-                            : "text-[#404040] hover:bg-[#f5f5f5] hover:text-[#171717]"
+                            : "text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--fg)]"
                         }`}
                       >
                         <span className="truncate">{item.label}</span>
@@ -129,7 +129,7 @@ export function DashboardShell({
                           className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full border ${
                             active
                               ? "border-[#bfdbfe] bg-white text-[#1e40af]"
-                              : "border-[#e5e5e5] bg-[#f5f5f5] text-[#525252]"
+                              : "border-[var(--border)] bg-[var(--bg-elevated)] text-[#525252]"
                           }`}
                         >
                           {item.badge}
@@ -142,8 +142,8 @@ export function DashboardShell({
             ))}
           </div>
 
-          <div className="rounded-xl border border-[#e5e5e5] bg-[#f5f5f5] p-3 text-[11px] text-[#525252] space-y-1">
-            <div className="flex items-center justify-between font-mono text-[10px] text-[#171717]">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3 text-[11px] text-[#525252] space-y-1">
+            <div className="flex items-center justify-between font-mono text-[10px] text-[var(--fg)]">
               <span>AUTHORITY BOUNDARY</span>
               <span className="text-[#16a34a] font-semibold">ENFORCED</span>
             </div>
@@ -166,14 +166,14 @@ export function DashboardShell({
             className="w-full max-w-lg rounded-2xl border border-[#d4d4d4] bg-white p-4 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#e5e5e5] pb-3 mb-3">
-              <span className="text-[13px] font-semibold text-[#171717]">
+            <div className="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">
+              <span className="text-[13px] font-semibold text-[var(--fg)]">
                 Quick Jump Navigation
               </span>
               <button
                 type="button"
                 onClick={() => setCmdOpen(false)}
-                className="font-mono text-[11px] text-[#737373] hover:text-[#171717]"
+                className="font-mono text-[11px] text-[var(--fg-muted)] hover:text-[var(--fg)]"
               >
                 ESC
               </button>
@@ -184,7 +184,7 @@ export function DashboardShell({
                   key={item.href}
                   href={item.href}
                   onClick={() => setCmdOpen(false)}
-                  className="flex items-center justify-between rounded-[8px] px-3 py-2 text-[13px] text-[#171717] hover:bg-[#f5f5f5]"
+                  className="flex items-center justify-between rounded-[8px] px-3 py-2 text-[13px] text-[var(--fg)] hover:bg-[var(--bg-elevated)]"
                 >
                   <span>{item.label}</span>
                   <span className="font-mono text-[11px] text-[#2563eb]">{item.href}</span>

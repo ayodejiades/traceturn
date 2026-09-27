@@ -117,7 +117,7 @@ export function ChaosLab() {
                 Self-Healing Engine: Active
               </span>
             </div>
-            <h1 className="text-xl font-semibold text-[var(--fg,#ededed)] tracking-tight mt-1">
+            <h1 className="text-xl font-semibold text-[var(--fg)] tracking-tight mt-1">
               The Reliability & Chaos Lab
             </h1>
             <p className="text-xs text-[var(--fg-muted,#888)] mt-1 max-w-2xl">

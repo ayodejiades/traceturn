@@ -64,7 +64,7 @@ export function PipelineFlow({
         <div>
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <h3 className="text-sm font-semibold tracking-tight text-[var(--fg,#ededed)] font-mono uppercase">
+            <h3 className="text-sm font-semibold tracking-tight text-[var(--fg)] font-mono uppercase">
               {title}
             </h3>
           </div>
@@ -102,7 +102,7 @@ export function PipelineFlow({
                 </div>
 
                 {/* Node Title & Subtitle */}
-                <div className="text-sm font-medium text-[var(--fg,#ededed)] tracking-tight">
+                <div className="text-sm font-medium text-[var(--fg)] tracking-tight">
                   {stage.name}
                 </div>
                 <div className="text-xs text-[var(--fg-muted,#888)] mt-0.5 font-mono">

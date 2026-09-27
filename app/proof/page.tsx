@@ -18,7 +18,7 @@ export default function Web2ProofPage() {
   const decision = evaluateDeterministicKernel(activeCase);
 
   return (
-    <div className="min-h-screen bg-[var(--bg,#0a0a0a)] text-[var(--fg,#ededed)]">
+    <div className="min-h-screen bg-[var(--bg,#0a0a0a)] text-[var(--fg)]">
       <header className="flex h-16 items-center justify-between border-b border-[var(--border,#262626)] px-6 max-w-6xl mx-auto w-full">
         <div className="flex items-center gap-3">
           <Link href="/" className="text-lg font-bold tracking-tight text-[var(--fg)]">
