@@ -181,7 +181,11 @@ Focus is a hard 2px inset outline — a block caret, not a soft ring.
 
 ### LineageGraph (`components/lineage-graph.tsx`)
 **Role:** Causal claim lineage visualizer  
-Deterministic radial causal DAG visualization. Reveals 14 agent assertions converging on 1 single independent origin turn. Real-time verdict telemetry and pulse animations.
+Deterministic radial causal DAG visualization. Reveals 14 agent assertions converging on 1 single independent origin turn, beside a verdict log for the sibling cases. Renders as one plain card split into two panes.
+
+**No window chrome.** This component previously sat inside a faux application window: a traffic-light title bar reading `traceturn / lineage · turn 4102`, a padded outer frame, and a further inset `shadow-inner` panel. Three nested frames made a static finding look like a screenshot of an app a visitor could open, and it clashed with the flat cards every other section uses. Keep it a single bordered card; when a section needs a heading, use the page's own `eyebrow` + `h-section` + prose shape instead of simulated toolbars.
+
+**Overflow budget.** The decorative glow is `-inset-4` (1rem), narrower than `--page-pad` (1.5rem). At the `-inset-10` it originally used, the glow pushed past the page gutter and added 16px of horizontal scroll at *every* viewport width — the regression `pnpm visual:check` exists to catch.
 
 ### SiteHeader & SiteFooter
 **Role:** System framing  
