@@ -102,59 +102,34 @@ export function DashboardShell({
         </div>
       </header>
 
-      {/* 2-Column Sticky Operator Layout */}
-      <div className="mx-auto flex max-w-[var(--content-max)] gap-4 p-3 lg:gap-5 lg:p-5">
-        <aside className="sticky top-5 hidden h-[calc(100vh-4.5rem)] w-[var(--sidebar-w)] shrink-0 flex-col justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-5 shadow-[var(--shadow)] lg:flex">
-          <div className="space-y-5 overflow-y-auto">
-            {NAV_GROUPS.map((group) => (
-              <div key={group.label}>
-                <p className="px-2 pb-1.5 font-mono text-[10px] tracking-[0.1em] text-[var(--fg-muted)] uppercase">
-                  {group.label}
-                </p>
-                <div className="flex flex-col gap-0.5">
-                  {group.items.map((item) => {
-                    const active = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`flex items-center justify-between rounded-[8px] px-2.5 py-1.5 text-[13px] font-medium transition-colors ${
-                          active
-                            ? "bg-[#dbeafe] text-[#1e40af]"
-                            : "text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--fg)]"
-                        }`}
-                      >
-                        <span className="truncate">{item.label}</span>
-                        <span
-                          className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full border ${
-                            active
-                              ? "border-[#bfdbfe] bg-[var(--surface)] text-[#1e40af]"
-                              : "border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--fg-muted)]"
-                          }`}
-                        >
-                          {item.badge}
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Horizontal section nav — replaces the sidebar */}
+      <nav
+        aria-label="Sections"
+        className="sticky top-[calc(3.5rem+1px)] z-30 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur"
+      >
+        <div className="mx-auto flex max-w-[var(--content-max)] items-center gap-1 overflow-x-auto px-[var(--page-pad)] py-2">
+          {NAV_GROUPS.flatMap((group) => group.items).map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`shrink-0 rounded-[var(--radius-sm)] px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                  active
+                    ? "bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] text-[var(--accent)]"
+                    : "text-[var(--fg-muted)] hover:bg-[var(--surface)] hover:text-[var(--fg)]"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
 
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3 text-[11px] text-[var(--fg-muted)] space-y-1">
-            <div className="flex items-center justify-between font-mono text-[10px] text-[var(--fg)]">
-              <span>AUTHORITY BOUNDARY</span>
-              <span className="text-[#16a34a] font-semibold">ENFORCED</span>
-            </div>
-            <p className="leading-snug">
-              Agents propose candidates. Deterministic code gates every state commit.
-            </p>
-          </div>
-        </aside>
-
-        <main className="min-w-0 flex-1">{children}</main>
-      </div>
+      <main className="mx-auto w-full max-w-[var(--content-max)] px-[var(--page-pad)] py-8">
+        {children}
+      </main>
 
       {/* ⌘K Command Modal */}
       {cmdOpen && (

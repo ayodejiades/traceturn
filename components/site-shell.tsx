@@ -7,12 +7,31 @@ const NAV = [
   { href: "/lab", label: "Lab" },
 ] as const;
 
-const FOOTER = [
-  { href: "/proof", label: "Evidence ledger" },
-  { href: "/verify", label: "Tamper verifier" },
-  { href: "/dashboard", label: "Workspace" },
-  { href: "/onboarding", label: "How it works" },
-  { href: "https://github.com/ayodejiades/traceturn", label: "GitHub" },
+const FOOTER_GROUPS = [
+  {
+    label: "Product",
+    links: [
+      { href: "/proof", label: "Evidence" },
+      { href: "/verify", label: "Verify" },
+      { href: "/dashboard", label: "Workspace" },
+      { href: "/lab", label: "Lab" },
+    ],
+  },
+  {
+    label: "Learn",
+    links: [
+      { href: "/onboarding", label: "How it works" },
+      { href: "/demo", label: "Demo" },
+      { href: "/login", label: "Sign in" },
+    ],
+  },
+  {
+    label: "Company",
+    links: [
+      { href: "https://github.com/ayodejiades/traceturn", label: "GitHub" },
+      { href: "https://swarmchasing.com/", label: "Hackathon" },
+    ],
+  },
 ] as const;
 
 export function SiteHeader() {
@@ -56,23 +75,41 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="border-t border-[var(--border)]">
-      <div className="mx-auto flex w-full max-w-[var(--content-max)] flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm text-[var(--fg-subtle)]">
-          <span className="font-medium text-[var(--fg-muted)]">traceturn</span>
-          <span aria-hidden>·</span>
-          <span>Deterministic forensics for AI agent swarms</span>
+      <div className="mx-auto grid max-w-[var(--content-max)] gap-10 px-[var(--page-pad)] py-14 sm:grid-cols-4">
+        <div>
+          <div className="flex items-center gap-2 text-[15px] font-semibold tracking-tight">
+            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+            traceturn
+          </div>
+          <p className="mt-3 max-w-[24ch] text-sm text-[var(--fg-muted)]">
+            Deterministic forensics for AI agent swarms.
+          </p>
         </div>
-        <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-          {FOOTER.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-[var(--fg-muted)] transition-colors hover:text-[var(--accent)]"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+
+        {FOOTER_GROUPS.map((g) => (
+          <div key={g.label}>
+            <div className="eyebrow mb-3">{g.label}</div>
+            <ul className="space-y-2">
+              {g.links.map((l) => (
+                <li key={l.href + l.label}>
+                  <Link
+                    href={l.href}
+                    className="text-sm text-[var(--fg-muted)] transition-colors hover:text-[var(--accent)]"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="border-t border-[var(--border)]">
+        <div className="mx-auto flex max-w-[var(--content-max)] flex-wrap items-center justify-between gap-3 px-[var(--page-pad)] py-5 text-[13px] text-[var(--fg-subtle)]">
+          <span>© 2026 traceturn</span>
+          <span>MIT licensed</span>
+        </div>
       </div>
     </footer>
   );
