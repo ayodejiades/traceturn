@@ -43,8 +43,23 @@
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--fg);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  /* Deliberately NOT mapped to --font-sans/--font-mono. Those names are owned by
+     next/font's injected variables on <html>. Re-declaring them here -- even as
+     `var(--font-sans)` -- makes Tailwind's `font-sans` utility resolve to a
+     self-reference and fall back to the system stack, which silently overrides
+     Geist. The `.font-sans` / `.font-mono` utilities are defined below instead. */
+}
+
+/* Mirror the next/font variables into Tailwind's font utilities, resolving to the
+   same custom properties rather than to themselves. */
+@layer base {
+  .font-sans {
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .font-mono {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
 }
 
 * {

@@ -2,9 +2,9 @@
 
 Computed from `evidence/campaign-report.json` and `lib/kernel.ts` by `tools/verify-evidence.ts`.
 
-- Generated: 2026-09-27T08:48:52.174Z
+- Generated: 2026-09-27T09:05:54.153Z
 - Mechanism: swarm-forgery-kernel-v1 · mode: NOT_RUN
-- sha256: `68ab2e2ef38d4756c3eea63b928695a3a52b4809d9cda4167255c69500f30e8c`
+- sha256: `b7eead80545581bd2f0a108ddfd44f8cb096aa6bc67f7215b4112e7a1450894c`
 
 ## Executed Fixture Matrix
 
