@@ -85,15 +85,15 @@ export default function HomePage() {
 
             {/* Display Headline */}
             <h1 className="h-display text-4xl sm:text-6xl md:text-[4.25rem] font-semibold tracking-tight text-white leading-[1.08] text-balance">
-              Two questions a
+              Every claim has a first author
               <br />
-              summary can&rsquo;t answer
+              Every claim has a lineage
             </h1>
 
             {/* Subtitle. Sits on its own soft scrim because the sky behind it can
                 be near-white, and muted warm grey alone drops below 4.5:1 there. */}
             <p className="mx-auto mt-5 max-w-2xl text-base text-white sm:text-lg leading-relaxed text-pretty [text-shadow:0_1px_12px_rgba(16,13,10,0.9)]">
-              Which turn started it. How one premise became consensus.
+              The turn that started it. How one premise became consensus.
             </p>
 
             {/* CTA Buttons */}
@@ -114,29 +114,42 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+        </section>
 
-          {/* Interactive Forensic Telemetry Showcase Card */}
-          <div className="mx-auto mt-12 sm:mt-16 max-w-5xl">
-            <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl p-4 sm:p-6">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-4 text-left">
-                <div>
-                  <div className="eyebrow text-[11px] text-[var(--fg-subtle)]">
-                    ACTIVE SWARM AUDIT · BENCHMARK SWARM-01
-                  </div>
-                  <h3 className="text-lg font-semibold text-[var(--fg)] mt-0.5">
-                    14 Assertions Trace to 1 Independent Origin
-                  </h3>
+        {/* Benchmark finding. Deliberately a normal section -- same eyebrow/heading/
+            prose shape as the sections below it. It used to sit inside a triple-nested
+            fake app window (toolbar pill, inset card, traffic-light title bar), which
+            read as a pasted-in screenshot rather than part of the page. */}
+        <section className="relative bg-[var(--bg)] py-14 sm:py-16">
+          <div className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)]">
+            <div className="mb-8 text-center">
+              <div className="mx-auto max-w-[var(--measure)]">
+                <div className="eyebrow mb-2">
+                  BENCHMARK SWARM-01 · MATERIAL_DRIFT_DETECTED
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/15 px-3 py-1 font-mono text-[11px] text-[var(--accent)]">
-                    MATERIAL_DRIFT_DETECTED
-                  </span>
-                </div>
+                <h2 className="h-section text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--fg)]">
+                  14 assertions trace to 1 independent origin
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--fg-muted)]">
+                  Fourteen assertions of corroboration, one derivation path. The kernel counts
+                  the other thirteen as re-citations of a single source, bound to the turn that
+                  introduced it.
+                </p>
               </div>
+              <Link
+                href="/proof"
+                className="mt-6 inline-flex rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-semibold text-[var(--fg)] shadow-sm transition-all hover:bg-[var(--surface-raised)] hover:border-[var(--accent)]"
+              >
+                Open the case file
+              </Link>
+            </div>
 
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg)] p-3 sm:p-5 shadow-inner">
-                <LineageGraph />
-              </div>
+            {/* The card is narrower than the page measure on purpose: at --content-max
+                the graph pane is ~690px wide and a 230px diagram drifts in the middle
+                of it. rem-based so it is a component width, not a second page
+                container, and so scripts/check-design-tokens.py rule 2 still passes. */}
+            <div className="mx-auto max-w-[56rem]">
+              <LineageGraph />
             </div>
           </div>
         </section>
@@ -147,9 +160,18 @@ export default function HomePage() {
             <p className="eyebrow text-center mb-8 text-[var(--fg-subtle)]">
               MEASURED, NOT ESTIMATED
             </p>
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-              {STATS.map((s) => (
-                <div key={s.label} className="border-l border-[var(--border)] pl-6">
+            <div className="mx-auto grid max-w-[var(--measure)] grid-cols-1 gap-6 sm:grid-cols-3">
+              {STATS.map((s, i) => (
+                <div
+                  key={s.label}
+                  className={
+                    "pl-6 " +
+                    // The left rule is what makes this read as a metrics log, but on the
+                    // first cell it would draw a line against the page edge with nothing
+                    // to divide from.
+                    (i === 0 ? "" : "border-l border-[var(--border)] ")
+                  }
+                >
                   <div className="tnum text-4xl sm:text-5xl font-semibold tracking-tight text-[var(--fg)]">
                     {s.value}
                   </div>
@@ -163,7 +185,7 @@ export default function HomePage() {
 
         {/* Capabilities Grid */}
         <section className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-14 sm:py-16">
-          <div className="mb-10 max-w-2xl">
+          <div className="mb-10 mx-auto max-w-[var(--measure)] text-center">
             <div className="eyebrow mb-3">AI BUILT FOR FORENSICS</div>
             <h2 className="h-section text-3xl sm:text-5xl font-semibold tracking-tight text-[var(--fg)] leading-tight">
               Agents propose. Deterministic code decides.
@@ -192,12 +214,12 @@ export default function HomePage() {
         {/* Testimonial Quote Block */}
         <section className="border-y border-[var(--border)] bg-[var(--bg-elevated)]">
           <div className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-16 sm:py-20">
-            <blockquote className="max-w-3xl">
+            <blockquote className="mx-auto max-w-[48rem] text-center">
               <p className="h-section text-2xl sm:text-3xl font-medium leading-snug text-[var(--fg)]">
                 &ldquo;A hundred agents were told to prove theorems. One found an exploit in the
                 grader. Nobody lied. The swarm simply agreed.&rdquo;
               </p>
-              <footer className="mt-8 flex items-center gap-3">
+              <footer className="mt-8 flex items-center justify-center gap-3">
                 <div className="h-px w-8 bg-[var(--border-strong)]" />
                 <span className="font-mono text-xs text-[var(--fg-muted)]">
                   Forensic Case Study: Emergent Collusion in Autonomous Research Swarms
@@ -209,8 +231,8 @@ export default function HomePage() {
 
         {/* Five Safety Invariants Section */}
         <section className="mx-auto max-w-[var(--content-max)] px-[var(--page-pad)] py-14 sm:py-16">
-          <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
-            <div>
+          <div className="mb-10 text-center">
+            <div className="mx-auto max-w-[var(--measure)]">
               <div className="eyebrow mb-2">AUDITABLE BY DEFAULT</div>
               <h2 className="h-section text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--fg)]">
                 Five invariants. Always checked.
@@ -221,9 +243,9 @@ export default function HomePage() {
             </div>
             <Link
               href="/verify"
-              className="rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-semibold text-[var(--fg)] shadow-sm transition-all hover:bg-[var(--surface-raised)] hover:border-[var(--accent)]"
+              className="mt-6 inline-flex rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-semibold text-[var(--fg)] shadow-sm transition-all hover:bg-[var(--surface-raised)] hover:border-[var(--accent)]"
             >
-              Run kernel suite →
+              Run kernel suite
             </Link>
           </div>
 
@@ -264,7 +286,7 @@ export default function HomePage() {
               <Link
                 href="/dashboard"
                 data-demo="launch-demo"
-                className="rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-7 py-3 text-sm font-medium text-[var(--fg)] transition-all hover:bg-[var(--surface-raised)]"
+                className="rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-7 py-3 text-sm font-medium text-white transition-all hover:bg-[var(--surface-raised)]"
               >
                 Open console
               </Link>
