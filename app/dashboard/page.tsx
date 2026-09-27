@@ -131,7 +131,7 @@ export default async function DashboardPage() {
               <li
                 key={row.id}
                 data-demo="row"
-                className="flex items-center justify-between rounded border border-[var(--border)] bg-[var(--bg)] px-4 py-2.5 text-sm text-[var(--fg)]"
+                className="flex items-center justify-between rounded border border-[var(--border)] bg-[var(--bg)] px-[var(--page-pad)] py-2.5 text-sm text-[var(--fg)]"
               >
                 <span className="font-medium">{row.title}</span>
                 <time className="font-mono text-xs text-[var(--fg-muted)] num" dateTime={row.createdAt.toISOString()}>

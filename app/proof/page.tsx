@@ -19,7 +19,7 @@ export default function Web2ProofPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg,#0a0a0a)] text-[var(--fg)]">
-      <header className="flex h-16 items-center justify-between border-b border-[var(--border,#262626)] px-6 max-w-6xl mx-auto w-full">
+      <header className="flex h-16 items-center justify-between border-b border-[var(--border,#262626)] px-6 max-w-[var(--content-max)] mx-auto w-full">
         <div className="flex items-center gap-3">
           <Link href="/" className="text-lg font-bold tracking-tight text-[var(--fg)]">
             traceturn
@@ -38,7 +38,7 @@ export default function Web2ProofPage() {
         </nav>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-12 flex flex-col gap-12">
+      <main className="max-w-[var(--content-max)] mx-auto px-6 py-12 flex flex-col gap-12">
         {/* Headline Measured Proof Banner */}
         <section className="flex flex-col gap-4 border border-[var(--border,#262626)] bg-[var(--surface,#121212)] p-6 rounded-lg">
           <div className="flex flex-wrap items-center justify-between gap-4">

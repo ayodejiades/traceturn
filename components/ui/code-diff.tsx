@@ -42,7 +42,7 @@ export function CodeDiff({
   return (
     <div className="w-full overflow-hidden rounded-xl border border-[var(--border,#262626)] bg-[var(--bg,#0a0a0a)] shadow-xl font-mono text-xs">
       {/* Terminal Titlebar */}
-      <div className="flex items-center justify-between border-b border-[var(--border,#262626)] bg-[var(--surface,#121212)] px-4 py-2.5">
+      <div className="flex items-center justify-between border-b border-[var(--border,#262626)] bg-[var(--surface,#121212)] px-[var(--page-pad)] py-2.5">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />

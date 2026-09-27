@@ -64,7 +64,7 @@ export function ConsoleTour() {
     <section className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6 space-y-10 text-[var(--fg)]">
       {/* Live Verifier Stamp Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3.5 py-1.5 shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-1.5 shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
           <span className="font-mono text-[11px] font-medium uppercase text-[#1e40af] tabular-nums">
             {headlineCase.id} · actionable drift · {summary.totalCases}/{summary.totalCases} reconciled · verifier PASS
@@ -74,13 +74,13 @@ export function ConsoleTour() {
           <button
             type="button"
             onClick={() => setPaused((p) => !p)}
-            className="rounded-[8px] border border-[var(--border)] bg-white px-3 py-1.5 text-[12px] font-medium text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)]"
+            className="rounded-[8px] border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)]"
           >
             {paused ? "Resume tour" : "Hold screen"}
           </button>
           <Link
             href="/verify"
-            className="rounded-[8px] bg-black px-3.5 py-1.5 text-[12px] font-medium text-white hover:bg-[var(--accent)]"
+            className="rounded-[8px] bg-[var(--accent)] px-3.5 py-1.5 text-[12px] font-medium text-[var(--accent-contrast)] hover:bg-[var(--accent)]"
           >
             Verify the proof →
           </Link>
@@ -92,10 +92,10 @@ export function ConsoleTour() {
         ref={frameRef}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
-        className="overflow-hidden rounded-[16px] border border-[#d4d4d4] bg-white shadow-[0_12px_36px_rgba(10,10,10,0.06)]"
+        className="overflow-hidden rounded-[16px] border border-[var(--border-strong)] bg-[var(--surface)] shadow-[0_12px_36px_rgba(10,10,10,0.06)]"
       >
         {/* Top Console Rail */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-[var(--page-pad)] py-2.5">
           <div className="flex flex-wrap items-center gap-1">
             {stops.map((stop, idx) => {
               const isCurrent = idx === active;
@@ -113,8 +113,8 @@ export function ConsoleTour() {
                   onClick={() => selectStop(idx)}
                   className={`inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-[12px] font-medium transition-colors ${
                     isCurrent
-                      ? "bg-white text-[var(--fg)] border border-[#d4d4d4] shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]"
-                      : "text-[#525252] hover:text-[var(--fg)] hover:bg-white/60 border border-transparent"
+                      ? "bg-[var(--surface)] text-[var(--fg)] border border-[var(--border-strong)] shadow-[rgba(0,0,0,0.04)_0px_1px_2px_0px]"
+                      : "text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)]/60 border border-transparent"
                   }`}
                 >
                   <span className={`h-1.5 w-1.5 rounded-full ${isCurrent ? dotClass : "bg-[#a3a3a3]"}`} />
@@ -129,7 +129,7 @@ export function ConsoleTour() {
         </div>
 
         {/* Active Tour Panel Body */}
-        <div className="p-5 sm:p-6 min-h-[360px] flex flex-col justify-between bg-white">
+        <div className="p-5 sm:p-6 min-h-[360px] flex flex-col justify-between bg-[var(--surface)]">
           {active === 0 && (
             <div className="space-y-5">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -147,7 +147,7 @@ export function ConsoleTour() {
               </div>
 
               {/* Collapsed Hairline Metric Strip */}
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] bg-white">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)]">
                 {[
                   { label: "Scored corpus", val: `${summary.totalCases}`, sub: "14 drift · 8 benign" },
                   { label: "Recall", val: `${summary.fullPipeline.recallPct}%`, sub: "14/14 caught" },
@@ -159,7 +159,7 @@ export function ConsoleTour() {
                     key={m.label}
                     className="border-r border-b sm:border-b-0 border-[var(--border)] last:border-r-0 p-4"
                   >
-                    <div className="text-[12px] text-[#525252]">{m.label}</div>
+                    <div className="text-[12px] text-[var(--fg-muted)]">{m.label}</div>
                     <div className="mt-1 font-mono text-[22px] font-semibold tracking-[-0.02em] text-[var(--fg)] tabular-nums">
                       {m.val}
                     </div>
@@ -170,7 +170,7 @@ export function ConsoleTour() {
 
               {/* Sample Cases Table */}
               <div className="overflow-hidden rounded-[12px] border border-[var(--border)]">
-                <div className="grid grid-cols-12 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2 font-mono text-[11px] text-[#525252]">
+                <div className="grid grid-cols-12 border-b border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2 font-mono text-[11px] text-[var(--fg-muted)]">
                   <div className="col-span-2">Case</div>
                   <div className="col-span-5">Surface & clause</div>
                   <div className="col-span-3">Kernel check</div>
@@ -179,16 +179,16 @@ export function ConsoleTour() {
                 {BENCHMARK_CASES.slice(0, 3).map((c) => (
                   <div
                     key={c.id}
-                    className="grid grid-cols-12 items-center border-b border-[var(--border)] last:border-b-0 bg-white px-4 py-2.5 text-[13px]"
+                    className="grid grid-cols-12 items-center border-b border-[var(--border)] last:border-b-0 bg-[var(--surface)] px-[var(--page-pad)] py-2.5 text-[13px]"
                   >
                     <div className="col-span-2 font-mono text-[12px] text-[var(--fg)]">{c.id}</div>
                     <div className="col-span-5 truncate pr-3 font-medium text-[var(--fg)]">{c.title}</div>
-                    <div className="col-span-3 font-mono text-[11px] text-[#525252]">5/5 invariants pass</div>
+                    <div className="col-span-3 font-mono text-[11px] text-[var(--fg-muted)]">5/5 invariants pass</div>
                     <div className="col-span-2 text-right">
                       <span
                         className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
                           c.expectedActionable
-                            ? "border-[#bbf7d0] bg-[#dcfce7] text-[#166534]"
+                            ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] text-[var(--accent)]"
                             : "border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--fg-muted)]"
                         }`}
                       >
@@ -228,8 +228,8 @@ export function ConsoleTour() {
                       }}
                       className={`rounded-[8px] border px-2.5 py-1 font-mono text-[11px] font-medium transition-colors ${
                         pipelineMode === m
-                          ? "border-black bg-black text-white"
-                          : "border-[var(--border)] bg-white text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)]"
+                          ? "border-black bg-[var(--accent)] text-[var(--accent-contrast)]"
+                          : "border-[var(--border)] bg-[var(--surface)] text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)]"
                       }`}
                     >
                       {m}
@@ -361,7 +361,7 @@ export function ConsoleTour() {
                   See authority matrix →
                 </Link>
               </div>
-              <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] sm:grid-cols-5 bg-white">
+              <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] sm:grid-cols-5 bg-[var(--surface)]">
                 {SAFETY_INVARIANTS.map((inv) => (
                   <div
                     key={inv.id}
@@ -370,9 +370,9 @@ export function ConsoleTour() {
                     <div>
                       <span className="font-mono text-[11px] font-semibold text-[#2563eb]">{inv.id}</span>
                       <div className="mt-1 text-[13px] font-semibold text-[var(--fg)]">{inv.name}</div>
-                      <p className="mt-1 text-[12px] leading-snug text-[#525252]">{inv.rule}</p>
+                      <p className="mt-1 text-[12px] leading-snug text-[var(--fg-muted)]">{inv.rule}</p>
                     </div>
-                    <div className="mt-3 pt-2 border-t border-[var(--border)] flex items-center justify-between font-mono text-[10px] text-[#166534]">
+                    <div className="mt-3 pt-2 border-t border-[var(--border)] flex items-center justify-between font-mono text-[10px] text-[var(--accent)]">
                       <span>KERNEL</span>
                       <span>ENFORCED</span>
                     </div>
@@ -397,7 +397,7 @@ export function ConsoleTour() {
                   Open kill-switch simulator →
                 </Link>
               </div>
-              <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] sm:grid-cols-2 lg:grid-cols-4 bg-white">
+              <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] sm:grid-cols-2 lg:grid-cols-4 bg-[var(--surface)]">
                 {SPONSORS.map((sp) => (
                   <div
                     key={sp.id}
@@ -405,10 +405,10 @@ export function ConsoleTour() {
                   >
                     <div className="flex items-center justify-between font-mono text-[10px]">
                       <span className="text-[#2563eb]">{sp.seam}</span>
-                      <span className="rounded-full bg-[#dcfce7] px-2 py-0.5 text-[#166534]">LIVE</span>
+                      <span className="rounded-full bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[var(--accent)]">LIVE</span>
                     </div>
                     <div className="text-[14px] font-semibold text-[var(--fg)]">{sp.name}</div>
-                    <div className="font-mono text-[11px] text-[#166534]">
+                    <div className="font-mono text-[11px] text-[var(--accent)]">
                       Full: {sp.ablation.fullSystemMetric}
                     </div>
                     <div className="font-mono text-[11px] text-[#9a3412]">
@@ -466,7 +466,7 @@ export function ConsoleTour() {
           </h2>
         </div>
 
-        <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] bg-white sm:grid-cols-3">
+        <div className="grid gap-0 overflow-hidden rounded-[12px] border border-[var(--border)] bg-[var(--surface)] sm:grid-cols-3">
           {[
             {
               when: "When a vendor silently edits terms",
@@ -492,14 +492,14 @@ export function ConsoleTour() {
           ].map((seat) => (
             <div
               key={seat.role}
-              className="border-r border-b sm:border-b-0 border-[var(--border)] last:border-r-0 p-5 flex flex-col justify-between bg-white"
+              className="border-r border-b sm:border-b-0 border-[var(--border)] last:border-r-0 p-5 flex flex-col justify-between bg-[var(--surface)]"
             >
               <div>
                 <p className="font-mono text-[11px] tracking-[0.08em] text-[#2563eb] uppercase">
                   {seat.when}
                 </p>
                 <h3 className="mt-1.5 text-[15px] font-semibold text-[var(--fg)]">{seat.role}</h3>
-                <p className="mt-1.5 text-[13px] leading-relaxed text-[#525252]">{seat.body}</p>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--fg-muted)]">{seat.body}</p>
               </div>
               <Link
                 href={seat.href}

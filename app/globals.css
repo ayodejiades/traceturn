@@ -25,6 +25,13 @@
   --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 24px 48px -24px rgba(0, 0, 0, 0.8);
   --ring: 0 0 0 1px var(--border);
   --ring-accent: 0 0 0 1px rgba(16, 185, 129, 0.4);
+
+  /* Layout scale. Both the marketing pages and the dashboard shell read these, so
+     the content edge lands in the same place on every route. */
+  --content-max: 1440px;
+  --sidebar-w: 248px;
+  --page-pad: 1.5rem;
+  --gutter: 1.25rem;
 }
 
 @theme inline {

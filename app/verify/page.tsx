@@ -96,7 +96,7 @@ export default function VerifyPage() {
             </Link>
             <Link
               href="/dashboard"
-              className="rounded-[8px] bg-black px-3.5 py-1.5 text-[13px] font-medium text-white hover:bg-[var(--accent)]"
+              className="rounded-[8px] bg-[var(--accent)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--accent-contrast)] hover:bg-[var(--accent)]"
             >
               Open console
             </Link>
@@ -122,7 +122,7 @@ export default function VerifyPage() {
           data-demo="verify-banner"
           className={`rounded-[12px] border p-5 flex flex-wrap items-center justify-between gap-4 ${
             verified
-              ? "border-[#bbf7d0] bg-[#dcfce7]/60 text-[#166534]"
+              ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]/60 text-[var(--accent)]"
               : "border-[#fecaca] bg-[#fef2f2] text-[#991b1b]"
           }`}
         >
@@ -153,7 +153,7 @@ export default function VerifyPage() {
               type="button"
               data-demo="tamper-byte"
               onClick={tamperOneByte}
-              className="rounded-[8px] border border-[#dc2626] bg-white px-3.5 py-2 font-mono text-[12px] font-medium text-[#dc2626] hover:bg-[#fef2f2]"
+              className="rounded-[8px] border border-[#dc2626] bg-[var(--surface)] px-3.5 py-2 font-mono text-[12px] font-medium text-[#dc2626] hover:bg-[#fef2f2]"
             >
               Tamper 1 byte (10000 → 10001)
             </button>
@@ -161,7 +161,7 @@ export default function VerifyPage() {
               type="button"
               data-demo="tamper-excerpt"
               onClick={injectHallucinatedExcerpt}
-              className="rounded-[8px] border border-[#9a3412] bg-white px-3.5 py-2 font-mono text-[12px] font-medium text-[#9a3412] hover:bg-[#fff7ed]"
+              className="rounded-[8px] border border-[#9a3412] bg-[var(--surface)] px-3.5 py-2 font-mono text-[12px] font-medium text-[#9a3412] hover:bg-[#fff7ed]"
             >
               Inject ungrounded excerpt (INV-01)
             </button>
@@ -170,7 +170,7 @@ export default function VerifyPage() {
                 type="button"
                 data-demo="restore-canonical"
                 onClick={restoreCanonical}
-                className="rounded-[8px] bg-black px-3.5 py-2 font-mono text-[12px] font-medium text-white hover:bg-[var(--accent)]"
+                className="rounded-[8px] bg-[var(--accent)] px-3.5 py-2 font-mono text-[12px] font-medium text-[var(--accent-contrast)] hover:bg-[var(--accent)]"
               >
                 Restore canonical payload
               </button>
@@ -214,7 +214,7 @@ export default function VerifyPage() {
                   <div className="text-[10px] text-[var(--fg-muted)]">RECOMPUTED LIVE DIGEST</div>
                   <div
                     className={`mt-0.5 truncate font-semibold ${
-                      actualDigest === expectedDigest ? "text-[#166534]" : "text-[#dc2626]"
+                      actualDigest === expectedDigest ? "text-[var(--accent)]" : "text-[#dc2626]"
                     }`}
                   >
                     {actualDigest}
@@ -222,7 +222,7 @@ export default function VerifyPage() {
                 </div>
                 <div className="rounded-[8px] border border-[var(--border)] bg-[var(--bg)] p-3 flex items-center justify-between">
                   <span>INV-01 Substring Grounding</span>
-                  <span className={excerptBound ? "text-[#166534] font-semibold" : "text-[#dc2626] font-semibold"}>
+                  <span className={excerptBound ? "text-[var(--accent)] font-semibold" : "text-[#dc2626] font-semibold"}>
                     {excerptBound ? "PASS ✓" : "REFUSED ✗"}
                   </span>
                 </div>

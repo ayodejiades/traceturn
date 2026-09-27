@@ -11,7 +11,7 @@ export default function NotFound() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main id="main" className="flex flex-1 items-center">
-        <div className="mx-auto w-full max-w-6xl px-6 py-24">
+        <div className="mx-auto w-full max-w-[var(--content-max)] px-6 py-24">
           <p className="tnum mb-4 text-sm text-[var(--fg-subtle)]">404</p>
           <h1 className="h-display mb-4 max-w-2xl text-4xl sm:text-5xl">
             No turn at that address.

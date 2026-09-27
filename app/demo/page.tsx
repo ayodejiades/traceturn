@@ -81,7 +81,7 @@ export default function GuidedDemoPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       {/* Top Judge Bar */}
       <div className="border-b border-[var(--border)] bg-[var(--surface)] px-6 py-2.5">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 font-mono text-xs">
+        <div className="mx-auto flex max-w-[var(--content-max)] flex-wrap items-center justify-between gap-2 font-mono text-xs">
           <div className="flex items-center gap-2">
             <span className="rounded border border-[#2563eb]/30 bg-[#2563eb]/10 px-2 py-0.5 text-[11px] font-medium text-[#2563eb]">
               CAUSAL BLAME DAG AND CLAIM LINEAGE
@@ -106,7 +106,7 @@ export default function GuidedDemoPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl space-y-8 px-6 py-10">
+      <div className="mx-auto max-w-[var(--content-max)] space-y-8 px-6 py-10">
         {/* Header */}
         <div className="flex flex-col justify-between gap-4 border-b border-[var(--border)] pb-6 md:flex-row md:items-center">
           <div>
@@ -125,13 +125,13 @@ export default function GuidedDemoPage() {
               type="button"
               data-demo="advance-stage"
               onClick={advanceStage}
-              className="rounded-md bg-[var(--accent)] px-4 py-2.5 font-mono text-xs font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]"
+              className="rounded-md bg-[var(--accent)] px-[var(--page-pad)] py-2.5 font-mono text-xs font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]"
             >
               Advance Lifecycle Stage ({stageIndex + 1}/5) &rarr;
             </button>
             <Link
               href="/dashboard"
-              className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 font-mono text-xs text-[var(--fg)] hover:border-[var(--fg-muted)]"
+              className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-[var(--page-pad)] py-2.5 font-mono text-xs text-[var(--fg)] hover:border-[var(--fg-muted)]"
             >
               Open Full Console &rarr;
             </Link>

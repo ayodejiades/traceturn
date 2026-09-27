@@ -18,7 +18,7 @@ const FOOTER = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex h-14 w-full max-w-[var(--content-max)] items-center justify-between px-6">
         <Link
           href="/"
           className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight transition-opacity hover:opacity-80"
@@ -56,7 +56,7 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="border-t border-[var(--border)]">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex w-full max-w-[var(--content-max)] flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2 text-sm text-[var(--fg-subtle)]">
           <span className="font-medium text-[var(--fg-muted)]">traceturn</span>
           <span aria-hidden>·</span>

@@ -79,7 +79,7 @@ export function AblationBenchmark() {
               {BENCHMARK_ROWS.map((row) => (
                 <tr
                   key={row.arm}
-                  className={row.highlight ? "bg-[#dcfce7]/30 font-medium" : "bg-[var(--surface)]"}
+                  className={row.highlight ? "bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]/30 font-medium" : "bg-[var(--surface)]"}
                 >
                   <td className="py-3 px-4 font-semibold text-[var(--fg)]">{row.arm}</td>
                   <td className="py-3 px-4 font-mono tabular-nums">{row.recall}</td>
@@ -88,7 +88,7 @@ export function AblationBenchmark() {
                     <span
                       className={`rounded-full border px-2 py-0.5 text-[11px] ${
                         row.highlight
-                          ? "border-[#bbf7d0] bg-[#dcfce7] text-[#166534]"
+                          ? "border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] text-[var(--accent)]"
                           : "border-[#fecaca] bg-[#fef2f2] text-[#991b1b]"
                       }`}
                     >
@@ -134,7 +134,7 @@ export function AblationBenchmark() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between font-mono text-[10px]">
                   <span className="text-[#2563eb] font-semibold">{sp.layer}</span>
-                  <span className="rounded-full border border-[#bbf7d0] bg-[#dcfce7] px-2 py-0.5 text-[#166534]">
+                  <span className="rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2 py-0.5 text-[var(--accent)]">
                     LIVE SEAM
                   </span>
                 </div>
@@ -143,7 +143,7 @@ export function AblationBenchmark() {
               </div>
 
               <div className="space-y-1 border-t border-[var(--border)] pt-2.5 font-mono text-[11px]">
-                <div className="text-[#166534]">Full: {sp.ablation.fullSystemMetric}</div>
+                <div className="text-[var(--accent)]">Full: {sp.ablation.fullSystemMetric}</div>
                 <div className="text-[#9a3412]">Removed: {sp.ablation.removedMetric}</div>
                 <div className="text-[10px] text-[var(--fg-muted)] pt-1">
                   Not claimed: {sp.notClaimed}

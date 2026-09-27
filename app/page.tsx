@@ -38,7 +38,7 @@ function LiveFixture() {
 
   return (
     <div className="surface overflow-hidden">
-      <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-2.5">
+      <div className="flex items-center justify-between border-b border-[var(--border)] px-[var(--page-pad)] py-2.5">
         <span className="eyebrow">Live kernel output</span>
         <span className="tnum text-xs text-[var(--fg-subtle)]">
           {BENCHMARK_CASES.length} fixtures · {flagged.length} flagged
@@ -82,7 +82,7 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main id="main" className="flex-1">
-        <section className="relative mx-auto w-full max-w-6xl overflow-hidden px-6 pb-16 pt-20 sm:pt-28">
+        <section className="relative mx-auto w-full max-w-[var(--content-max)] overflow-hidden px-6 pb-16 pt-20 sm:pt-28">
           <div className="hero-grid" aria-hidden />
           <div className="relative grid items-center gap-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
             <div>
@@ -128,12 +128,12 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-        <section className="mx-auto w-full max-w-6xl px-6 pb-20">
+        <section className="mx-auto w-full max-w-[var(--content-max)] px-6 pb-20">
           <LiveFixture />
         </section>
 
         <section className="border-y border-[var(--border)] bg-[var(--bg-elevated)]">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20">
+          <div className="mx-auto w-full max-w-[var(--content-max)] px-6 py-20">
             <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
               <div>
                 <h2 className="eyebrow mb-4">Why summaries fail</h2>
@@ -159,7 +159,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-6xl px-6 py-20">
+        <section className="mx-auto w-full max-w-[var(--content-max)] px-6 py-20">
           <h2 className="eyebrow mb-4">What it does</h2>
           <h3 className="h-section mb-12 max-w-2xl text-2xl sm:text-3xl">
             Two graphs, one deterministic kernel.
@@ -177,7 +177,7 @@ export default function HomePage() {
           </div>
         </section>
         <section className="border-y border-[var(--border)] bg-[var(--bg-elevated)]">
-          <div className="mx-auto w-full max-w-6xl px-6 py-20">
+          <div className="mx-auto w-full max-w-[var(--content-max)] px-6 py-20">
             <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
               <div>
                 <h2 className="eyebrow mb-4">The pipeline</h2>
@@ -204,7 +204,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-6xl px-6 py-20">
+        <section className="mx-auto w-full max-w-[var(--content-max)] px-6 py-20">
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
             <div>
               <h2 className="eyebrow mb-4">Guarantees</h2>
@@ -231,7 +231,7 @@ export default function HomePage() {
         </section>
 
         <section className="border-t border-[var(--border)] bg-[var(--bg-elevated)]">
-          <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-20 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mx-auto flex w-full max-w-[var(--content-max)] flex-col gap-6 px-6 py-20 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="h-section mb-2 text-2xl">Check the claims yourself.</h3>
               <p className="prose-measure text-sm">

@@ -78,6 +78,33 @@ SVG_ATTRS = [
     (r'fill="#3f3f46"', 'fill="var(--fg-muted)"'),
 ]
 
+# 5. Named Tailwind light/dark utilities the arbitrary-value pass cannot see.
+#    `bg-white` is a class, not a `var(...)`, so it survived the earlier run.
+NAMED = [
+    (r"\bbg-white\b", "bg-[var(--surface)]"),
+    (r"\bbg-black\b", "bg-[var(--accent)]"),
+    (r"\bbg-black/30\b", "bg-black/60"),
+    (r"\bborder-\[#bbf7d0\]", "border-[var(--accent)]"),
+    (r"\bbg-\[#dcfce7\]", "bg-[color-mix(in_oklab,var(--accent)_14%,transparent)]"),
+    (r"\btext-\[#166534\]", "text-[var(--accent)]"),
+    (r"\bborder-\[#d4d4d4\]", "border-[var(--border-strong)]"),
+    (r"\btext-\[#525252\]", "text-[var(--fg-muted)]"),
+    (r"\bbg-\[#052e16\]", "bg-[var(--surface-raised)]"),
+    (r"\btext-\[#14532d\]", "text-[var(--accent)]"),
+    (
+        r"shadow-\[rgba\(0,0,0,0\.05\)_0px_1px_2px_0px\]",
+        "shadow-[var(--shadow)]",
+    ),
+]
+
+# 6. Layout: one content edge and one sidebar width across every route.
+LAYOUT = [
+    (r"\bmax-w-\[1480px\]", "max-w-[var(--content-max)]"),
+    (r"\bmax-w-6xl\b", "max-w-[var(--content-max)]"),
+    (r"\bw-\[248px\]", "w-[var(--sidebar-w)]"),
+    (r"\bpx-4 py-2\.5(?=\"|\s)", "px-[var(--page-pad)] py-2.5"),
+]
+
 for path in sorted(ROOT.glob("app/**/*.tsx")) + sorted(ROOT.glob("components/**/*.tsx")):
     src = original = path.read_text(encoding="utf-8")
     src = FALLBACK_PAREN.sub(")", src)
@@ -85,6 +112,10 @@ for path in sorted(ROOT.glob("app/**/*.tsx")) + sorted(ROOT.glob("components/**/
     for pat, rep in LITERALS:
         src = re.sub(pat, rep, src)
     for pat, rep in SVG_ATTRS:
+        src = re.sub(pat, rep, src)
+    for pat, rep in NAMED:
+        src = re.sub(pat, rep, src)
+    for pat, rep in LAYOUT:
         src = re.sub(pat, rep, src)
     # An opacity modifier on a var() is not valid CSS; map it to the dim token.
     src = re.sub(

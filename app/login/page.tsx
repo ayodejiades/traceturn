@@ -33,7 +33,7 @@ export default function LoginPage() {
             <Link
               href="/dashboard"
               data-demo="judge-login"
-              className="mt-1 flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-500 transition-colors shadow-sm"
+              className="mt-1 flex items-center justify-center rounded-md bg-emerald-600 px-[var(--page-pad)] py-2.5 text-sm font-medium text-white hover:bg-emerald-500 transition-colors shadow-sm"
             >
               Continue as Judge / Demo User
             </Link>

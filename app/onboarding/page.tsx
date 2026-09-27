@@ -361,7 +361,7 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => finishOnboarding("/demo")}
-                  className="rounded-md border border-[var(--border)] bg-[var(--bg)] px-4 py-2.5 font-mono text-xs text-[var(--fg)] transition-colors hover:border-[var(--fg-muted)]"
+                  className="rounded-md border border-[var(--border)] bg-[var(--bg)] px-[var(--page-pad)] py-2.5 font-mono text-xs text-[var(--fg)] transition-colors hover:border-[var(--fg-muted)]"
                 >
                   Launch 5-Stage Guided Demo (/demo) &rarr;
                 </button>

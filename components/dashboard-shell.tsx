@@ -57,8 +57,8 @@ export function DashboardShell({
   return (
     <div className="min-h-screen bg-[var(--bg-elevated)] text-[var(--fg)] antialiased">
       {/* Top Header */}
-      <header className="border-b border-[var(--border)] bg-white px-4 py-2.5">
-        <div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-between gap-3">
+      <header className="border-b border-[var(--border)] bg-[var(--surface)] px-[var(--page-pad)] py-2.5">
+        <div className="mx-auto flex max-w-[var(--content-max)] flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link href="/" className="inline-flex items-center gap-2">
               <span className="relative inline-grid h-3.5 w-3.5 place-items-center" aria-hidden>
@@ -69,7 +69,7 @@ export function DashboardShell({
                 {project || "Operations Console"}
               </span>
             </Link>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#bbf7d0] bg-[#dcfce7] px-2.5 py-0.5 font-mono text-[11px] font-medium text-[#166534]">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_14%,transparent)] px-2.5 py-0.5 font-mono text-[11px] font-medium text-[var(--accent)]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
               Verifier PASS · Invariants Active
             </span>
@@ -82,19 +82,19 @@ export function DashboardShell({
               className="inline-flex items-center gap-2 rounded-[8px] border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 text-[12px] font-medium text-[var(--fg-muted)] hover:bg-[var(--surface-raised)]"
             >
               <span>Quick jump</span>
-              <kbd className="rounded border border-[#d4d4d4] bg-white px-1.5 py-0.5 font-mono text-[10px] text-[#525252]">
+              <kbd className="rounded border border-[var(--border-strong)] bg-[var(--surface)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--fg-muted)]">
                 ⌘K
               </kbd>
             </button>
             <Link
               href="/proof"
-              className="rounded-[8px] border border-[var(--border)] bg-white px-3 py-1 text-[12px] font-medium text-[var(--fg)] hover:bg-[var(--bg-elevated)]"
+              className="rounded-[8px] border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[12px] font-medium text-[var(--fg)] hover:bg-[var(--bg-elevated)]"
             >
               Proof Ledger
             </Link>
             <Link
               href="/verify"
-              className="rounded-[8px] bg-black px-3 py-1 text-[12px] font-medium text-white hover:bg-[var(--accent)]"
+              className="rounded-[8px] bg-[var(--accent)] px-3 py-1 text-[12px] font-medium text-[var(--accent-contrast)] hover:bg-[var(--accent)]"
             >
               Verify Receipts
             </Link>
@@ -103,8 +103,8 @@ export function DashboardShell({
       </header>
 
       {/* 2-Column Sticky Operator Layout */}
-      <div className="mx-auto flex max-w-[1480px] gap-4 p-3 lg:gap-5 lg:p-5">
-        <aside className="sticky top-5 hidden h-[calc(100vh-4.5rem)] w-[248px] shrink-0 flex-col justify-between rounded-2xl border border-[var(--border)] bg-white px-4 py-5 shadow-[rgba(0,0,0,0.05)_0px_1px_2px_0px] lg:flex">
+      <div className="mx-auto flex max-w-[var(--content-max)] gap-4 p-3 lg:gap-5 lg:p-5">
+        <aside className="sticky top-5 hidden h-[calc(100vh-4.5rem)] w-[var(--sidebar-w)] shrink-0 flex-col justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-5 shadow-[var(--shadow)] lg:flex">
           <div className="space-y-5 overflow-y-auto">
             {NAV_GROUPS.map((group) => (
               <div key={group.label}>
@@ -128,8 +128,8 @@ export function DashboardShell({
                         <span
                           className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full border ${
                             active
-                              ? "border-[#bfdbfe] bg-white text-[#1e40af]"
-                              : "border-[var(--border)] bg-[var(--bg-elevated)] text-[#525252]"
+                              ? "border-[#bfdbfe] bg-[var(--surface)] text-[#1e40af]"
+                              : "border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--fg-muted)]"
                           }`}
                         >
                           {item.badge}
@@ -142,7 +142,7 @@ export function DashboardShell({
             ))}
           </div>
 
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3 text-[11px] text-[#525252] space-y-1">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-3 text-[11px] text-[var(--fg-muted)] space-y-1">
             <div className="flex items-center justify-between font-mono text-[10px] text-[var(--fg)]">
               <span>AUTHORITY BOUNDARY</span>
               <span className="text-[#16a34a] font-semibold">ENFORCED</span>
@@ -159,11 +159,11 @@ export function DashboardShell({
       {/* ⌘K Command Modal */}
       {cmdOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 pt-20 px-4"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-[var(--accent)]/30 pt-20 px-4"
           onClick={() => setCmdOpen(false)}
         >
           <div
-            className="w-full max-w-lg rounded-2xl border border-[#d4d4d4] bg-white p-4 shadow-xl"
+            className="w-full max-w-lg rounded-2xl border border-[var(--border-strong)] bg-[var(--surface)] p-4 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-[var(--border)] pb-3 mb-3">

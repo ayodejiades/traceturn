@@ -235,7 +235,7 @@ export function ChaosLab() {
             </div>
 
             {/* Live Terminal Output */}
-            <div className="rounded border border-zinc-900 bg-black p-3 space-y-1 text-[11px] min-h-[160px]">
+            <div className="rounded border border-zinc-900 bg-[var(--accent)] p-3 space-y-1 text-[11px] min-h-[160px]">
               <div className="text-zinc-600">// Live Subsystem Event Trace</div>
               {logs.length === 0 ? (
                 <div className="text-zinc-600 italic">
