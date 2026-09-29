@@ -33,3 +33,6 @@ docs/*.gif
 .vscode/
 .idea/
 .vercel
+
+# AI Village dataset (gated; never commit)
+data/

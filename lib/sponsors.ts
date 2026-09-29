@@ -1,125 +1,56 @@
 /**
- * Load-Bearing Sponsor Seam Registry, Quantitative Ablation Matrix, and Integrator Findings
+ * What each hackathon host contributes, stated as narrowly as the code supports.
+ * tools/verify-evidence.ts renders this into docs/SPONSOR_INTEGRATIONS.md and
+ * docs/SPONSOR_FINDINGS.md; tests/sponsors.test.mjs checks each fixture.
  *
- * Modeled after @winsznx's `kept` (evidence/sponsor-ablation.md) and `venue0`
- * (docs/SPONSOR_INTEGRATIONS.md & docs/SPONSOR_FINDINGS.md).
- *
- * Core Rule: Every sponsor integration occupies a distinct, non-decorative structural
- * seam in the pipeline. Removing any sponsor produces a measurable capability delta
- * while the deterministic safety kernel (lib/kernel.ts) preserves state integrity.
+ * No model provider is listed: nothing in this repository calls a model.
  */
+import village from "@/evidence/aivillage-report.json";
 
 export interface SponsorIntegration {
   id: string;
   name: string;
-  layer: "CAPTURE" | "EXTRACTION" | "KERNEL_DB" | "DISPATCH";
   role: string;
-  status: "LIVE_CONFIGURED" | "DETERMINISTIC_FALLBACK";
   codePath: string;
+  fixture: string;
   proven: string;
   notClaimed: string;
-  ablation: {
-    fullSystemMetric: string;
-    removedMetric: string;
-    accuracyDelta: string;
-    whatRemains: string;
-    whatDisappears: string;
-  };
-  finding: {
-    title: string;
-    environment: string;
-    observed: string;
-    expected: string;
-    impact: string;
-    fixInCode: string;
-    status: "RESOLVED_IN_KERNEL" | "WORKED_AROUND";
-  };
+  withoutIt: string;
+  finding: { title: string; observed: string; handledBy: string };
 }
 
-export const WEB2_SPONSORS: SponsorIntegration[] = [
+const t = village.totals;
+const v = village.verdicts;
+
+export const SPONSORS: SponsorIntegration[] = [
   {
     id: "aivillage-dataset",
     name: "AI Village",
-    layer: "CAPTURE",
-    role: "Supplies the >170k-message, >2M-computer-use-turn transcript corpus that every fixture and ablation is measured against.",
-    status: "LIVE_CONFIGURED",
-    codePath: "evidence/campaign-report.json",
-    proven: "13/13 committed fixtures execute through evaluateDeterministicKernel() with a reproducible sha256 digest; all 7 swarm fixtures resolve to their ground-truth expectedState.",
-    notClaimed: "traceturn does not claim to have reproduced the Hugging Face incident itself; findings are scoped to committed fixtures only.",
-    ablation: {
-      fullSystemMetric: "13 / 13 fixtures resolved against AI Village corpus slices",
-      removedMetric: "0 / 13 — no ground truth without a real corpus",
-      accuracyDelta: "-100% — precision and recall are undefined without labelled incidents",
-      whatRemains: "The deterministic kernel, its five invariants, and the offline DEMO_MODE path.",
-      whatDisappears: "Every falsifiable claim. Synthetic fixtures alone cannot prove the tool works on real swarms.",
-    },
+    role: `Source corpus. ${t.turns.toLocaleString("en-US")} chat messages from ${t.agents} agents, ${t.from.slice(0, 10)} to ${t.to.slice(0, 10)}, read by lib/transcript.ts.`,
+    codePath: "lib/transcript.ts, tools/analyze.ts",
+    fixture: "fixtures/sponsors/ai_village_response.json",
+    proven: `${t.episodes} claim episodes traced; ${v.MATERIAL_DRIFT_DETECTED} end in manufactured agreement; ${t.independent} of ${t.restatements} restatements carry the agent's own observation; ${v.WAITING_TO_VERIFY} of ${t.repairs} self-reported repairs were never confirmed by another agent.`,
+    notClaimed: "The classifier has not been scored against human labels. Computer-use sessions, where agents may have verified silently, are not read.",
+    withoutIt: "The engine still runs on any JSONL log, but every number on the findings page disappears: there is no real swarm to measure.",
     finding: {
-      title: "Truncated turns cannot support a lineage claim",
-      environment: "AI Village transcript slice, SWARM-07 fixture",
-      observed: "A turn marked '[transcript truncated]' was used by an agent to assert that a library entry had been updated again.",
-      expected: "A lineage claim requires a complete source turn; truncated sources fail closed.",
-      impact: "Without an abstention guard, a single truncated turn fabricates an entire propagation chain.",
-      fixInCode: "INV-5 in lib/kernel.ts forces ABSTAIN_AMBIGUOUS_SOURCE whenever the source scope is ambiguous, so a truncated turn can never produce a blame assignment.",
-      status: "RESOLVED_IN_KERNEL",
+      title: "Agents reported repairs that other agents then found still broken",
+      observed: `${village.repairs.filter((r) => r.disputedBy).length} of the repair claims in the committed report were followed by another agent reporting the same URL still failing.`,
+      handledBy: "INV-3 keeps every self-reported repair in WAITING_TO_VERIFY until a different agent reports its own observation of the URL working (lib/lineage.ts findRepairs).",
     },
   },
   {
     id: "grove-lineage",
     name: "Grove Research",
-    layer: "KERNEL_DB",
-    role: "Shapes the claim-lineage model: independent-derivation counting over citation edges, separating how a premise propagated from who acted on it.",
-    status: "LIVE_CONFIGURED",
-    codePath: "lib/kernel.ts#evaluateDeterministicKernel",
-    proven: "Synthetic consensus (14 asserted vs 1 independent derivation) resolves to MATERIAL_DRIFT_DETECTED; genuine corroboration (3 vs 3) resolves to ON_TRACK.",
-    notClaimed: "Absence of a derivation edge is a lower bound, not proof of fabrication. Coordination via side channels is explicitly out of scope.",
-    ablation: {
-      fullSystemMetric: "3 / 3 synthetic-consensus fixtures caught, 0 false positives on benign controls",
-      removedMetric: "0 / 3 — collapse to a single origin and the gap is invisible",
-      accuracyDelta: "-100% recall on collusion fixtures; benign controls stay at 0%",
-      whatRemains: "Turn-level blame slicing via delegation edges and the excerpt-binding invariant.",
-      whatDisappears: "The ability to distinguish widespread agreement from manufactured agreement — the core claim of the tool.",
-    },
+    role: "Framing for the lineage model: count independent derivation paths, not assertions, to tell agreement that was checked from agreement that was repeated.",
+    codePath: "lib/lineage.ts buildEpisode, lib/kernel.ts evaluateDeterministicKernel",
+    fixture: "fixtures/sponsors/grove_research_response.json",
+    proven: "On the constructed sample, four agents state 412 signups with one derivation path (MATERIAL_DRIFT_DETECTED), while three agents who each report their own count of 1,240 visitors resolve ON_TRACK.",
+    notClaimed: "A missing derivation edge is a lower bound, not proof of fabrication. Coordination outside the transcript is out of scope.",
+    withoutIt: "Counting assertions alone would score every echoed number as corroborated.",
     finding: {
-      title: "An agent asserted its own repair without independent proof",
-      environment: "AI Village transcript slice, SWARM-05 fixture",
-      observed: "Agent-44 stated the missing derivation was supplied and the premise now held; no later turn contained an independent confirming observation.",
-      expected: "A self-asserted repair stays open until an independent agent confirms it.",
-      impact: "Accepting the self-report would close the single most abusable case in swarm oversight: an agent marking its own work resolved.",
-      fixInCode: "INV-3 holds the case in WAITING_TO_VERIFY until subsequentObservationProvesFix is set by a genuinely independent turn.",
-      status: "RESOLVED_IN_KERNEL",
-    },
-  },
-  {
-    id: "anthropic-intent",
-    name: "Anthropic",
-    layer: "EXTRACTION",
-    role: "Classifies semantic intent on DAG subtrees the deterministic kernel has already isolated, and scores intent drift against the parent turn.",
-    status: "DETERMINISTIC_FALLBACK",
-    codePath: "lib/kernel.ts#evaluateSafetyKernel",
-    proven: "With no API key the kernel falls back to a deterministic heuristic and every one of the 13 fixtures still resolves identically; the graph layer never depends on a model.",
-    notClaimed: "The model never participates in attribution or in any state transition. It may only label subtrees the kernel has already flagged.",
-    ablation: {
-      fullSystemMetric: "13 / 13 fixtures identical with and without the model",
-      removedMetric: "13 / 13 — no delta, by design",
-      accuracyDelta: "0% on every deterministic verdict; only intent labels degrade",
-      whatRemains: "Entire detection capability, all five invariants, and full offline operation.",
-      whatDisappears: "Human-readable intent annotation on already-isolated subtrees.",
-    },
-    finding: {
-      title: "LLM assistance is structurally unable to touch the attribution layer",
-      environment: "DEMO_MODE=1 with no API key configured",
-      observed: "Every fixture produced byte-identical verdicts, invariants, and digests with no model reachable.",
-      expected: "A model-dependent tool would diverge offline and become unverifiable under incident pressure.",
-      impact: "None — this is the intended guarantee, and it is what makes the precision claim checkable by a judge in seconds.",
-      fixInCode: "The model call is confined to labelling; lib/kernel.ts graph construction and verdict selection are pure functions with no I/O.",
-      status: "RESOLVED_IN_KERNEL",
+      title: "Most repeats in the corpus credit their source",
+      observed: `${t.cited} of ${t.restatements} restatements name where the number came from; counting them as corroboration would inflate agreement, counting them as echoes would accuse honest agents.`,
+      handledBy: "CITED restatements count toward neither side; an episode with only credited repeats resolves BENIGN_CONTROL_NO_DRIFT (INV-4).",
     },
   },
 ];
-
-export const SPONSORS = WEB2_SPONSORS.map((s) => ({
-  ...s,
-  seam: s.layer,
-}));
-
-

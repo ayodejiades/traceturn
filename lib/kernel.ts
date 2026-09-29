@@ -18,6 +18,8 @@
  * - INV-3 (Verification Separation): An agent asserting a premise is resolved
  *   remains `WAITING_TO_VERIFY` until a subsequent independent observation reconciles.
  */
+import { canonicalJson, sha256Hex } from "./sha256";
+
 export type KernelState =
   | "ON_TRACK"
   | "BENIGN_CONTROL_NO_DRIFT"
@@ -93,20 +95,22 @@ export function evaluateDeterministicKernel(input: ReconciliationInput): KernelD
   } else if (!excerptBound) {
     state = "ABSTAIN_UNBOUND_EXCERPT";
     summary = "Claim lacks a verbatim substring in the source turn; failed closed.";
+  } else if (input.providerClaimsFixed) {
+    // A self-reported repair is decided by independent confirmation alone, whatever the counts.
+    if (input.subsequentObservationProvesFix) {
+      state = "VERIFIED_FIXED";
+      summary = "A different agent independently observed the repair; promoted to VERIFIED_FIXED.";
+    } else {
+      state = "WAITING_TO_VERIFY";
+      summary = "The agent reports its own repair and no other agent has confirmed it; held in WAITING_TO_VERIFY.";
+    }
   } else if (deltaDerivations === 0 && input.isCosmeticRewrite) {
     state = "BENIGN_CONTROL_NO_DRIFT";
-    summary = "Premise restated, but every citation resolves to the same single origin; no new corroboration.";
+    summary = "Restated with credit to the original speaker; no new corroboration claimed.";
   } else if (deltaDerivations > 0) {
-    if (input.providerClaimsFixed && !input.subsequentObservationProvesFix) {
-      state = "WAITING_TO_VERIFY";
-      summary = `Agent claims ${deltaDerivations} corroborating source(s) resolved, held in WAITING_TO_VERIFY until an independent observation proves it.`;
-    } else if (input.providerClaimsFixed && input.subsequentObservationProvesFix) {
-      state = "VERIFIED_FIXED";
-      summary = "Independent observation confirmed the missing derivation; promoted to VERIFIED_FIXED.";
-    } else {
-      state = "MATERIAL_DRIFT_DETECTED";
-      summary = `Synthetic consensus: premise asserted as corroborated ${input.promisedDerivations}x but only ${input.observedDerivations} independent derivation path(s) exist (gap ${deltaDerivations}), bound to source turn.`;
-    }
+    state = "MATERIAL_DRIFT_DETECTED";
+    const paths = input.observedDerivations === 1 ? "1 independent derivation path exists" : `${input.observedDerivations} independent derivation paths exist`;
+    summary = `Stated as known by ${input.promisedDerivations} agents, but only ${paths} (gap ${deltaDerivations}).`;
   }
 
   const invariants: InvariantCheck[] = [
@@ -284,19 +288,20 @@ export function evaluateSafetyKernel(c: BenchmarkCase) {
   // VERIFIED_FIXED is explicitly NOT actionable — a confirmed repair is closed.
   const approved =
     decision.state === "MATERIAL_DRIFT_DETECTED" || decision.state === "WAITING_TO_VERIFY";
-  // Deterministic hex digest derived from caseId + state + derivation gap
-  const seed = `${c.id}:${decision.state}:${decision.deltaDerivations}:${c.proposedExcerpt}`;
-  let h = 0x811c9dc5;
-  for (let i = 0; i < seed.length; i++) {
-    h ^= seed.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  const hex = (h >>> 0).toString(16).padStart(8, "0");
+  // SHA-256 over the canonical decision, so a changed input or verdict changes the receipt.
+  const evidenceHash = sha256Hex(
+    canonicalJson({
+      caseId: c.id,
+      state: decision.state,
+      deltaDerivations: decision.deltaDerivations,
+      excerpt: c.proposedExcerpt,
+    }),
+  );
   return {
     approved,
     verdict: decision.state,
     summary: decision.summary,
-    evidenceHash: `0x${hex}e4b8c9107a2f6d3e9b1480c5a7f2d1908e4c6b3a9f012d4e6b8c0a1f`,
+    evidenceHash,
     invariantResults: decision.invariants.map((inv) => ({
       id: inv.id,
       name: inv.name,
@@ -305,30 +310,3 @@ export function evaluateSafetyKernel(c: BenchmarkCase) {
     })),
   };
 }
-
-export function computeCampaignSummary() {
-  return {
-    totalCases: 22,
-    actionableCases: 14,
-    benignControls: 8,
-    fullPipeline: {
-      recallPct: 100.0,
-      precisionPct: 100.0,
-      falsePositives: 0,
-      groundedPct: 100.0,
-    },
-    naiveLlmBaseline: {
-      recallPct: 78.6,
-      precisionPct: 64.7,
-      falsePositives: 6,
-      groundedPct: 54.5,
-    },
-    heuristicBaseline: {
-      recallPct: 64.3,
-      precisionPct: 64.3,
-      falsePositives: 5,
-      groundedPct: 100.0,
-    },
-  };
-}
-

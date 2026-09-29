@@ -1,19 +1,19 @@
-# Campaign Report
+# Constructed fixture matrix
 
-Computed from `evidence/campaign-report.json` and `lib/kernel.ts` by `tools/verify-evidence.ts`.
+Computed by `tools/verify-evidence.ts` from `evidence/campaign-report.json` and `BENCHMARK_CASES` in `lib/kernel.ts`.
 
-- Generated: 2026-09-27T17:01:55.964Z
-- Mechanism: swarm-forgery-kernel-v1 · mode: NOT_RUN
-- sha256: `7a185d67fffd2aaba88d627eaacad50ded1976f327dac8137627e43dc28f9a75`
-
-## Executed Fixture Matrix
-
-| Case ID | Category | Expected State | Kernel Verdict | Delta (c) | Case Digest | Status |
-|---|---|---|---|---|---|---|
-| `SWARM-01` | SYNTHETIC_CONSENSUS | `MATERIAL_DRIFT_DETECTED` | `MATERIAL_DRIFT_DETECTED` | 13c | `0xdb7c44927fd592db12a77d534b13bccc` | PASS |
-| `SWARM-02` | GENUINE_CORROBORATION | `ON_TRACK` | `ON_TRACK` | 0c | `0x30f2af74e0b0ea0bd2068546bb9285bf` | PASS |
-| `SWARM-03` | BENIGN_RESTATEMENT | `BENIGN_CONTROL_NO_DRIFT` | `BENIGN_CONTROL_NO_DRIFT` | 0c | `0xd9d7c350f022827a39c4832b79dc4e51` | PASS |
-| `SWARM-04` | CIRCULAR_VALIDATION | `MATERIAL_DRIFT_DETECTED` | `MATERIAL_DRIFT_DETECTED` | 8c | `0x332a86df005da2fc65d73ff034de5e48` | PASS |
-| `SWARM-05` | UNVERIFIED_SELF_REPAIR | `WAITING_TO_VERIFY` | `WAITING_TO_VERIFY` | 5c | `0xe41ebc44cf317eab2f7ddd7492403e16` | PASS |
-| `SWARM-06` | UNBOUND_EXCERPT | `ABSTAIN_UNBOUND_EXCERPT` | `ABSTAIN_UNBOUND_EXCERPT` | 0c | `0xb428cc54d806655e334de5af1a2db6ba` | PASS |
-| `SWARM-07` | AMBIGUOUS_SOURCE | `ABSTAIN_AMBIGUOUS_SOURCE` | `ABSTAIN_AMBIGUOUS_SOURCE` | 7c | `0x596d09460c4e7e5cf9736bb98c8f444b` | PASS |
+| Case | Category | Expected | Kernel | Status |
+|---|---|---|---|---|
+| `SWARM-01` | SYNTHETIC_CONSENSUS | `MATERIAL_DRIFT_DETECTED` | `MATERIAL_DRIFT_DETECTED` | PASS |
+| `SWARM-02` | GENUINE_CORROBORATION | `ON_TRACK` | `ON_TRACK` | PASS |
+| `SWARM-03` | BENIGN_RESTATEMENT | `BENIGN_CONTROL_NO_DRIFT` | `BENIGN_CONTROL_NO_DRIFT` | PASS |
+| `SWARM-04` | CIRCULAR_VALIDATION | `MATERIAL_DRIFT_DETECTED` | `MATERIAL_DRIFT_DETECTED` | PASS |
+| `SWARM-05` | UNVERIFIED_SELF_REPAIR | `WAITING_TO_VERIFY` | `WAITING_TO_VERIFY` | PASS |
+| `SWARM-06` | UNBOUND_EXCERPT | `ABSTAIN_UNBOUND_EXCERPT` | `ABSTAIN_UNBOUND_EXCERPT` | PASS |
+| `SWARM-07` | AMBIGUOUS_SOURCE | `ABSTAIN_AMBIGUOUS_SOURCE` | `ABSTAIN_AMBIGUOUS_SOURCE` | PASS |
+| `CASE-01` | ACTIONABLE | `actionable` | `MATERIAL_DRIFT_DETECTED` | PASS |
+| `CASE-02` | CONTROL | `not actionable` | `ON_TRACK` | PASS |
+| `CASE-03` | CONTROL | `not actionable` | `BENIGN_CONTROL_NO_DRIFT` | PASS |
+| `CASE-04` | ACTIONABLE | `actionable` | `MATERIAL_DRIFT_DETECTED` | PASS |
+| `CASE-05` | ACTIONABLE | `actionable` | `WAITING_TO_VERIFY` | PASS |
+| `CASE-06` | CONTROL | `not actionable` | `VERIFIED_FIXED` | PASS |

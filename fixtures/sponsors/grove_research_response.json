@@ -1,14 +1,13 @@
 {
   "sponsor": "Grove Research",
-  "fixtureKind": "real-response",
-  "source": "Claim-lineage model shaped with Grove Research",
-  "note": "Independent-derivation counting over citation edges is what separates widespread agreement from manufactured agreement.",
+  "fixtureKind": "constructed-transcript",
+  "source": "fixtures/transcripts/sample-swarm.jsonl (constructed; not drawn from any corpus)",
+  "note": "Independent-derivation counting on the sample: four agents state 412 signups, only the origin has a derivation path of its own.",
   "response": {
-    "claimId": "CLAIM-EXPLOIT-001",
-    "promisedDerivations": 14,
+    "claim": "412 signups",
+    "promisedDerivations": 4,
     "observedDerivations": 1,
-    "gap": 13,
-    "verdict": "MATERIAL_DRIFT_DETECTED",
-    "expectedState": "MATERIAL_DRIFT_DETECTED"
+    "gap": 3,
+    "verdict": "MATERIAL_DRIFT_DETECTED"
   }
 }

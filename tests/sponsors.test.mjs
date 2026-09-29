@@ -1,5 +1,5 @@
 /**
- * tests/sponsors.test.mjs — asserts each sponsor's load-bearing seam actually holds.
+ * tests/sponsors.test.mjs — each sponsor fixture is re-run through the code it describes.
  *
  * Run with: pnpm test
  */
@@ -10,47 +10,44 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-async function loadKernel() {
-  const { evaluateDeterministicKernel, BENCHMARK_CASES, evaluateSafetyKernel } = await import(
-    path.join(root, "lib/kernel.ts")
-  );
-  return { evaluateDeterministicKernel, BENCHMARK_CASES, evaluateSafetyKernel };
-}
-
 const readFixture = (slug) =>
   JSON.parse(fs.readFileSync(path.join(root, "fixtures", "sponsors", `${slug}_response.json`), "utf8"));
 
-test("AI Village: real transcript fixture is bound to the deterministic kernel", async () => {
-  const { evaluateDeterministicKernel } = await loadKernel();
-  const fx = readFixture("ai_village");
-  const decision = evaluateDeterministicKernel({
-    caseId: "AI-VILLAGE-4102",
-    sourceCaptureT0: fx.response.text,
-    extractedExcerpt: "proof checker accepts incomplete tactic blocks",
-    promisedDerivations: fx.response.citedBy.length,
-    observedDerivations: fx.response.independentDerivations,
+test("AI Village: the fixture row is the committed report's origin, and the kernel re-derives it", async () => {
+  const { evaluateDeterministicKernel } = await import(path.join(root, "lib/kernel.ts"));
+  const report = JSON.parse(fs.readFileSync(path.join(root, "evidence/aivillage-report.json"), "utf8"));
+  const fx = readFixture("ai_village").response;
+  const ep = report.episodes.find((e) => e.id === fx.episode);
+  assert.ok(ep, "fixture episode must exist in the committed report");
+  assert.equal(ep.assertions[0].turnId, fx.turnId);
+  assert.equal(ep.assertions[0].excerpt, fx.excerpt);
+
+  const d = evaluateDeterministicKernel({
+    caseId: fx.episode,
+    sourceCaptureT0: fx.source,
+    extractedExcerpt: fx.excerpt,
+    promisedDerivations: fx.promisedDerivations,
+    observedDerivations: fx.observedDerivations,
   });
-  assert.equal(decision.excerptBound, true, "fixture excerpt must bind to the real turn");
-  assert.equal(decision.state, "MATERIAL_DRIFT_DETECTED", "AI Village corpus must be scored, not summarized");
-  assert.equal(decision.deltaDerivations, 3);
+  assert.equal(d.excerptBound, true, "excerpt must be verbatim in the AI Village source turn");
+  assert.equal(d.state, fx.verdict);
 });
 
-test("Grove Research: independent-derivation counting separates agreement from manufacture", async () => {
-  const { BENCHMARK_CASES, evaluateSafetyKernel } = await loadKernel();
-  const synthetic = BENCHMARK_CASES.find((b) => b.id === "CASE-01");
-  const genuine = BENCHMARK_CASES.find((b) => b.id === "CASE-02");
-  assert.equal(evaluateSafetyKernel(synthetic).approved, true, "synthetic consensus must be actionable");
-  assert.equal(evaluateSafetyKernel(genuine).approved, false, "genuine corroboration must not false-positive");
-  assert.equal(readFixture("grove_research").response.gap, 13);
+test("Grove Research: independent-derivation counting on the sample separates checked from repeated", async () => {
+  const { parseJsonl } = await import(path.join(root, "lib/transcript.ts"));
+  const { analyzeLineage } = await import(path.join(root, "lib/lineage.ts"));
+  const fx = readFixture("grove_research").response;
+  const sample = fs.readFileSync(path.join(root, "fixtures/transcripts/sample-swarm.jsonl"), "utf8");
+  const ep = analyzeLineage(parseJsonl(sample).turns).episodes.find((e) => e.claim === fx.claim);
+  assert.equal(ep.promised, fx.promisedDerivations);
+  assert.equal(ep.observed, fx.observedDerivations);
+  assert.equal(ep.decision.state, fx.verdict);
 });
 
-test("Anthropic: attribution is identical with no model reachable", async () => {
-  const { BENCHMARK_CASES, evaluateSafetyKernel } = await loadKernel();
-  const fx = readFixture("anthropic");
-  assert.equal(fx.response.modelReachable, false, "fixture must record the offline condition");
-  for (const c of BENCHMARK_CASES) {
-    // Pure function: no network, no API key, no model call in the attribution path.
-    assert.equal(typeof evaluateSafetyKernel(c).approved, "boolean", `${c.id} must resolve deterministically`);
+test("No model is called anywhere in the attribution path", () => {
+  const files = ["lib/kernel.ts", "lib/lineage.ts", "lib/transcript.ts", "lib/report.ts", "lib/analyze.worker.ts"];
+  for (const f of files) {
+    const src = fs.readFileSync(path.join(root, f), "utf8");
+    assert.doesNotMatch(src, /anthropic|openai|fetch\(/i, `${f} must stay a pure function of the transcript`);
   }
 });

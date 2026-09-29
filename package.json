@@ -10,11 +10,12 @@
     "test": "node --import tsx --test tests/*.test.mjs",
     "verify:evidence": "tsx tools/verify-evidence.ts",
     "claim:verify": "tsx tools/verify-evidence.ts",
-    "verify:system": "tsx tools/verify.ts && tsx tools/verify-evidence.ts",
+    "verify:system": "pnpm test && pnpm claim:verify && pnpm verify:design",
     "verify:design": "python3 scripts/check-design-tokens.py",
     "visual:check": "node scripts/visual-check.js",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "analyze": "tsx tools/analyze.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

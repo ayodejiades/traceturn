@@ -1,223 +1,178 @@
 /**
- * tools/verify-evidence.ts — Independent Evidence & Invariant Verification Suite.
- * Executes every fixture in `evidence/campaign-report.json` and `BENCHMARK_CASES`
- * through the pure deterministic kernel (`lib/kernel.ts`), computes real SHA-256 digests,
- * and writes:
- * - `evidence/campaign-report.json` (updated summary + timestamps + case digests)
- * - `evidence/verification.md`
- * - `evidence/campaign-report.md`
- * - `evidence/sponsor-ablation.md`
- * - `docs/SPONSOR_INTEGRATIONS.md`
- * - `docs/SPONSOR_FINDINGS.md`
- * - `CLAIM_LEDGER.md`
- * - `WHAT_IS_REAL.md`
+ * tools/verify-evidence.ts — re-derive every public number from committed artifacts.
  *
- * Usage: pnpm verify:evidence (or pnpm claim:verify)
+ * Checks, exiting 1 on any drift:
+ *  1. evidence/aivillage-report.json: its sha256 matches its body; the verdict counts
+ *     re-derive from the per-episode ledger; every pinned episode manifest re-derives its
+ *     verdict through the kernel; every origin excerpt is verbatim in its source (INV-1).
+ *  2. evidence/campaign-report.json and BENCHMARK_CASES: each constructed fixture
+ *     resolves to its expected state with all invariants passing.
+ *
+ * Then writes CLAIM_LEDGER.md, WHAT_IS_REAL.md, evidence/verification.md,
+ * evidence/campaign-report.md, evidence/sponsor-ablation.md and the two sponsor docs
+ * from what it just computed, so the prose cannot claim more than the check proved.
+ *
+ * Usage: pnpm claim:verify (alias: pnpm verify:evidence)
  */
-import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import {
-  evaluateDeterministicKernel,
-  evaluateSafetyKernel,
-  BENCHMARK_CASES,
-  type ReconciliationInput,
-} from "../lib/kernel.js";
-import { SPONSORS } from "../lib/sponsors.js";
+import { BENCHMARK_CASES, evaluateDeterministicKernel, evaluateSafetyKernel, type KernelState, type ReconciliationInput } from "../lib/kernel";
+import { episodeManifest, rederive, reportDigest, type LineageReportJson } from "../lib/report";
+import { SPONSORS } from "../lib/sponsors";
 
-const reportPath = path.join(process.cwd(), "evidence", "campaign-report.json");
-if (!fs.existsSync(reportPath)) {
-  console.error("verify:evidence FAILED: evidence/campaign-report.json missing");
+const root = process.cwd();
+const read = (rel: string) => JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
+const write = (rel: string, text: string) => fs.writeFileSync(path.join(root, rel), text.endsWith("\n") ? text : text + "\n");
+const failures: string[] = [];
+const fail = (msg: string) => failures.push(msg);
+
+// 1. AI Village report -------------------------------------------------------
+const village = read("evidence/aivillage-report.json") as LineageReportJson;
+const digest = reportDigest(village);
+if (digest !== village.reportSha256) fail(`aivillage-report.json: body sha256 ${digest.slice(0, 12)} != recorded ${village.reportSha256.slice(0, 12)}`);
+if (village.ledger.length !== village.totals.episodes) fail(`ledger has ${village.ledger.length} rows, totals.episodes says ${village.totals.episodes}`);
+
+const ledgerCounts: Partial<Record<KernelState, number>> = {};
+for (const [, , state, promised, observed] of village.ledger) {
+  ledgerCounts[state] = (ledgerCounts[state] ?? 0) + 1;
+  if (state === "MATERIAL_DRIFT_DETECTED" && !(promised > observed)) fail(`ledger row marked drift without a gap (${promised}/${observed})`);
+}
+for (const state of ["MATERIAL_DRIFT_DETECTED", "ON_TRACK", "BENIGN_CONTROL_NO_DRIFT", "ABSTAIN_AMBIGUOUS_SOURCE"] as const) {
+  if ((ledgerCounts[state] ?? 0) !== village.verdicts[state]) fail(`${state}: ledger ${ledgerCounts[state] ?? 0} != verdicts ${village.verdicts[state]}`);
+}
+
+let manifestsOk = 0;
+let bound = 0;
+for (const e of village.episodes) {
+  const d = rederive(episodeManifest(e));
+  if (d.state === e.state) manifestsOk++;
+  else fail(`${e.id}: manifest re-derives ${d.state}, report says ${e.state}`);
+  const excerpt = e.assertions[0]?.excerpt;
+  if (e.source === null || (excerpt && e.source.includes(excerpt))) bound++;
+  else fail(`${e.id}: origin excerpt not verbatim in its source (INV-1)`);
+}
+
+// 2. Constructed fixtures ------------------------------------------------------
+const campaign = read("evidence/campaign-report.json");
+type CampaignCase = ReconciliationInput & { category: string; title: string; expectedState: string };
+const fixtureRows = [
+  ...(campaign.cases as CampaignCase[]).map((c) => {
+    const d = evaluateDeterministicKernel(c);
+    return { id: c.caseId, category: c.category, expected: c.expectedState, actual: d.state as string, pass: d.state === c.expectedState && d.invariants.every((i) => i.passed) };
+  }),
+  ...BENCHMARK_CASES.map((b) => {
+    const r = evaluateSafetyKernel(b);
+    return { id: b.id, category: b.expectedActionable ? "ACTIONABLE" : "CONTROL", expected: b.expectedActionable ? "actionable" : "not actionable", actual: r.verdict as string, pass: r.approved === b.expectedActionable };
+  }),
+];
+for (const f of fixtureRows) if (!f.pass) fail(`fixture ${f.id}: expected ${f.expected}, kernel ${f.actual}`);
+
+if (failures.length) {
+  console.error(`claim:verify FAILED (${failures.length}):\n  ${failures.join("\n  ")}`);
   process.exit(1);
 }
 
-const rawInputJson = fs.readFileSync(reportPath, "utf8");
-const campaign = JSON.parse(rawInputJson);
+// 3. Write the ledger from what was just proved --------------------------------
+const t = village.totals;
+const v = village.verdicts;
+const pct = (a: number, b: number) => `${((a / b) * 100).toFixed(1)}%`;
+const passing = fixtureRows.length;
+const now = new Date().toISOString();
 
-if (!Array.isArray(campaign.cases) || campaign.cases.length === 0) {
-  console.log("verify:evidence: NOT_RUN: populate fixtures first in evidence/campaign-report.json");
-  process.exit(0);
-}
-
-let passedCases = 0;
-let boundCount = 0;
-let materialDriftCount = 0;
-let benignIgnoredCount = 0;
-let abstentionCount = 0;
-let unverifiedHeldCount = 0;
-let falseVerifiedCount = 0;
-
-const caseResults: Array<{
-  id: string;
-  category: string;
-  expected: string;
-  actual: string;
-  deltaDerivations: number;
-  digest: string;
-  pass: boolean;
-}> = [];
-
-for (const c of campaign.cases as Array<ReconciliationInput & { category: string; expectedState: string }>) {
-  const decision = evaluateDeterministicKernel(c);
-  const pass = decision.state === c.expectedState && decision.invariants.every((i) => i.passed);
-  if (pass) passedCases++;
-  if (decision.excerptBound || decision.state.startsWith("ABSTAIN_")) boundCount++;
-  if (decision.state === "MATERIAL_DRIFT_DETECTED") materialDriftCount++;
-  if (decision.state === "BENIGN_CONTROL_NO_DRIFT") benignIgnoredCount++;
-  if (decision.state.startsWith("ABSTAIN_")) abstentionCount++;
-  if (decision.state === "WAITING_TO_VERIFY") unverifiedHeldCount++;
-  if (c.providerClaimsFixed && !c.subsequentObservationProvesFix && decision.state === "VERIFIED_FIXED") {
-    falseVerifiedCount++;
-  }
-
-  const caseDigest = crypto
-    .createHash("sha256")
-    .update(JSON.stringify({ caseId: c.caseId, state: decision.state, deltaDerivations: decision.deltaDerivations }))
-    .digest("hex");
-
-  caseResults.push({
-    id: c.caseId,
-    category: c.category,
-    expected: c.expectedState,
-    actual: decision.state,
-    deltaDerivations: decision.deltaDerivations,
-    digest: `0x${caseDigest.slice(0, 32)}`,
-    pass,
-  });
-}
-
-// Also evaluate BENCHMARK_CASES from lib/kernel.ts
-const benchmarkEvaluations = BENCHMARK_CASES.map((b) => ({
-  id: b.id,
-  title: b.title,
-  expectedActionable: b.expectedActionable,
-  result: evaluateSafetyKernel(b),
-}));
-
-for (const b of benchmarkEvaluations) {
-  if (b.result.approved !== b.expectedActionable) {
-    console.error(`verify:evidence FAILED: BENCHMARK_CASES mismatch on ${b.id}`);
-    process.exit(1);
-  }
-}
-
-if (passedCases !== campaign.cases.length) {
-  console.error("verify:evidence FAILED: kernel mismatch on campaign cases", caseResults);
-  process.exit(1);
-}
-
-const nowIso = new Date().toISOString();
-const totalEvaluated = campaign.cases.length + benchmarkEvaluations.length;
-
-campaign.generatedAt = nowIso;
-campaign.summary = {
-  evidenceBoundDecisions: `${totalEvaluated} / ${totalEvaluated} (100%)`,
-  materialDriftDetected: `${materialDriftCount + benchmarkEvaluations.filter((b) => b.result.approved).length} / ${materialDriftCount + benchmarkEvaluations.filter((b) => b.expectedActionable).length}`,
-  benignChangesIgnored: `${benignIgnoredCount + benchmarkEvaluations.filter((b) => !b.expectedActionable).length} / ${benignIgnoredCount + benchmarkEvaluations.filter((b) => !b.expectedActionable).length}`,
-  benignChangesFirstRunNote:
-    "Computed live by tools/verify-evidence.ts executing evaluateDeterministicKernel() and evaluateSafetyKernel() across all committed fixtures.",
-  ambiguityAbstention: `${abstentionCount} / ${abstentionCount}`,
-  falseVerifiedClaims: `${falseVerifiedCount} / ${unverifiedHeldCount}`,
-  invariantsPassed: "5 / 5",
-};
-
-const updatedRawJson = JSON.stringify(campaign, null, 2) + "\n";
-fs.writeFileSync(reportPath, updatedRawJson);
-const reportSha256 = crypto.createHash("sha256").update(updatedRawJson).digest("hex");
-
-const verificationMd = [
-  "# Independent Verification & Claim Ledger",
+const ledger = [
+  "# Claim ledger",
   "",
-  "Generated by `pnpm verify:evidence` (`tools/verify-evidence.ts`). Re-evaluates every fixture in `evidence/campaign-report.json` and `BENCHMARK_CASES` through the pure decision kernel (`lib/kernel.ts`).",
+  "Generated by `pnpm claim:verify` (`tools/verify-evidence.ts`). Every line below was re-derived from committed files on this run; the command exits 1 if any of them drifts.",
   "",
-  "- Result: **PASS**",
-  `- Total fixtures executed: **${totalEvaluated}** (${campaign.cases.length} campaign cases + ${benchmarkEvaluations.length} benchmark cases)`,
-  `- campaign-report.json sha256: \`${reportSha256}\``,
-  `- Verified at: ${nowIso}`,
+  `- Verified at: ${now}`,
+  `- evidence/aivillage-report.json sha256: \`${village.reportSha256}\``,
   "",
-  "| Invariant | Result | Computed Evidence |",
+  "## AI Village",
+  "",
+  `Source: ${village.source.citation} Export of ${village.source.exportedAt?.slice(0, 10) ?? "unknown date"}.`,
+  "",
+  "| Claim | Value | How it is checked |",
   "|---|---|---|",
-  `| INV-1: Literal Evidence-Excerpt Binding | PASS | ${boundCount}/${campaign.cases.length} campaign cases + ${benchmarkEvaluations.length}/${benchmarkEvaluations.length} benchmark cases verified |`,
-  `| INV-2: Integer-Cent Exact Arithmetic & Material Drift | PASS | ${campaign.summary.materialDriftDetected} actionable drift cases detected |`,
-  `| INV-3: Provider Claim vs. Verified Fix Separation | PASS | ${campaign.summary.falseVerifiedClaims} unverified claims falsely promoted |`,
-  `| INV-4: Benign Rewrite Suppression | PASS | ${campaign.summary.benignChangesIgnored} cosmetic rewrites suppressed (0 false positives) |`,
-  `| INV-5: Ambiguity & Unbound Excerpt Abstention | PASS | ${campaign.summary.ambiguityAbstention} unbound/ambiguous inputs failed closed |`,
+  `| Messages analysed | ${t.turns.toLocaleString("en-US")} from ${t.agents} agents | Input sha256 recorded per file in the report |`,
+  `| Claims stated by 3+ agents within ${village.params.episodeGapHours}h | ${t.episodes} | Ledger row count equals totals.episodes |`,
+  `| Manufactured agreement | ${v.MATERIAL_DRIFT_DETECTED} of ${t.episodes} | Re-counted from the ledger; every row has promised > observed |`,
+  `| Independently corroborated | ${v.ON_TRACK} | Re-counted from the ledger |`,
+  `| Credited restatement only | ${v.BENIGN_CONTROL_NO_DRIFT} | Re-counted from the ledger |`,
+  `| Abstained (human or scrubbed origin) | ${v.ABSTAIN_AMBIGUOUS_SOURCE} | Re-counted from the ledger |`,
+  `| Restatements with the agent's own observation | ${t.independent} of ${t.restatements} (${pct(t.independent, t.restatements)}) | Report totals, covered by the body sha256 |`,
+  `| Self-reported repairs never confirmed | ${v.WAITING_TO_VERIFY} of ${t.repairs} | Report totals, covered by the body sha256 |`,
+  `| Pinned episode manifests that re-derive | ${manifestsOk} of ${village.episodes.length} | rederive() through the kernel |`,
+  `| Origin excerpts verbatim in source (INV-1) | ${bound} of ${village.episodes.length} | Substring check |`,
+  "",
+  "## Constructed kernel fixtures",
+  "",
+  `${passing} of ${fixtureRows.length} pass. These are hand-written cases that pin each kernel rule; they are not drawn from the corpus.`,
   "",
 ].join("\n");
 
-const campaignMd = [
-  "# Campaign Report",
-  "",
-  "Computed from `evidence/campaign-report.json` and `lib/kernel.ts` by `tools/verify-evidence.ts`.",
-  "",
-  `- Generated: ${nowIso}`,
-  `- Mechanism: ${campaign.mechanismVersion} · mode: ${campaign.verificationMode ?? "DETERMINISTIC_KERNEL_EXECUTION"}`,
-  `- sha256: \`${reportSha256}\``,
-  "",
-  "## Executed Fixture Matrix",
-  "",
-  "| Case ID | Category | Expected State | Kernel Verdict | Delta (c) | Case Digest | Status |",
-  "|---|---|---|---|---|---|---|",
-  ...caseResults.map(
-    (r) =>
-      `| \`${r.id}\` | ${r.category} | \`${r.expected}\` | \`${r.actual}\` | ${r.deltaDerivations}c | \`${r.digest}\` | ${r.pass ? "PASS" : "FAIL"} |`
-  ),
-  "",
-].join("\n");
+write("CLAIM_LEDGER.md", ledger);
+write("evidence/verification.md", ledger);
 
-const sponsorIntegrationsMd = [
-  "# Sponsor Integrations & Load-Bearing Seams",
-  "",
-  "Generated by `pnpm verify:evidence` from `lib/sponsors.ts`.",
-  "",
-  "| Sponsor | Pipeline Seam | Code Path | Status | Full Pipeline Metric | Ablated Fallback Metric |",
-  "|---|---|---|---|---|---|",
-  ...SPONSORS.map(
-    (s) =>
-      `| **${s.name}** | \`${s.seam}\` | \`${s.codePath}\` | \`${s.status}\` | ${s.ablation.fullSystemMetric} | ${s.ablation.removedMetric} |`
-  ),
-  "",
-].join("\n");
-
-const sponsorFindingsMd = [
-  "# Sponsor Integration Field Findings",
-  "",
-  "Concrete engineering findings observed while wiring each sponsor seam and how they are guarded in `lib/kernel.ts`.",
-  "",
-  ...SPONSORS.flatMap((s) => [
-    `## ${s.name} (\`${s.seam}\`)`,
-    `- **Finding**: ${s.finding.title}`,
-    `- **Environment**: ${s.finding.environment}`,
-    `- **Observed**: ${s.finding.observed}`,
-    `- **Deterministic Fix (\`${s.codePath}\`)**: ${s.finding.fixInCode}`,
-    `- **Boundary Honesty (Not Claimed)**: ${s.notClaimed}`,
-    "",
-  ]),
-].join("\n");
-
-fs.mkdirSync(path.join(process.cwd(), "evidence"), { recursive: true });
-fs.mkdirSync(path.join(process.cwd(), "docs"), { recursive: true });
-fs.writeFileSync(path.join(process.cwd(), "evidence", "verification.md"), verificationMd);
-fs.writeFileSync(path.join(process.cwd(), "evidence", "campaign-report.md"), campaignMd);
-fs.writeFileSync(path.join(process.cwd(), "evidence", "sponsor-ablation.md"), sponsorIntegrationsMd);
-fs.writeFileSync(path.join(process.cwd(), "docs", "SPONSOR_INTEGRATIONS.md"), sponsorIntegrationsMd);
-fs.writeFileSync(path.join(process.cwd(), "docs", "SPONSOR_FINDINGS.md"), sponsorFindingsMd);
-fs.writeFileSync(path.join(process.cwd(), "CLAIM_LEDGER.md"), verificationMd);
-fs.writeFileSync(
-  path.join(process.cwd(), "WHAT_IS_REAL.md"),
+write(
+  "evidence/campaign-report.md",
   [
-    "# WHAT_IS_REAL.md — Production Maturity & Boundaries",
+    "# Constructed fixture matrix",
     "",
-    "| Component | Verification Level | Evidence |",
+    "Computed by `tools/verify-evidence.ts` from `evidence/campaign-report.json` and `BENCHMARK_CASES` in `lib/kernel.ts`.",
+    "",
+    "| Case | Category | Expected | Kernel | Status |",
+    "|---|---|---|---|---|",
+    ...fixtureRows.map((r) => `| \`${r.id}\` | ${r.category} | \`${r.expected}\` | \`${r.actual}\` | ${r.pass ? "PASS" : "FAIL"} |`),
+  ].join("\n"),
+);
+
+const sponsorTable = [
+  "# Sponsor integrations",
+  "",
+  "Generated by `pnpm claim:verify` from `lib/sponsors.ts`. No model provider is listed because nothing in the repository calls a model.",
+  "",
+  "| Sponsor | Role | Code | Fixture | Without it |",
+  "|---|---|---|---|---|",
+  ...SPONSORS.map((s) => `| **${s.name}** | ${s.role} | \`${s.codePath}\` | \`${s.fixture}\` | ${s.withoutIt} |`),
+].join("\n");
+write("docs/SPONSOR_INTEGRATIONS.md", sponsorTable);
+write("evidence/sponsor-ablation.md", sponsorTable);
+write(
+  "docs/SPONSOR_FINDINGS.md",
+  [
+    "# Sponsor findings",
+    "",
+    ...SPONSORS.flatMap((s) => [
+      `## ${s.name}`,
+      "",
+      `- **Finding:** ${s.finding.title}`,
+      `- **Observed:** ${s.finding.observed}`,
+      `- **Handled by:** ${s.finding.handledBy}`,
+      `- **Proven:** ${s.proven}`,
+      `- **Not claimed:** ${s.notClaimed}`,
+      "",
+    ]),
+  ].join("\n"),
+);
+
+write(
+  "WHAT_IS_REAL.md",
+  [
+    "# What is real",
+    "",
+    "| Component | Status | Evidence |",
     "|---|---|---|",
-    `| **Deterministic Safety Kernel (\`lib/kernel.ts\`)** | **PROVEN_LOCAL_EXECUTION** | ${totalEvaluated}/${totalEvaluated} fixtures verified across \`INV-1\`..\`INV-5\` (\`pnpm verify:evidence\`) |`,
-    `| **Literal Evidence-Excerpt Binding (\`INV-1\`)** | **PROVEN_LOCAL_EXECUTION** | Unbound or paraphrased excerpts fail closed to \`ABSTAIN_UNBOUND_EXCERPT\` |`,
-    "| **Zero-Signup `/proof`, `/demo`, & `/verify` Surfaces** | **LIVE_IN_BROWSER** | Inspectable in browser with 1-byte tamper detection |",
-    "| **Offline `DEMO_MODE` Fixture Store (`db/index.ts`)** | **LIVE_FALLBACK** | Automatic in-memory fixture store when `DATABASE_URL` is unset |",
-    "",
-  ].join("\n")
+    `| Transcript parser (\`lib/transcript.ts\`) | Runs on the real AI Village corpus | ${t.turns.toLocaleString("en-US")} messages parsed; input sha256 in the report |`,
+    `| Claim lineage engine (\`lib/lineage.ts\`) | Deterministic, no model | ${t.episodes} episodes, re-derived by \`pnpm claim:verify\` |`,
+    `| Kernel (\`lib/kernel.ts\`) | Five invariants on every verdict | ${manifestsOk}/${village.episodes.length} pinned manifests and ${passing}/${fixtureRows.length} fixtures re-derive |`,
+    "| Findings page (`/proof`) | Reads the committed report | No network, no account |",
+    "| Tamper verifier (`/verify`) | Recomputes sha256 and the kernel in the browser | Same `rederive()` as this command |",
+    "| Workspace (`/dashboard`) | Analyses dropped JSONL in a Web Worker | Nothing uploaded; same `buildReport()` as the CLI |",
+    "| Independence classifier | Deterministic phrase matching | Not yet scored against human labels (see docs/HONESTY.md) |",
+    "| Computer-use sessions | Not read | Agents that verified silently count as echoes: independence is a lower bound |",
+  ].join("\n"),
 );
 
 console.log(
-  `verify:evidence: PASS (${totalEvaluated}/${totalEvaluated} total fixtures executed, sha256=${reportSha256.slice(0, 12)}…)`
+  `claim:verify: PASS (AI Village report ${village.reportSha256.slice(0, 12)}…: ${t.episodes} episodes, ${manifestsOk}/${village.episodes.length} manifests, ${bound}/${village.episodes.length} excerpts bound; ${passing}/${fixtureRows.length} fixtures)`,
 );
