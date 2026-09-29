@@ -37,8 +37,9 @@ function Highlighted({ text, claim }: { text: string; claim: string }) {
  *   grey         credits it by name
  *   green ring   an independent path: no incoming edge that carries the claim
  */
-export function LineageView({ episode }: { episode: ReportEpisode }) {
-  const rows = episode.assertions;
+export function LineageView({ episode, limit }: { episode: ReportEpisode; limit?: number }) {
+  // Parents always precede children, so a prefix of the rows is a complete sub-graph.
+  const rows = limit ? episode.assertions.slice(0, limit) : episode.assertions;
   const h = rows.length * ROW;
   const y = (i: number) => i * ROW + 22;
   const origin = rows[0];
@@ -103,6 +104,11 @@ export function LineageView({ episode }: { episode: ReportEpisode }) {
                 </span>
               </div>
               <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-[var(--fg-muted)]">
+                {a.via === "session" && a.session && (
+                  <span className="mr-1 font-mono text-[10px] text-[var(--accent)]" title={`Computer session goal: ${a.session.goal}`}>
+                    [opened a session to check it]
+                  </span>
+                )}
                 {a.excerpt ? (
                   <Highlighted text={plain(a.excerpt)} claim={episode.claim} />
                 ) : (

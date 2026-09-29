@@ -4,9 +4,13 @@ import { useMemo, useState } from "react";
 import { CodeDiff } from "@/components/ui/code-diff";
 import { rederive, type EpisodeManifest } from "@/lib/report";
 import { canonicalJson, sha256Hex } from "@/lib/sha256";
-import { STATE, TONE_TEXT } from "@/lib/tones";
+import { STATE, TONE_TEXT, fmtClaim } from "@/lib/tones";
 
 export interface PinnedManifest {
+  /** Corpus-qualified id: episode ids repeat across reports. */
+  key: string;
+  corpus: string;
+  file: string;
   manifest: EpisodeManifest;
   digest: string;
 }
@@ -55,15 +59,15 @@ function evaluate(text: string, pinned: PinnedManifest): { checks: Check[]; ok: 
   return { checks, ok: checks.every((c) => c.pass) };
 }
 
-export function Verifier({ pinned, initialId }: { pinned: PinnedManifest[]; initialId?: string }) {
-  const [id, setId] = useState(pinned.find((p) => p.manifest.id === initialId)?.manifest.id ?? pinned[0].manifest.id);
-  const current = pinned.find((p) => p.manifest.id === id)!;
+export function Verifier({ pinned, initialKey }: { pinned: PinnedManifest[]; initialKey?: string }) {
+  const [id, setId] = useState(pinned.find((p) => p.key === initialKey)?.key ?? pinned[0].key);
+  const current = pinned.find((p) => p.key === id)!;
   const original = useMemo(() => pretty(current.manifest), [current]);
   const [text, setText] = useState(original);
   const [lastTamper, setLastTamper] = useState<string | null>(null);
 
   const select = (next: string) => {
-    const p = pinned.find((x) => x.manifest.id === next)!;
+    const p = pinned.find((x) => x.key === next)!;
     setId(next);
     setText(pretty(p.manifest));
     setLastTamper(null);
@@ -145,10 +149,16 @@ export function Verifier({ pinned, initialId }: { pinned: PinnedManifest[]; init
               onChange={(e) => select(e.target.value)}
               className="w-full min-w-0 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--fg)]"
             >
-              {pinned.map((p) => (
-                <option key={p.manifest.id} value={p.manifest.id}>
-                  {p.manifest.id} · “{p.manifest.claim}” · {STATE[p.manifest.verdict].label}
-                </option>
+              {[...new Set(pinned.map((p) => p.corpus))].map((corpus) => (
+                <optgroup key={corpus} label={corpus}>
+                  {pinned
+                    .filter((p) => p.corpus === corpus)
+                    .map((p) => (
+                      <option key={p.key} value={p.key}>
+                        {p.manifest.id} · “{fmtClaim(p.manifest.claim)}” · {STATE[p.manifest.verdict].label}
+                      </option>
+                    ))}
+                </optgroup>
               ))}
             </select>
           </label>
@@ -214,7 +224,7 @@ export function Verifier({ pinned, initialId }: { pinned: PinnedManifest[]; init
         </div>
       </div>
 
-      <CodeDiff beforeTitle="Pinned in evidence/aivillage-report.json" afterTitle="What you are verifying" beforeCode={original} afterCode={text} />
+      <CodeDiff beforeTitle={`Pinned in ${current.file}`} afterTitle="What you are verifying" beforeCode={original} afterCode={text} />
     </div>
   );
 }

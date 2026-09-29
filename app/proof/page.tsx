@@ -3,45 +3,73 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-shell";
 import { BTN_GHOST_ON_ART, BTN_PRIMARY, PageHero, Section, SectionHead } from "@/components/page-hero";
 import { ReportView } from "@/components/report-view";
-import { FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE } from "@/lib/evidence";
+import { CORPORA, FIXTURES, FIXTURES_PASSING, type CorpusId } from "@/lib/evidence";
 import { STATE, TONE_TEXT, fmtInt, pct } from "@/lib/tones";
 import type { KernelState } from "@/lib/kernel";
 
 export const metadata: Metadata = {
-  title: "AI Village findings",
-  description: `Claim lineage over ${HEADLINE.messages.toLocaleString("en-US")} AI Village chat messages: who checked, who credited, who echoed.`,
+  title: "Findings",
+  description: "Claim lineage over the AI Village chat corpus and the German Wiki incident: who checked a claim before repeating it.",
 };
 
 const NOT_CLAIMED = [
-  "Independence is a lower bound. An agent that checked privately and did not say so is counted as an echo, never the other way round.",
-  "Most echoed numbers here are probably true. What the report measures is how many agents checked a number before repeating it.",
-  "Claims are quantities (a number and what it counts). Agreement about things with no number in them is out of scope.",
-  "Only the group chat is read. Computer-use sessions, where an agent may have verified silently, are not in this run.",
-  "The classifier is deterministic phrase matching, not a model. It has not been scored against human labels yet.",
+  "Independence is a lower bound. A check is counted when the speaker reports it, or (AI Village) opens a computer session to check that claim. A silent check counts as an echo; an echo is never promoted to a check.",
+  "Most echoed numbers are probably true. What the report measures is how many speakers checked a number before repeating it.",
+  "Claims are numbers: a quantity and what it counts in chat, a bare value on the wiki answer boards. Agreement with no number in it is out of scope.",
+  "On the wiki, one account label is one speaker. Several labels may be one operator; the publishers redacted user names.",
+  "The classifier is deterministic phrase matching, not a model. Its agreement with a hand-labelled sample is in docs/AUDIT.md.",
 ];
 
-export default async function ProofPage({ searchParams }: { searchParams: Promise<{ ep?: string }> }) {
-  const { ep } = await searchParams;
-  const v = VILLAGE.verdicts;
+const HERO: Record<CorpusId, (c: (typeof CORPORA)[CorpusId]) => { eyebrow: string; title: string; lede: string }> = {
+  aivillage: (c) => ({
+    eyebrow: "Findings · AI Village",
+    title: `Only ${pct(c.report.totals.independent, c.report.totals.restatements)} of repeated claims were reported as checked`,
+    lede: `${fmtInt(c.report.totals.episodes)} claims that three or more agents stated within 72 hours of each other, traced statement by statement through ${fmtInt(c.report.totals.turns)} messages and ${fmtInt(c.report.totals.sessions)} computer sessions.`,
+  }),
+  collusion: (c) => ({
+    eyebrow: "Findings · German Wiki incident",
+    title: `${fmtInt(c.report.totals.echoed)} answers repeated, ${c.report.totals.independent} checked`,
+    lede: `${fmtInt(c.report.totals.turns)} wiki edits by ${fmtInt(c.report.totals.agents)} account labels, counting only the lines each edit added. ${fmtInt(c.report.verdicts.MATERIAL_DRIFT_DETECTED)} shared values trace to a single first post.`,
+  }),
+};
+
+export default async function ProofPage({ searchParams }: { searchParams: Promise<{ ep?: string; corpus?: string }> }) {
+  const { ep, corpus: requested } = await searchParams;
+  const id: CorpusId = requested === "collusion" ? "collusion" : "aivillage";
+  const corpus = CORPORA[id];
+  const report = corpus.report;
+  const hero = HERO[id](corpus);
+  const v = report.verdicts;
   const strip: { state: KernelState; n: number }[] = [
     { state: "MATERIAL_DRIFT_DETECTED", n: v.MATERIAL_DRIFT_DETECTED },
     { state: "BENIGN_CONTROL_NO_DRIFT", n: v.BENIGN_CONTROL_NO_DRIFT },
     { state: "ON_TRACK", n: v.ON_TRACK },
-    { state: "ABSTAIN_AMBIGUOUS_SOURCE", n: v.ABSTAIN_AMBIGUOUS_SOURCE },
+    id === "aivillage"
+      ? { state: "WAITING_TO_VERIFY", n: v.WAITING_TO_VERIFY }
+      : { state: "ABSTAIN_AMBIGUOUS_SOURCE", n: v.ABSTAIN_AMBIGUOUS_SOURCE },
   ];
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
-      <PageHero
-        eyebrow="Findings · AI Village"
-        title={`Only ${pct(HEADLINE.independent, HEADLINE.restatements)} of repeated claims were reported as checked`}
-        lede={`${fmtInt(HEADLINE.episodes)} claims that three or more agents stated within 72 hours of each other, traced statement by statement through ${fmtInt(HEADLINE.messages)} messages.`}
-      >
-        <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+      <PageHero eyebrow={hero.eyebrow} title={hero.title} lede={hero.lede}>
+        <nav aria-label="Corpus" className="mt-7 inline-flex rounded-full border border-white/20 bg-[var(--bg)]/60 p-1 backdrop-blur-md">
+          {(Object.keys(CORPORA) as CorpusId[]).map((c) => (
+            <Link
+              key={c}
+              href={`/proof?corpus=${c}#episodes`}
+              aria-current={c === id ? "page" : undefined}
+              data-demo={`corpus-${c}`}
+              className="inline-flex min-h-11 items-center rounded-full px-5 text-sm font-medium text-white/80 transition-colors hover:text-white aria-[current=page]:bg-[var(--accent)] aria-[current=page]:text-[var(--accent-contrast)]"
+            >
+              {CORPORA[c].name}
+            </Link>
+          ))}
+        </nav>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
           <a href="#episodes" className={BTN_PRIMARY}>
             Read the lineages
           </a>
-          <Link href="/verify" className={BTN_GHOST_ON_ART}>
+          <Link href={`/verify?corpus=${id}`} className={BTN_GHOST_ON_ART}>
             Tamper-check a verdict
           </Link>
         </div>
@@ -62,11 +90,11 @@ export default async function ProofPage({ searchParams }: { searchParams: Promis
 
         <Section id="episodes">
           <SectionHead
-            eyebrow="The evidence"
+            eyebrow={`The evidence · ${corpus.name}`}
             title="Every statement, in order, with its source"
-            lede={`The ${VILLAGE.episodes.length} lineages below are the widest gaps plus every kind of control. All ${fmtInt(HEADLINE.episodes)} verdicts are in the report's ledger.`}
+            lede={`The ${report.episodes.length} lineages below are the widest gaps plus every kind of control. All ${fmtInt(report.totals.episodes)} verdicts are in the report's ledger.`}
           />
-          <ReportView report={VILLAGE} initialEpisode={ep} verifyLinks />
+          <ReportView key={id} report={report} initialEpisode={ep} verifyCorpus={id} actor={corpus.actor} />
         </Section>
 
         <Section id="fixtures" band>
@@ -109,24 +137,24 @@ export default async function ProofPage({ searchParams }: { searchParams: Promis
             <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
               <h3 className="text-base font-semibold text-[var(--fg)]">Source data</h3>
               <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">
-                {VILLAGE.source.citation} Gated research release
-                {VILLAGE.source.exportedAt ? `, export of ${VILLAGE.source.exportedAt.slice(0, 10)}` : ""}. The corpus is not in this
-                repository; the report quotes single sentences from agent messages and never quotes a human.
+                {report.source.citation}
+                {report.source.exportedAt ? ` Export of ${report.source.exportedAt.slice(0, 10)}.` : ""} The raw data is not in this repository;
+                the report quotes single sentences written by {corpus.actors} and never quotes a human.
               </p>
               <dl className="mt-4 space-y-2 font-mono text-[11px]">
-                {VILLAGE.inputs.map((i) => (
+                {report.inputs.map((i) => (
                   <div key={i.file} className="flex flex-wrap justify-between gap-2">
                     <dt className="text-[var(--fg-muted)]">{i.file}</dt>
                     <dd className="break-all text-[var(--fg-subtle)]">sha256 {i.sha256.slice(0, 24)}…</dd>
                   </div>
                 ))}
                 <div className="flex flex-wrap justify-between gap-2 border-t border-[var(--border)] pt-2">
-                  <dt className="text-[var(--fg-muted)]">evidence/aivillage-report.json</dt>
-                  <dd className="break-all text-[var(--accent)]">sha256 {VILLAGE.reportSha256.slice(0, 24)}…</dd>
+                  <dt className="text-[var(--fg-muted)]">evidence/{id}-report.json</dt>
+                  <dd className="break-all text-[var(--accent)]">sha256 {report.reportSha256.slice(0, 24)}…</dd>
                 </div>
               </dl>
               <pre className="mt-5 overflow-x-auto rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg)] p-3 font-mono text-[11px] leading-relaxed text-[var(--fg-muted)]">
-{`pnpm analyze        # re-run over data/aivillage/
+{`pnpm analyze${id === "collusion" ? " collusion" : "          "}   # re-run over data/${id}/
 pnpm claim:verify   # re-derive every total from the ledger`}
               </pre>
             </div>
@@ -140,8 +168,8 @@ pnpm claim:verify   # re-derive every total from the ledger`}
                 ))}
               </ul>
               <p className="mt-4 font-mono text-[11px] text-[var(--fg-subtle)]">
-                Parameters: episode gap {VILLAGE.params.episodeGapHours}h · min speakers {VILLAGE.params.minSpeakers} · copy shingle{" "}
-                {VILLAGE.params.shingleWords} words
+                Parameters: claim key {report.params.claimKey} · episode gap {report.params.episodeGapHours}h · min speakers{" "}
+                {report.params.minSpeakers} · copy shingle {report.params.shingleWords} words
               </p>
             </div>
           </div>

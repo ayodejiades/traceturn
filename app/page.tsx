@@ -5,8 +5,8 @@ import { BTN_GHOST_ON_ART, BTN_PRIMARY, BTN_SECONDARY, PageHero, Section, Sectio
 import { PipelineFlow } from "@/components/ui/pipeline-flow";
 import { TelemetryTile } from "@/components/ui/telemetry-tile";
 import { SAFETY_INVARIANTS } from "@/lib/kernel";
-import { FEATURED, FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE } from "@/lib/evidence";
-import { ROLE, TONE_TEXT, fmtInt, pct } from "@/lib/tones";
+import { FEATURED, FEATURED_WIKI, FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE, WIKI_HEADLINE } from "@/lib/evidence";
+import { ROLE, TONE_TEXT, fmtClaim, fmtInt, pct, plain } from "@/lib/tones";
 
 const STATS = [
   {
@@ -17,7 +17,7 @@ const STATS = [
   {
     value: pct(HEADLINE.independent, HEADLINE.restatements),
     label: "Repeats with the agent's own check",
-    sub: `${fmtInt(HEADLINE.independent)} of ${fmtInt(HEADLINE.restatements)} restatements`,
+    sub: `${fmtInt(HEADLINE.independent)} of ${fmtInt(HEADLINE.restatements)}, ${VILLAGE.totals.independentBySession} via a computer session`,
   },
   {
     value: fmtInt(HEADLINE.echoed),
@@ -59,7 +59,7 @@ export default function HomePage() {
           </Link>
         </div>
         <p className="mt-5 font-mono text-xs text-white/80 [text-shadow:0_1px_10px_rgba(16,13,10,0.9)]">
-          Run on {fmtInt(HEADLINE.messages)} AI Village messages from {HEADLINE.agents} agents
+          Run on {fmtInt(HEADLINE.messages)} AI Village messages and {fmtInt(WIKI_HEADLINE.edits)} German Wiki incident edits
         </p>
       </PageHero>
 
@@ -69,14 +69,14 @@ export default function HomePage() {
             eyebrow="From the AI Village corpus"
             title={
               <>
-                {FEATURED.promised} agents stated “{FEATURED.claim}”. {rechecked === 0 ? "None" : rechecked === 1 ? "One" : rechecked}{" "}
+                {FEATURED.promised} agents stated “{fmtClaim(FEATURED.claim)}”. {rechecked === 0 ? "None" : rechecked === 1 ? "One" : rechecked}{" "}
                 re-checked it.
               </>
             }
             lede="Each agent's first statement of the number, in time order. The kernel counts who reported their own observation, who named a source, and who repeated it as fact with neither."
           />
           <div className="mx-auto max-w-[56rem]">
-            <LineageGraph episode={FEATURED} />
+            <LineageGraph episode={FEATURED} corpus="aivillage" />
           </div>
         </Section>
 
@@ -114,6 +114,33 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <Section>
+          <SectionHead
+            eyebrow="From the German Wiki incident"
+            title={
+              <>
+                One account guessed {fmtClaim(FEATURED_WIKI.claim)}. {FEATURED_WIKI.promised - 1} more submitted it.
+              </>
+            }
+            lede={
+              <>
+                Agents used a public wiki as an answer board. The first post of this value said{" "}
+                <q className="text-[var(--fg)]">{plain(FEATURED_WIKI.assertions[0].excerpt ?? "").slice(0, 110)}…</q> None of the accounts
+                that repeated it reported checking it. Of those that logged both times, most answered one second after the question
+                arrived; others held it &ldquo;cached&rdquo; before the question came.
+              </>
+            }
+          />
+          <div className="mx-auto max-w-[56rem]">
+            <LineageGraph episode={FEATURED_WIKI} corpus="collusion" />
+          </div>
+          <p className="mx-auto mt-6 max-w-[var(--measure)] text-center text-sm text-[var(--fg-muted)]">
+            Across {fmtInt(WIKI_HEADLINE.edits)} edits by {fmtInt(WIKI_HEADLINE.accounts)} account labels, {fmtInt(WIKI_HEADLINE.drift)} shared
+            values trace to one first post, and {WIKI_HEADLINE.independent} of {fmtInt(WIKI_HEADLINE.restatements)} repeats carry a check of
+            their own.
+          </p>
+        </Section>
 
         <Section id="method">
           <SectionHead

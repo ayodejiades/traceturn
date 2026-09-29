@@ -26,31 +26,40 @@ const write = (rel: string, text: string) => fs.writeFileSync(path.join(root, re
 const failures: string[] = [];
 const fail = (msg: string) => failures.push(msg);
 
-// 1. AI Village report -------------------------------------------------------
-const village = read("evidence/aivillage-report.json") as LineageReportJson;
-const digest = reportDigest(village);
-if (digest !== village.reportSha256) fail(`aivillage-report.json: body sha256 ${digest.slice(0, 12)} != recorded ${village.reportSha256.slice(0, 12)}`);
-if (village.ledger.length !== village.totals.episodes) fail(`ledger has ${village.ledger.length} rows, totals.episodes says ${village.totals.episodes}`);
+// 1. Real-corpus reports ----------------------------------------------------
+function checkReport(name: string) {
+  const report = read(`evidence/${name}-report.json`) as LineageReportJson;
+  const tag = `${name}-report.json`;
+  const digest = reportDigest(report);
+  if (digest !== report.reportSha256) fail(`${tag}: body sha256 ${digest.slice(0, 12)} != recorded ${report.reportSha256.slice(0, 12)}`);
+  if (report.ledger.length !== report.totals.episodes) fail(`${tag}: ledger has ${report.ledger.length} rows, totals.episodes says ${report.totals.episodes}`);
 
-const ledgerCounts: Partial<Record<KernelState, number>> = {};
-for (const [, , state, promised, observed] of village.ledger) {
-  ledgerCounts[state] = (ledgerCounts[state] ?? 0) + 1;
-  if (state === "MATERIAL_DRIFT_DETECTED" && !(promised > observed)) fail(`ledger row marked drift without a gap (${promised}/${observed})`);
-}
-for (const state of ["MATERIAL_DRIFT_DETECTED", "ON_TRACK", "BENIGN_CONTROL_NO_DRIFT", "ABSTAIN_AMBIGUOUS_SOURCE"] as const) {
-  if ((ledgerCounts[state] ?? 0) !== village.verdicts[state]) fail(`${state}: ledger ${ledgerCounts[state] ?? 0} != verdicts ${village.verdicts[state]}`);
+  const ledgerCounts: Partial<Record<KernelState, number>> = {};
+  for (const [, , state, promised, observed] of report.ledger) {
+    ledgerCounts[state] = (ledgerCounts[state] ?? 0) + 1;
+    if (state === "MATERIAL_DRIFT_DETECTED" && !(promised > observed)) fail(`${tag}: ledger row marked drift without a gap (${promised}/${observed})`);
+  }
+  for (const state of ["MATERIAL_DRIFT_DETECTED", "ON_TRACK", "BENIGN_CONTROL_NO_DRIFT", "ABSTAIN_AMBIGUOUS_SOURCE"] as const) {
+    if ((ledgerCounts[state] ?? 0) !== report.verdicts[state]) fail(`${tag} ${state}: ledger ${ledgerCounts[state] ?? 0} != verdicts ${report.verdicts[state]}`);
+  }
+
+  let manifestsOk = 0;
+  let bound = 0;
+  for (const e of report.episodes) {
+    const d = rederive(episodeManifest(e));
+    if (d.state === e.state) manifestsOk++;
+    else fail(`${tag} ${e.id}: manifest re-derives ${d.state}, report says ${e.state}`);
+    const excerpt = e.assertions[0]?.excerpt;
+    if (e.source === null || (excerpt && e.source.includes(excerpt))) bound++;
+    else fail(`${tag} ${e.id}: origin excerpt not verbatim in its source (INV-1)`);
+  }
+  return { report, manifestsOk, bound };
 }
 
-let manifestsOk = 0;
-let bound = 0;
-for (const e of village.episodes) {
-  const d = rederive(episodeManifest(e));
-  if (d.state === e.state) manifestsOk++;
-  else fail(`${e.id}: manifest re-derives ${d.state}, report says ${e.state}`);
-  const excerpt = e.assertions[0]?.excerpt;
-  if (e.source === null || (excerpt && e.source.includes(excerpt))) bound++;
-  else fail(`${e.id}: origin excerpt not verbatim in its source (INV-1)`);
-}
+const V = checkReport("aivillage");
+const W = checkReport("collusion");
+const village = V.report;
+const wiki = W.report;
 
 // 2. Constructed fixtures ------------------------------------------------------
 const campaign = read("evidence/campaign-report.json");
@@ -86,6 +95,7 @@ const ledger = [
   "",
   `- Verified at: ${now}`,
   `- evidence/aivillage-report.json sha256: \`${village.reportSha256}\``,
+  `- evidence/collusion-report.json sha256: \`${wiki.reportSha256}\``,
   "",
   "## AI Village",
   "",
@@ -99,10 +109,23 @@ const ledger = [
   `| Independently corroborated | ${v.ON_TRACK} | Re-counted from the ledger |`,
   `| Credited restatement only | ${v.BENIGN_CONTROL_NO_DRIFT} | Re-counted from the ledger |`,
   `| Abstained (human or scrubbed origin) | ${v.ABSTAIN_AMBIGUOUS_SOURCE} | Re-counted from the ledger |`,
-  `| Restatements with the agent's own observation | ${t.independent} of ${t.restatements} (${pct(t.independent, t.restatements)}) | Report totals, covered by the body sha256 |`,
+  `| Restatements with the agent's own check | ${t.independent} of ${t.restatements} (${pct(t.independent, t.restatements)}); ${t.independentBySession} of them via a computer session | Report totals, covered by the body sha256 |`,
   `| Self-reported repairs never confirmed | ${v.WAITING_TO_VERIFY} of ${t.repairs} | Report totals, covered by the body sha256 |`,
-  `| Pinned episode manifests that re-derive | ${manifestsOk} of ${village.episodes.length} | rederive() through the kernel |`,
-  `| Origin excerpts verbatim in source (INV-1) | ${bound} of ${village.episodes.length} | Substring check |`,
+  `| Pinned episode manifests that re-derive | ${V.manifestsOk} of ${village.episodes.length} | rederive() through the kernel |`,
+  `| Origin excerpts verbatim in source (INV-1) | ${V.bound} of ${village.episodes.length} | Substring check |`,
+  "",
+  "## German Wiki incident",
+  "",
+  `Source: ${wiki.source.citation} Export generated ${wiki.source.exportedAt?.slice(0, 10) ?? "unknown date"}. Only the lines each edit inserted are read.`,
+  "",
+  "| Claim | Value | How it is checked |",
+  "|---|---|---|",
+  `| Wiki edits analysed | ${wiki.totals.turns.toLocaleString("en-US")} by ${wiki.totals.agents.toLocaleString("en-US")} account labels | Input sha256 recorded in the report |`,
+  `| Values stated by 3+ accounts within ${wiki.params.episodeGapHours}h | ${wiki.totals.episodes} | Ledger row count equals totals.episodes |`,
+  `| Traced to a single first post | ${wiki.verdicts.MATERIAL_DRIFT_DETECTED} of ${wiki.totals.episodes} | Re-counted from the ledger |`,
+  `| Repeats with a check of their own | ${wiki.totals.independent} of ${wiki.totals.restatements} | Report totals, covered by the body sha256 |`,
+  `| Pinned episode manifests that re-derive | ${W.manifestsOk} of ${wiki.episodes.length} | rederive() through the kernel |`,
+  `| Origin excerpts verbatim in source (INV-1) | ${W.bound} of ${wiki.episodes.length} | Substring check |`,
   "",
   "## Constructed kernel fixtures",
   "",
@@ -164,15 +187,16 @@ write(
     "|---|---|---|",
     `| Transcript parser (\`lib/transcript.ts\`) | Runs on the real AI Village corpus | ${t.turns.toLocaleString("en-US")} messages parsed; input sha256 in the report |`,
     `| Claim lineage engine (\`lib/lineage.ts\`) | Deterministic, no model | ${t.episodes} episodes, re-derived by \`pnpm claim:verify\` |`,
-    `| Kernel (\`lib/kernel.ts\`) | Five invariants on every verdict | ${manifestsOk}/${village.episodes.length} pinned manifests and ${passing}/${fixtureRows.length} fixtures re-derive |`,
+    `| Kernel (\`lib/kernel.ts\`) | Five invariants on every verdict | ${V.manifestsOk + W.manifestsOk}/${village.episodes.length + wiki.episodes.length} pinned manifests and ${passing}/${fixtureRows.length} fixtures re-derive |`,
+    `| German Wiki adapter | Reads collusion.wiki revisions, inserted lines only | ${wiki.totals.turns.toLocaleString("en-US")} edits; ${wiki.totals.episodes} episodes re-derived |`,
     "| Findings page (`/proof`) | Reads the committed report | No network, no account |",
     "| Tamper verifier (`/verify`) | Recomputes sha256 and the kernel in the browser | Same `rederive()` as this command |",
     "| Workspace (`/dashboard`) | Analyses dropped JSONL in a Web Worker | Nothing uploaded; same `buildReport()` as the CLI |",
     "| Independence classifier | Deterministic phrase matching | Not yet scored against human labels (see docs/HONESTY.md) |",
-    "| Computer-use sessions | Not read | Agents that verified silently count as echoes: independence is a lower bound |",
+    `| Computer-use sessions | Read as evidence of a check | ${t.independentBySession} of ${t.independent} AI Village checks rest on a session goal naming the claim; independence is still a lower bound |`,
   ].join("\n"),
 );
 
 console.log(
-  `claim:verify: PASS (AI Village report ${village.reportSha256.slice(0, 12)}…: ${t.episodes} episodes, ${manifestsOk}/${village.episodes.length} manifests, ${bound}/${village.episodes.length} excerpts bound; ${passing}/${fixtureRows.length} fixtures)`,
+  `claim:verify: PASS (AI Village ${village.reportSha256.slice(0, 12)}…: ${t.episodes} episodes, ${V.manifestsOk}/${village.episodes.length} manifests; German Wiki ${wiki.reportSha256.slice(0, 12)}…: ${wiki.totals.episodes} episodes, ${W.manifestsOk}/${wiki.episodes.length} manifests; ${passing}/${fixtureRows.length} fixtures)`,
 );

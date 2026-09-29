@@ -17,6 +17,9 @@ export interface ReportAssertion {
   edge: "copies" | "cites" | "exposed" | null;
   /** Verbatim sentence from the turn; null for human messages, which are never quoted. */
   excerpt: string | null;
+  /** For checked statements: the agent's own words, or a computer-use session it opened. */
+  via?: "statement" | "session";
+  session?: { id: string; at: string; goal: string };
 }
 
 export interface ReportEpisode {
@@ -73,6 +76,9 @@ export interface LineageReportJson {
     episodes: number;
     restatements: number;
     independent: number;
+    /** Of `independent`, how many rest on a computer-use session rather than the agent's words. */
+    independentBySession: number;
+    sessions: number;
     cited: number;
     echoed: number;
     repairs: number;
@@ -135,6 +141,8 @@ function exportEpisode(e: Episode, days?: Map<string, number>): ReportEpisode {
       parent: a.parent,
       edge: a.edge,
       excerpt: a.human ? null : a.excerpt,
+      ...(a.via ? { via: a.via } : {}),
+      ...(a.session ? { session: { id: a.session.id, at: iso(a.session.ts), goal: a.session.goal } } : {}),
     })),
   };
 }
@@ -157,7 +165,9 @@ function exportRepair(r: RepairClaim, days?: Map<string, number>): ReportRepair 
 }
 
 export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageReportJson {
-  const report = analyzeLineage(parsed.turns, opts.params);
+  // Answer boards pass bare values; chat passes quantities (see ClaimKey).
+  const params = { claimKey: parsed.format === "collusion-wiki" ? ("value" as const) : ("quantity" as const), ...opts.params };
+  const report = analyzeLineage(parsed.turns, params, parsed.sessions);
   const days = opts.dayByDate;
   const byState = (s: KernelState) => report.episodes.filter((e) => e.decision.state === s);
   const drift = byState("MATERIAL_DRIFT_DETECTED");
@@ -205,6 +215,8 @@ export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageRep
       episodes: report.episodes.length,
       restatements: restated.length,
       independent: roleCount("INDEPENDENT"),
+      independentBySession: restated.filter((a) => a.via === "session").length,
+      sessions: parsed.sessions.length,
       cited: roleCount("CITED"),
       echoed: roleCount("ECHO"),
       repairs: report.repairs.length,

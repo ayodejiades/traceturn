@@ -3,16 +3,38 @@
  *
  * - VILLAGE: evidence/aivillage-report.json, produced by `pnpm analyze` over the real
  *   AI Village chat corpus and re-derived by `pnpm claim:verify`.
+ * - WIKI: evidence/collusion-report.json, produced by `pnpm analyze collusion` over the
+ *   German Wiki incident export from collusion.wiki.
  * - FIXTURES: the constructed kernel test cases in evidence/campaign-report.json plus
  *   BENCHMARK_CASES, evaluated here at import time, so the count and the pass/fail
  *   shown on a page are whatever the kernel returns now.
  */
 import villageJson from "@/evidence/aivillage-report.json";
+import collusionJson from "@/evidence/collusion-report.json";
 import campaignJson from "@/evidence/campaign-report.json";
 import { BENCHMARK_CASES, evaluateDeterministicKernel, evaluateSafetyKernel, type ReconciliationInput } from "./kernel";
 import type { LineageReportJson } from "./report";
 
 export const VILLAGE = villageJson as unknown as LineageReportJson;
+export const COLLUSION = collusionJson as unknown as LineageReportJson;
+
+export type CorpusId = "aivillage" | "collusion";
+
+export interface Corpus {
+  id: CorpusId;
+  name: string;
+  /** What one speaker is: named agents in the village, pseudonymous accounts on the wiki. */
+  actor: string;
+  actors: string;
+  /** What one turn is. */
+  turnNoun: string;
+  report: LineageReportJson;
+}
+
+export const CORPORA: Record<CorpusId, Corpus> = {
+  aivillage: { id: "aivillage", name: "AI Village", actor: "agent", actors: "agents", turnNoun: "messages", report: VILLAGE },
+  collusion: { id: "collusion", name: "German Wiki incident", actor: "account", actors: "accounts", turnNoun: "wiki edits", report: COLLUSION },
+};
 
 const t = VILLAGE.totals;
 const v = VILLAGE.verdicts;
@@ -38,6 +60,28 @@ export const HEADLINE = {
 export const FEATURED =
   VILLAGE.episodes.find((e) => e.state === "MATERIAL_DRIFT_DETECTED" && e.source && e.assertions.length >= 6) ??
   VILLAGE.episodes[0];
+
+const w = COLLUSION.totals;
+
+export const WIKI_HEADLINE = {
+  edits: w.turns,
+  accounts: w.agents,
+  from: w.from.slice(0, 10),
+  to: w.to.slice(0, 10),
+  episodes: w.episodes,
+  drift: COLLUSION.verdicts.MATERIAL_DRIFT_DETECTED,
+  restatements: w.restatements,
+  independent: w.independent,
+  echoed: w.echoed,
+};
+
+/**
+ * The wiki's featured lineage: a value its origin posted as a guess ("Hypothesis only",
+ * "may be", "likely") that other accounts then submitted as their answer. Falls back to
+ * the widest episode if no origin hedges.
+ */
+export const FEATURED_WIKI =
+  COLLUSION.episodes.find((e) => /hypothes|may be|likely|guess/i.test(e.assertions[0]?.excerpt ?? "")) ?? COLLUSION.episodes[0];
 
 type CampaignCase = ReconciliationInput & { category: string; title: string; expectedState: string };
 

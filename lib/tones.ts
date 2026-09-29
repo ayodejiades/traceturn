@@ -51,6 +51,10 @@ export const ROLE: Record<Role, { label: string; tone: Tone; help: string }> = {
  */
 export const plain = (s: string) => s.replace(/\*\*|__|`/g, "").replace(/^\s*[-*]\s+/, "");
 
+/** Claim keys store bare digits ("34770", "$19291176969.27"); show them grouped. */
+export const fmtClaim = (claim: string) =>
+  claim.replace(/^([$£€]?)(\d+)/, (_, cur: string, int: string) => cur + int.replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
 export const fmtInt = (n: number) => n.toLocaleString("en-US");
 
 export const pct = (part: number, whole: number, digits = 1) =>

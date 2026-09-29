@@ -1,7 +1,8 @@
 /**
  * tools/analyze.ts — run claim lineage over a transcript and write committed evidence.
  *
- *   pnpm analyze                      # AI Village: data/aivillage/{agents,chat_messages}.jsonl.gz
+ *   pnpm analyze                      # AI Village: data/aivillage/{agents,chat_messages,computer_use_sessions}.jsonl.gz
+ *   pnpm analyze collusion            # German Wiki incident: data/collusion/revisions.jsonl.gz
  *   pnpm analyze path/to/log.jsonl    # any multi-agent JSONL (.jsonl or .jsonl.gz)
  *
  * AI Village is gated (huggingface.co/datasets/aidigestorg/ai-village). With access:
@@ -11,7 +12,10 @@
  * short sentences from agent messages (never human ones) and cites the dataset as its
  * terms ask.
  *
- * Writes evidence/aivillage-report.json (or evidence/<name>-report.json for other input).
+ * collusion.wiki publishes its export at https://collusion.wiki/explorer/download; fetch
+ * revisions.jsonl.gz into data/collusion/ and check it against the SHA256SUMS on that page.
+ *
+ * Writes evidence/<name>-report.json: aivillage, collusion, or the input file's name.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -24,9 +28,18 @@ const root = process.cwd();
 const dataDir = path.join(root, "data", "aivillage");
 const args = process.argv.slice(2);
 const isVillage = args.length === 0;
+const isCollusion = args.length === 1 && args[0] === "collusion";
+const sessionsFile = path.join(dataDir, "computer_use_sessions.jsonl.gz");
 const inputs = isVillage
-  ? [path.join(dataDir, "agents.jsonl.gz"), path.join(dataDir, "chat_messages.jsonl.gz")]
-  : args.map((a) => path.resolve(a));
+  ? [
+      path.join(dataDir, "agents.jsonl.gz"),
+      path.join(dataDir, "chat_messages.jsonl.gz"),
+      // Optional: sessions let an agent's silent check count as an independent path.
+      ...(fs.existsSync(sessionsFile) ? [sessionsFile] : []),
+    ]
+  : isCollusion
+    ? [path.join(root, "data", "collusion", "revisions.jsonl.gz")]
+    : args.map((a) => path.resolve(a));
 
 for (const f of inputs) {
   if (!fs.existsSync(f)) {
@@ -70,12 +83,19 @@ const report = buildReport(parsed, {
         dataset: "https://huggingface.co/datasets/aidigestorg/ai-village",
         exportedAt: manifest?.exportedAt ?? null,
       }
-    : { name: path.basename(inputs[0]), citation: null, dataset: null, exportedAt: null },
+    : isCollusion
+      ? {
+          name: "German Wiki incident (collusion.wiki)",
+          citation: "collusion.wiki, German Wiki incident export (revisions.jsonl), user names and half of every IP redacted by the publishers. https://collusion.wiki/",
+          dataset: "https://collusion.wiki/explorer/download",
+          exportedAt: JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(root, "data", "collusion", "manifest.json.gz"))).toString()).generated_at ?? null,
+        }
+      : { name: path.basename(inputs[0]), citation: null, dataset: null, exportedAt: null },
   inputs: loaded.map(({ file, sha256 }) => ({ file, sha256 })),
   dayByDate,
 });
 
-const name = isVillage ? "aivillage" : path.basename(inputs[0]).replace(/\.jsonl(\.gz)?$/, "");
+const name = isVillage ? "aivillage" : isCollusion ? "collusion" : path.basename(inputs[0]).replace(/\.jsonl(\.gz)?$/, "");
 const outPath = path.join(root, "evidence", `${name}-report.json`);
 fs.writeFileSync(outPath, JSON.stringify(report, null, 2) + "\n");
 

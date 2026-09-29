@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { KernelState } from "@/lib/kernel";
 import type { LineageReportJson, ReportEpisode } from "@/lib/report";
 import { LineageLegend, LineageView } from "@/components/lineage-view";
-import { STATE, TONE_TEXT, fmtAt, fmtInt, pct, plain } from "@/lib/tones";
+import { STATE, TONE_TEXT, fmtAt, fmtClaim, fmtInt, pct, plain } from "@/lib/tones";
 
 type Tab = "episodes" | "repairs" | "agents";
 
@@ -54,12 +54,16 @@ function SourceBinding({ episode }: { episode: ReportEpisode }) {
   );
 }
 
+const ROW_LIMIT = 12;
+
 function EpisodeDetail({ episode, verifyHref }: { episode: ReportEpisode; verifyHref?: string }) {
+  const [all, setAll] = useState(false);
+  const hidden = episode.assertions.length - ROW_LIMIT;
   return (
     <div className="flex flex-col gap-5">
       <div>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="tnum text-2xl font-semibold tracking-tight text-[var(--fg)]">“{episode.claim}”</h3>
+          <h3 className="tnum text-2xl font-semibold tracking-tight text-[var(--fg)]">“{fmtClaim(episode.claim)}”</h3>
           <StateTag state={episode.state} />
         </div>
         <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">{episode.summary}</p>
@@ -87,8 +91,18 @@ function EpisodeDetail({ episode, verifyHref }: { episode: ReportEpisode; verify
       <LineageLegend />
 
       <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--bg)] px-3">
-        <LineageView episode={episode} />
+        <LineageView episode={episode} limit={all ? undefined : ROW_LIMIT} />
       </div>
+      {hidden > 0 && (
+        <button
+          type="button"
+          onClick={() => setAll((v) => !v)}
+          aria-expanded={all}
+          className="-mt-2 self-start rounded-full border border-[var(--border)] px-4 py-2 text-xs text-[var(--fg-muted)] hover:border-[var(--border-strong)] hover:text-[var(--fg)]"
+        >
+          {all ? "Show the first 12 statements" : `Show all ${episode.assertions.length} statements (${hidden} more)`}
+        </button>
+      )}
 
       <details className="group rounded-[var(--radius)] border border-[var(--border)] bg-[var(--bg)] p-4">
         <summary className="cursor-pointer text-xs font-medium text-[var(--fg)]">
@@ -105,12 +119,15 @@ function EpisodeDetail({ episode, verifyHref }: { episode: ReportEpisode; verify
 export function ReportView({
   report,
   initialEpisode,
-  verifyLinks = false,
+  verifyCorpus,
+  actor = "agent",
 }: {
   report: LineageReportJson;
   initialEpisode?: string;
-  /** Link each episode to /verify (only for the committed report, which /verify can load). */
-  verifyLinks?: boolean;
+  /** What one speaker is called in this corpus: "agent" or "account". */
+  actor?: string;
+  /** Link each episode to /verify; only committed reports, which /verify can load, pass this. */
+  verifyCorpus?: string;
 }) {
   const [tab, setTab] = useState<Tab>("episodes");
   const [filter, setFilter] = useState("all");
@@ -128,7 +145,7 @@ export function ReportView({
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: "episodes", label: "Claim lineages", count: report.episodes.length },
     { id: "repairs", label: "Repair claims", count: report.repairs.length },
-    { id: "agents", label: "By agent", count: profiles.length },
+    { id: "agents", label: `By ${actor}`, count: profiles.length },
   ];
 
   return (
@@ -188,7 +205,7 @@ export function ReportView({
                     }`}
                   >
                     <span className="min-w-0 flex-1">
-                      <span className="tnum block truncate text-sm font-medium text-[var(--fg)]">“{e.claim}”</span>
+                      <span className="tnum block truncate text-sm font-medium text-[var(--fg)]">“{fmtClaim(e.claim)}”</span>
                       <span className="mt-0.5 block">
                         <StateTag state={e.state} />
                       </span>
@@ -206,7 +223,7 @@ export function ReportView({
           </div>
           <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6 lg:col-span-7">
             {episode ? (
-              <EpisodeDetail episode={episode} verifyHref={verifyLinks ? `/verify?ep=${episode.id}` : undefined} />
+              <EpisodeDetail key={episode.id} episode={episode} verifyHref={verifyCorpus ? `/verify?corpus=${verifyCorpus}&ep=${episode.id}` : undefined} />
             ) : (
               <p className="py-10 text-center text-sm text-[var(--fg-muted)]">
                 No claim was stated by {report.params.minSpeakers} or more agents within {report.params.episodeGapHours} hours of each
@@ -273,7 +290,7 @@ export function ReportView({
             <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="border-b border-[var(--border)] text-left">
-                  {["Agent", "Statements", "Originated", "Checked", "Credited", "Echoed", "Check rate"].map((h, i) => (
+                  {[actor[0].toUpperCase() + actor.slice(1), "Statements", "Originated", "Checked", "Credited", "Echoed", "Check rate"].map((h, i) => (
                     <th key={h} className={`eyebrow px-4 py-3 font-medium ${i > 0 ? "text-right" : ""}`}>
                       {h}
                     </th>

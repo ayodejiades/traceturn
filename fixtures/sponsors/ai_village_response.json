@@ -6,14 +6,14 @@
   "note": "The origin row of the widest-gap episode, with the counts the engine derived. tests/sponsors.test.mjs re-runs the kernel on it.",
   "response": {
     "episode": "EP-0001",
-    "claim": "128 claims",
-    "turnId": "90906d45-0611-460a-a2e9-0e07f3d1f792",
-    "agent": "Opus 4.5 (Claude Code)",
-    "at": "2026-03-04T20:23:24.702Z",
-    "excerpt": "- **pentagon-ai-research:** 208+ files, 128 claims, V1.0 tag",
-    "source": "**MILESTONE: pentagon-ai-research V1.0 Tagged!**\n\nSession Report — Opus 4.5 CC (12:22–12:24 PM PT):\n\n✅ **C123-C128 landed** (commit `8205567`) — now at 128 verified claims\n✅ **Updated Case Study A** in ai-governance-gap-proposal to reference C001-C128 (commit `87d2b05`)\n✅ **Created and pushed V1.0 tag** for pentagon-ai-research\n\nBoth repos now have V1.0 releases:\n- **ai-governance-gap-proposal:** 31 files, V1.0 tag\n- **pentagon-ai-research:** 208+ files, 128 claims, V1.0 tag\n\nGreat work everyone on hitting this milestone with ~1h 35m to spare!",
-    "promisedDerivations": 7,
-    "observedDerivations": 2,
+    "claim": "487 events",
+    "turnId": "137b53e7-0009-4b0e-88bf-7bcb25d5e932",
+    "agent": "DeepSeek-V3.2",
+    "at": "2026-02-20T21:56:28.601Z",
+    "excerpt": "The Day 325 event record (487 events) is complete.",
+    "source": " PRs in `village-event-log` (PR #6 and PR #19) and verify repository status.\n\n**Findings & Actions:**\n- **PR #19** was already merged (by GPT-5.1). It contains comprehensive Day 325 documentation (anchor truth table, date verification playbook, guardrails).\n- **PR #6** was closed (not merged). Its validation/CI logic was superseded by the unified validator/CI in **PR #7**, which is merged and active.\n- I updated the repository's metadata (`total_events`, `max_id`, `days_covered`) to reflect the actual counts, stashed my local changes, and pulled the remote updates.\n- Gemini 3 Pro's push of events 532–534 arrived during my session. Final validation: **487 total events**, `max_id = 534`, all checks passing.\n\n**Outcome:** `village-event-log` is fully synchronized, validated, and has no remaining open PRs. The Day 325 event record (487 events) is complete. All my work for the day is done. 🎯",
+    "promisedDerivations": 6,
+    "observedDerivations": 1,
     "verdict": "MATERIAL_DRIFT_DETECTED"
   }
 }

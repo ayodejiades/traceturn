@@ -28,7 +28,7 @@
  * Pure, synchronous and isomorphic; no model participates.
  */
 import { evaluateDeterministicKernel, type KernelDecision, type KernelState } from "./kernel";
-import type { Turn } from "./transcript";
+import type { Session, Turn } from "./transcript";
 
 export type Role = "ORIGIN" | "INDEPENDENT" | "CITED" | "ECHO";
 export type EdgeKind = "copies" | "cites" | "exposed";
@@ -45,6 +45,13 @@ export interface Assertion {
   /** Verbatim sentence around the claim, cut from the turn text. */
   excerpt: string;
   human: boolean;
+  /**
+   * For INDEPENDENT statements, what the independence rests on: the agent's own words
+   * ("I re-ran…"), or a computer-use session it opened to check this claim between the
+   * claim first appearing and the agent repeating it.
+   */
+  via?: "statement" | "session";
+  session?: { id: string; ts: number; goal: string };
 }
 
 export interface Episode {
@@ -101,9 +108,10 @@ export interface LineageParams {
   minSpeakers: number;
   /** Words in a shared run that counts as copied text. */
   shingleWords: number;
+  claimKey: ClaimKey;
 }
 
-export const DEFAULT_PARAMS: LineageParams = { episodeGapHours: 72, minSpeakers: 3, shingleWords: 8 };
+export const DEFAULT_PARAMS: LineageParams = { episodeGapHours: 72, minSpeakers: 3, shingleWords: 8, claimKey: "quantity" };
 
 // ---------------------------------------------------------------------------
 // Claim extraction
@@ -133,7 +141,15 @@ export interface ClaimHit {
   end: number;
 }
 
-export function extractClaims(text: string): ClaimHit[] {
+/**
+ * `quantity` (chat): a claim is a number and the word it counts, "487 events".
+ * `value` (answer boards): a claim is the number alone. On the collusion.wiki boards the
+ * word after an answer varies ("answered 5,269 immediately", "5,269 cached"), and keying
+ * on it would split one shared answer into several claims.
+ */
+export type ClaimKey = "quantity" | "value";
+
+export function extractClaims(text: string, mode: ClaimKey = "quantity"): ClaimHit[] {
   // Numbers inside URLs are identifiers, not claims; blank them out preserving offsets.
   const masked = text.replace(URL_RE, (m) => " ".repeat(m.length));
   const hits: ClaimHit[] = [];
@@ -142,8 +158,13 @@ export function extractClaims(text: string): ClaimHit[] {
     const [, cur, int, frac = "", pct] = m;
     const digits = int.replace(/,/g, "");
     if (digits.length + frac.length - (frac ? 1 : 0) < 3) continue; // too small to be distinctive
-    if (digits.length > 9) continue; // ids, phone numbers
+    // Bare long integers are ids and phone numbers; money and decimals may be long
+    // (the collusion.wiki boards pass values like $19,291,176,969.27).
+    if (digits.length > (cur || frac ? 15 : 9)) continue;
     if (!cur && int.startsWith("0")) continue; // zero-padded labels: "008", "0042"
+    // Round numbers ("100%", "1000", "200") are targets and goals that agents reach on their
+    // own, not facts passed from one agent to another. Round money amounts stay.
+    if (!cur && !frac && /^[1-9]0+$/.test(digits)) continue;
     if (!cur && !pct && !frac && /^(19|20)\d\d$/.test(digits)) continue; // years
     if (!cur && !pct && HTTP_CODES.has(digits)) continue;
     const before = /([A-Za-z]+)[\s#:.-]*$/.exec(masked.slice(Math.max(0, m.index! - 24), m.index!));
@@ -153,12 +174,12 @@ export function extractClaims(text: string): ClaimHit[] {
     const u = UNIT_RE.exec(after);
     const unit = u ? u[1].toLowerCase().replace(/'s$/, "") : "";
     let key: string;
-    if (unit && !STOP_UNITS.has(unit)) key = `${num} ${unit}`;
-    else if (cur) key = num; // money is distinctive on its own
+    if (mode === "value" || cur) key = num; // money is distinctive on its own
+    else if (unit && !STOP_UNITS.has(unit)) key = `${num} ${unit}`;
     else continue;
     if (seen.has(key)) continue;
     seen.add(key);
-    const end = m.index! + m[0].length + (u && unit && !STOP_UNITS.has(unit) ? u[0].length : 0);
+    const end = m.index! + m[0].length + (key.includes(" ") && u ? u[0].length : 0);
     hits.push({ key, start: m.index!, end });
   }
   return hits;
@@ -219,7 +240,11 @@ function escapeRe(s: string) {
 function mentionMatcher(names: string[]): Map<string, RegExp> {
   const m = new Map<string, RegExp>();
   for (const n of names) {
-    const alts = aliases(n).map(escapeRe).join("|");
+    const list = aliases(n);
+    // A name too short to match safely gets no matcher: an empty alternation would match
+    // every message and mark every repeat as credited.
+    if (list.length === 0) continue;
+    const alts = list.map(escapeRe).join("|");
     m.set(n, new RegExp(`(?<![\\w.-])(?:${alts})(?![\\w-]|\\.\\d)`, "i"));
   }
   return m;
@@ -245,13 +270,17 @@ interface Occurrence {
   hit: ClaimHit;
 }
 
-export function analyzeLineage(turns: Turn[], params: Partial<LineageParams> = {}): LineageReport {
+export function analyzeLineage(
+  turns: Turn[],
+  params: Partial<LineageParams> = {},
+  sessions: Session[] = [],
+): LineageReport {
   const p = { ...DEFAULT_PARAMS, ...params };
   const gapMs = p.episodeGapHours * 3600_000;
 
   const byClaim = new Map<string, Occurrence[]>();
   for (const turn of turns) {
-    for (const hit of extractClaims(turn.text)) {
+    for (const hit of extractClaims(turn.text, p.claimKey)) {
       let list = byClaim.get(hit.key);
       if (!list) byClaim.set(hit.key, (list = []));
       list.push({ turn, hit });
@@ -260,6 +289,12 @@ export function analyzeLineage(turns: Turn[], params: Partial<LineageParams> = {
 
   const agentNames = [...new Set(turns.filter((t) => !t.human).map((t) => t.agent))];
   const mention = mentionMatcher(agentNames);
+  const sessionsByAgent = new Map<string, Session[]>();
+  for (const s of sessions) {
+    let list = sessionsByAgent.get(s.agent);
+    if (!list) sessionsByAgent.set(s.agent, (list = []));
+    list.push(s);
+  }
   const episodes: Episode[] = [];
 
   for (const [claim, occs] of byClaim) {
@@ -267,7 +302,7 @@ export function analyzeLineage(turns: Turn[], params: Partial<LineageParams> = {
     let group: Occurrence[] = [];
     const flush = () => {
       if (new Set(group.map((o) => o.turn.agent)).size >= p.minSpeakers) {
-        episodes.push(buildEpisode(claim, group, mention, p));
+        episodes.push(buildEpisode(claim, group, mention, p, sessionsByAgent));
       }
       group = [];
     };
@@ -314,12 +349,49 @@ export function analyzeLineage(turns: Turn[], params: Partial<LineageParams> = {
   };
 }
 
+// A session goal counts as a check of a claim when it is short enough to be a goal rather
+// than a pasted memory dump, and a checking verb sits near the claim's number.
+const VERIFY_RE = /\b(?:verif|check|confirm|test|count|validat|re-?run|audit|inspect|measure|recount|look up|double-check)/i;
+const MAX_GOAL = 1500;
+
+function numberPattern(claim: string): RegExp {
+  const num = claim.split(" ")[0].replace(/^[$£€]/, "").replace(/%$/, "");
+  const [int, frac] = num.split(".");
+  const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const f = frac ? `\\.${frac}` : "";
+  return new RegExp(`(?<![\\d.,])(?:${int}|${grouped.replace(/,/g, ",")})${f}(?![\\d])`);
+}
+
+/**
+ * A session the agent opened after the claim appeared and before repeating it, set up to
+ * check it: the goal names the number and what it counts, with a checking verb nearby.
+ */
+function sessionCheck(list: Session[] | undefined, from: number, to: number, pattern: RegExp, unit: string): Session | null {
+  if (!list) return null;
+  for (const s of list) {
+    if (s.ts <= from) continue;
+    if (s.ts > to) break;
+    if (s.goal.length > MAX_GOAL) continue;
+    const m = pattern.exec(s.goal);
+    if (!m) continue;
+    const near = s.goal.slice(Math.max(0, m.index - 120), m.index + m[0].length + 120);
+    if (unit && !near.toLowerCase().includes(unit)) continue;
+    if (VERIFY_RE.test(near)) return s;
+  }
+  return null;
+}
+
 function buildEpisode(
   claim: string,
   occs: Occurrence[],
   mention: Map<string, RegExp>,
   p: LineageParams,
+  sessionsByAgent: Map<string, Session[]>,
 ): Episode {
+  const pattern = numberPattern(claim);
+  // Stem of the counted word, so "claims" also matches "claim" and "files" matches "file".
+  const unitWord = claim.split(" ")[1] ?? "";
+  const unit = unitWord.length > 4 ? unitWord.slice(0, -1) : unitWord;
   const assertions: Assertion[] = [];
   const firstIndexByAgent = new Map<string, number>();
   const shingleCache: Set<string>[] = [];
@@ -337,6 +409,8 @@ function buildEpisode(
     let role: Role = "ORIGIN";
     let parent = -1;
     let edge: EdgeKind | null = null;
+    let via: Assertion["via"];
+    let session: Session | null = null;
 
     if (idx > 0) {
       // Credit to a specific earlier speaker, by name anywhere in the turn.
@@ -360,8 +434,12 @@ function buildEpisode(
 
       // Own observation outranks everything: an agent that re-ran the check is a
       // separate derivation path even when it credits or reuses someone's wording.
-      if (firsthand && !turn.human) {
+      if (!firsthand && !attributed && !turn.human) {
+        session = sessionCheck(sessionsByAgent.get(turn.agent), occs[0].turn.ts, turn.ts, pattern, unit);
+      }
+      if ((firsthand || session) && !turn.human) {
         role = "INDEPENDENT";
+        via = firsthand ? "statement" : "session";
         if (citedIdx >= 0) {
           edge = "cites";
           parent = citedIdx;
@@ -399,6 +477,8 @@ function buildEpisode(
       edge,
       excerpt,
       human: !!turn.human,
+      ...(via ? { via } : {}),
+      ...(session ? { session: { id: session.id, ts: session.ts, goal: sessionSnippet(session.goal, pattern) } } : {}),
     });
   }
 
@@ -423,6 +503,13 @@ function buildEpisode(
   });
 
   return { id: "", claim, assertions, promised, observed, decision, originText: origin.turn.text };
+}
+
+function sessionSnippet(goal: string, pattern: RegExp): string {
+  const m = pattern.exec(goal);
+  const at = m ? m.index : 0;
+  const from = Math.max(0, at - 90);
+  return goal.slice(from, from + 220).replace(/\s+/g, " ").trim();
 }
 
 // ---------------------------------------------------------------------------
