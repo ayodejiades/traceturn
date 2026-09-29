@@ -1,5 +1,7 @@
 # Wedge Brief: traceturn
 
+> Planning brief written before the build. What shipped differs: no model is used anywhere (the Anthropic line below was dropped), and the analysis runs on AI Village chat rather than collusion.wiki. See docs/HONESTY.md for what is claimed now.
+
 ## 1. The Differentiated Wedge
 * **Target User:** Incident investigator, AI safety researcher, or trust & security engineer auditing out-of-control multi-agent swarms under incident pressure
 * **Painful Crisis Moment:** Facing 200,000 turns of multi-agent tool logs and message threads during a cascading agent runaway, collusion, or benchmark cheating incident with a post-mortem deadline measured in hours, not weeks — and no way to tell which bad action caused the damage versus how a single false premise convinced the whole group it was legitimate.

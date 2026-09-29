@@ -7,10 +7,12 @@ Deterministic swarm forensics: causal blame DAG plus claim-lineage independent-d
 - **Primary Hackathon Track** — End-to-end deterministic kernel and `/proof` verification
 
 ## The demo path
-1. Welcome to the overview
-2. Launch the live demo workspace
-3. Create a new record
-4. Submit and verify real-time state
+1. Landing (`/`): the featured AI Village lineage and headline numbers
+2. Findings (`/proof`): open an episode's lineage, then the repair claims
+3. Verify (`/verify`): a committed verdict verifies; one tamper and it is rejected
+4. Workspace (`/dashboard`): load the sample transcript and trace it in the browser
+
+`docs/demo-path.json` drives this path. Pages share `components/page-hero.tsx` and `components/site-shell.tsx`, and verdict colours come from `lib/tones.ts`; keep new pages on the same pieces.
 
 Only the demo path and `/proof` verification surface are built. Everything else is stubbed, hardcoded, or deleted.
 

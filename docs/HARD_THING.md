@@ -1,56 +1,30 @@
-# The One Hard Thing: traceturn: Deterministic Constraint & State Reconciliation
+# The hard part
 
-Hackathons are won by demonstrating at least one non-trivial engineering feat. This document details the technical core of `traceturn`, its algorithmic architecture, failure boundary handling, and test verification.
+Telling "seven agents agree" apart from "one agent said it and six repeated it", from chat alone, with no model, in a way a skeptic can re-run.
 
----
+## Why it is hard
 
-## 1. The Core Engineering Challenge
-Horizontal LLMs and naive API scripts cannot solve this problem because:
-1. **Unbounded Latency & Cost:** Unstructured multi-pass queries exceed time and budget limits.
-2. **Hallucination Risk:** Missing or invented citations invalidate real-world domain compliance.
-3. **Network Boundary Partitions:** Venue and cloud rate-limits break naive execution loops.
+- **Paraphrase.** Agents restate a claim in their own words, so matching sentences misses most repeats. traceturn keys a claim on a quantity and the word it counts ("237 files"), which survives paraphrase verbatim and needs no embedding model.
+- **Numbers that are not claims.** "Day 259", "PR #34", "HTTP 404", a year, digits in a URL. Treating these as claims floods the report with noise; the first run on the corpus did exactly that. `extractClaims` skips labels by the word before the number, zero-padded ids, HTTP codes and URL contents.
+- **Independence from text.** A repeat is independent only if the agent reports its own observation. First-person observation verbs are read from the whole sentence, not the trimmed excerpt; "re‑ran" with a non-breaking hyphen (U+2011) is common in the corpus and was missed until the regex allowed it. Tool output ("`wc -l` returns 236", "my instance shows 110") also counts.
+- **Honest credit is not corroboration, and not an echo either.** 1,162 of 2,491 restatements name their source. Counting them as corroboration inflates agreement; counting them as echoes accuses honest agents. They count toward neither side.
+- **Whose claim is it.** When a human introduced the number, blaming the first agent to repeat it would be wrong, so the kernel abstains.
 
-Our solution implements: **AST parsing with sub-second constraint resolution and cryptographic state hashing.**
+## Failure states
 
----
+| Input | Result |
+|---|---|
+| Origin excerpt not verbatim in the source turn | `ABSTAIN_UNBOUND_EXCERPT` (INV-1) |
+| Origin is a human message, or its sentence was scrubbed (`[REDACTED]`) | `ABSTAIN_AMBIGUOUS_SOURCE` (INV-5) |
+| Only credited restatements | `BENIGN_CONTROL_NO_DRIFT` (INV-4) |
+| Agent reports its own repair, nobody else confirms | `WAITING_TO_VERIFY` (INV-3) |
+| Another agent reports the same URL working | `VERIFIED_FIXED` |
+| Stated as known by more agents than have derivation paths | `MATERIAL_DRIFT_DETECTED` |
+| Malformed JSONL line | Skipped and counted; parsing continues |
 
-## 2. Architecture & State Machine
-
-```
-   [ Raw Domain Input (PDF / Event Stream) ]
-                     │
-                     ▼
-       ┌───────────────────────────────┐
-       │   Deterministic AST Parser    │ ───► Syntax / Structural Validation
-       └───────────────────────────────┘
-                     │
-                     ▼
-       ┌───────────────────────────────┐
-       │ Constraint Verification Core  │ ───► Local Rule Engine & Invariants
-       └───────────────────────────────┘
-                     │
-                     ▼
-       ┌───────────────────────────────┐
-       │   Sponsor Telemetry & Audit   │ ───► Cryptographic Receipt (SHA-256)
-       └───────────────────────────────┘
-```
-
----
-
-## 3. Handled Edge & Boundary Cases
-
-| Failure Scenario | Naive System Result | Our Hardened System Result |
-|---|---|---|
-| **API Timeout (>3000ms)** | Frozen UI / White screen crash | Transparent fallback to signed fixture with audit flag |
-| **Malformed Input Structure** | Uncaught JSON exception | Graceful fallback parser with line-specific recovery |
-| **Contradictory Policy Rules** | Silent hallucination / bias | Highlighted side-by-side discrepancy diff |
-| **Offline / Airplane Mode** | Total failure | Full local execution using cached domain invariants |
-
----
-
-## 4. Automated Verification Command
-Run the dedicated test suite validating these invariants:
+## Re-run
 
 ```bash
-pnpm test
+pnpm test           # sample transcript covers every row above
+pnpm claim:verify   # re-derives the AI Village report
 ```

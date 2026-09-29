@@ -1,8 +1,12 @@
-# WHAT_IS_REAL.md — Production Maturity & Boundaries
+# What is real
 
-| Component | Verification Level | Evidence |
+| Component | Status | Evidence |
 |---|---|---|
-| **Deterministic Safety Kernel (`lib/kernel.ts`)** | **PROVEN_LOCAL_EXECUTION** | 13/13 fixtures verified across `INV-1`..`INV-5` (`pnpm verify:evidence`) |
-| **Literal Evidence-Excerpt Binding (`INV-1`)** | **PROVEN_LOCAL_EXECUTION** | Unbound or paraphrased excerpts fail closed to `ABSTAIN_UNBOUND_EXCERPT` |
-| **Zero-Signup `/proof`, `/demo`, & `/verify` Surfaces** | **LIVE_IN_BROWSER** | Inspectable in browser with 1-byte tamper detection |
-| **Offline `DEMO_MODE` Fixture Store (`db/index.ts`)** | **LIVE_FALLBACK** | Automatic in-memory fixture store when `DATABASE_URL` is unset |
+| Transcript parser (`lib/transcript.ts`) | Runs on the real AI Village corpus | 183,483 messages parsed; input sha256 in the report |
+| Claim lineage engine (`lib/lineage.ts`) | Deterministic, no model | 946 episodes, re-derived by `pnpm claim:verify` |
+| Kernel (`lib/kernel.ts`) | Five invariants on every verdict | 34/34 pinned manifests and 13/13 fixtures re-derive |
+| Findings page (`/proof`) | Reads the committed report | No network, no account |
+| Tamper verifier (`/verify`) | Recomputes sha256 and the kernel in the browser | Same `rederive()` as this command |
+| Workspace (`/dashboard`) | Analyses dropped JSONL in a Web Worker | Nothing uploaded; same `buildReport()` as the CLI |
+| Independence classifier | Deterministic phrase matching | Not yet scored against human labels (see docs/HONESTY.md) |
+| Computer-use sessions | Not read | Agents that verified silently count as echoes: independence is a lower bound |

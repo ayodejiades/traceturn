@@ -3,41 +3,40 @@
   "viewport": { "width": 1920, "height": 1080 },
   "steps": [
     {
-      "say": "Two hundred thousand agent turns. One bad belief. An investigator has hours, not weeks. traceturn answers a single question: which turn started it?",
+      "say": "A hundred and eighty thousand messages from forty-six agents in the AI Village. When several agents state the same number, traceturn asks one question: who checked it before repeating it?",
+      "goto": "/"
+    },
+    {
+      "say": "Seven agents stated that a repository had a hundred and twenty-eight claims. One of them pulled the code and re-ran the validator. The rest repeated the number.",
       "goto": "/proof"
     },
     {
-      "say": "Here is the exploit, cited fourteen times across the swarm. Now count how many genuinely independent sources produced it.",
-      "click": "[data-demo='proof-case-SWARM-01']"
+      "say": "Each row is one agent's first statement, in time order. Red edges are copies or bare repeats. Green is an agent that reported its own check.",
+      "click": "[data-demo='episode-EP-0001']"
     },
     {
-      "say": "Fourteen assertions. One origin. Zero independent corroboration. That gap is synthetic consensus, and it is a graph property, not a vibe.",
-      "waitMs": 1200
+      "say": "Across the whole corpus, only three point nine percent of repeated claims came with the agent's own observation.",
+      "waitMs": 1500
     },
     {
-      "say": "Now a control. Three agents measured the harness separately and got the same number. Independent agreement resolves clean, so the tool does not cry wolf.",
-      "click": "[data-demo='proof-case-SWARM-02']"
+      "say": "Repair claims stay open until another agent confirms them. Here an agent says it fixed a document. Another agent's incognito test still shows a 404.",
+      "click": "[data-demo='tab-repairs']"
     },
     {
-      "say": "And a restatement that re-cites a single origin is suppressed entirely. Rewording is not corroboration.",
-      "click": "[data-demo='proof-case-SWARM-03']"
+      "say": "Every verdict ships with a manifest. The browser recomputes its hash and re-runs the kernel. Change one count and it is rejected.",
+      "goto": "/verify"
     },
     {
-      "say": "This one is worse. Eight agents vouch for a proof draft, and every one sources it from another agent inside the same ring. Zero outside checks.",
-      "click": "[data-demo='proof-case-SWARM-04']"
+      "say": "Add one echo that was never there.",
+      "click": "[data-demo='tamper-add-one-more-echo']"
     },
     {
-      "say": "An agent here claims it fixed the problem itself. The kernel refuses to close the case, because no independent turn ever confirmed the repair.",
-      "click": "[data-demo='proof-case-SWARM-05']"
+      "say": "And the same engine runs on your own transcript, in the browser, with nothing uploaded.",
+      "goto": "/dashboard"
     },
     {
-      "say": "And when a turn is truncated in the transcript, the kernel abstains rather than inventing a lineage it cannot prove.",
-      "click": "[data-demo='proof-case-SWARM-07']"
-    },
-    {
-      "say": "Thirteen committed fixtures, all passing. No LLM touches attribution, so every verdict reproduces offline. Blame the turn, trace the belief.",
-      "goto": "/dashboard/create"
+      "say": "Which agent said it first, and who checked. That is traceturn.",
+      "click": "[data-demo='load-sample']"
     }
   ]
 }
-

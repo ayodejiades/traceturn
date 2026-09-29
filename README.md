@@ -1,85 +1,67 @@
 # traceturn
 
-Deterministic swarm forensics: causal blame DAG plus claim-lineage independent-derivation counting over multi-agent JSONL transcripts
+When several agents in a swarm state the same number, traceturn finds the agent that said it first and counts how many of the others checked it before repeating it.
 
-> **Engineered by Ayodeji Adesegun** ([@ayodejiades](https://github.com/ayodejiades))
+> Built by Ayodeji Adesegun ([@ayodejiades](https://github.com/ayodejiades)) for the AI Swarm Dynamics Hackathon, hosted by AI Village and Grove Research.
 
-[![Builder](https://img.shields.io/badge/Builder-@ayodejiades-black?style=flat-square&logo=github)](https://github.com/ayodejiades)
-[![Zero-Signup Demo](https://img.shields.io/badge/Demo-Zero--Signup-emerald?style=flat-square)](/dashboard)
-[![Deterministic Proof](https://img.shields.io/badge/Verifier-100%25_Passing-blue?style=flat-square)](/proof)
-[![Invariants](https://img.shields.io/badge/Invariants-Verified-purple?style=flat-square)](CLAIM_LEDGER.md)
+## What it found in the AI Village
 
-![demo](docs/demo.gif)
+Run over 183,483 chat messages from 46 agents in the [AI Village](https://theaidigest.org/village) (2 April 2025 to 18 September 2026):
 
-| Surface | Path / Command | Status |
-| --- | --- | --- |
-| **Public demo (zero-signup / zero-wallet)** | [https://traceturn-qphql3v6w-ayodeji-adeseguns-projects.vercel.app/dashboard](https://traceturn-qphql3v6w-ayodeji-adeseguns-projects.vercel.app/dashboard) | **LIVE** |
-| **Inspectable proof & refusal ledger** | [https://traceturn-qphql3v6w-ayodeji-adeseguns-projects.vercel.app/proof](https://traceturn-qphql3v6w-ayodeji-adeseguns-projects.vercel.app/proof) · [`CLAIM_LEDGER.md`](CLAIM_LEDGER.md) | **LIVE** |
-| **Production maturity & boundaries** | [`WHAT_IS_REAL.md`](WHAT_IS_REAL.md) · [`docs/HARD_THING.md`](docs/HARD_THING.md) | **VERIFIED** |
-| **Independent claim verifier** | `pnpm claim:verify` | **PASS** |
-| **Demo walkthrough & video** | [`docs/DEMO_PATH.md`](docs/DEMO_PATH.md) · `docs/demo.mp4` | **READY** |
+| | |
+|---|---|
+| Claims stated by three or more agents within 72 hours | 946 |
+| Times an agent restated one of those claims | 2,491 |
+| Restatements where the agent reported its own observation | 98 (3.9%) |
+| Restatements that credited their source | 1,162 |
+| Restatements stated as fact with no credit and no observation | 1,231 |
+| Episodes where uncredited echoes outnumber independent checks | 727 |
+| "I fixed it" claims no other agent confirmed within 72 hours | 108 of 119 |
 
-## 1. For judges: two ways in
+Every number above is re-derived from `evidence/aivillage-report.json` by `pnpm claim:verify`, which exits 1 if any of them drifts. The limits of these numbers are in [docs/HONESTY.md](docs/HONESTY.md); the most important one is that independence is a lower bound.
 
-1. **Zero-friction proof inspector (`/proof`):** Open `/proof` with no wallet or account required. Inspect the committed production runs, cryptographic digests / T0 source-excerpt bindings, and execute the deterministic verifier in-browser across happy-path, benign-control, and adversarial refusal cases.
-2. **Interactive live console (`/dashboard`):** Run the complete user loop end-to-end. In air-gapped or rate-limited environments, `DEMO_MODE=1` routes external calls through deterministic fixtures without degrading the verification kernel.
+## How it works
 
-## 2. What it does
+1. **Parse** (`lib/transcript.ts`). JSONL rows become ordered turns. It reads AI Village `chat_messages` and `events` rows, or any log with an agent, content and timestamp field. Human messages are kept so a number a person introduced is never blamed on the first agent to repeat it.
+2. **Extract claims** (`lib/lineage.ts`). A claim is a quantity and the word it counts: "237 files", "$542 raised". Labels ("Day 259", "PR #34"), years, HTTP codes and digits inside URLs are skipped.
+3. **Group episodes.** Statements of one claim by three or more agents, split wherever the thread goes quiet for 72 hours.
+4. **Classify each agent's first statement** as the origin, a first-hand check ("I pulled latest main and it still validates 128 claims"), a credited restatement ("according to Delta…"), or an echo. An echo either copies an earlier agent's wording (an 8-word run) or states the number with no credit and no observation.
+5. **Decide** (`lib/kernel.ts`). Agents who stated it as known are compared with independent derivation paths, and the origin excerpt must appear verbatim in its source turn. Five invariants run on every verdict. Self-reported repairs stay open until a different agent reports the same URL working.
 
-Deterministic swarm forensics: causal blame DAG plus claim-lineage independent-derivation counting over multi-agent JSONL transcripts
+No model reads the transcript. The same file gives the same report on any machine, offline.
 
-## 3. The mechanism
+## Try it
 
-```mermaid
-flowchart LR
-    Input["User / Agent Intent"] --> Kernel["Deterministic Policy & Safety Kernel"]
-    Kernel -->|ALLOW / BOUND| Settle["Atomic Execution / State Commit"]
-    Kernel -->|AMBIGUOUS / UNBOUND| Refuse["Fail-Closed Refusal (ABSTAIN / BLOCK)"]
-    Settle --> Verify["Independent Verifier (pnpm claim:verify)"]
-    Verify --> Receipt["Durable Cryptographic Receipt (/proof)"]
-```
-
-**Core architectural invariant:** *Models and agents propose; deterministic code decides.* No unverified model output or unbound intent ever mutates state or moves funds directly.
-
-Built on Next.js App Router, TypeScript, and Drizzle ORM with the deterministic safety and reconciliation kernel (`lib/kernel.ts`). Every decisive extraction is bound to a verbatim T0 source excerpt (`INV-1`), evaluated in integer cents (`INV-2`), and audited against synthetic and control fixtures in `evidence/campaign-report.json`.
-
-## 4. Production status & boundaries
-
-| Layer | Responsibility | Status |
-| --- | --- | --- |
-| **Deterministic Decision Kernel** | Enforces strict invariants, integer-cent / bps math, and fail-closed abstention on unbound inputs | **LIVE** |
-| **Proof & Refusal Explorer (`/proof`)** | Side-by-side inspection of happy path, benign control, and adversarial refusal fixtures | **LIVE** |
-| **Independent Claim Verifier** | `pnpm claim:verify` re-derives every public metric from committed artifacts and exits non-zero on drift | **LIVE** |
-| **Rubric & Technical Moat Dossier** | Full line-level evidence mapping in [`docs/EVIDENCE.md`](docs/EVIDENCE.md) and [`docs/HARD_THING.md`](docs/HARD_THING.md) | **LIVE** |
-
-## 5. Bounties & ecosystem tracks targeted
-
-- **Primary Track Submission**: Full deterministic kernel, `/proof` receipt inspector, and automated invariant verification (`pnpm claim:verify`). See `docs/BOUNTIES.md` and `CLAIM_LEDGER.md`.
-
-## 6. Quick start & independent verification
+| Where | What |
+|---|---|
+| `/` | The featured lineage and the headline numbers |
+| `/proof` | All 34 pinned lineages, 27 repair claims and per-agent check rates, each linked to the moment in the live village |
+| `/verify` | Recompute a verdict's SHA-256 and re-run the kernel in the browser, then tamper with it and watch it fail |
+| `/dashboard` | Drop your own `.jsonl` or `.jsonl.gz` (including the AI Village files). It is analysed in a Web Worker; nothing is uploaded |
 
 ```bash
 pnpm install
-pnpm claim:verify   # re-derives all claims in CLAIM_LEDGER.md and WHAT_IS_REAL.md
-make test           # runs unit, invariant, and fixture suites
-make dev            # starts the local server with /dashboard and /proof
-make deploy         # deploys to Cloudflare Pages / Vercel
+pnpm dev                 # http://localhost:3000
+pnpm test                # engine, report and sponsor fixture tests
+pnpm claim:verify        # re-derive every public number; exits 1 on drift
+pnpm analyze log.jsonl   # write evidence/log-report.json for any transcript
 ```
 
-## 7. Honest boundaries (`WHAT_IS_REAL.md`)
+### Re-running the AI Village analysis
 
-Everything on the critical verification and demo path (`docs/DEMO_PATH.md`, `/proof`, `/dashboard`, and `pnpm claim:verify`) is implemented and tested end-to-end. Secondary peripheral integrations outside the core thesis are explicitly scoped in [`WHAT_IS_REAL.md`](WHAT_IS_REAL.md).
+The dataset is gated. With approved access and `HF_TOKEN` set:
 
-## 8. Sponsors
+```bash
+hf download aidigestorg/ai-village agents.jsonl.gz chat_messages.jsonl.gz \
+  summaries.jsonl.gz manifest.json --repo-type dataset --local-dir data/aivillage
+pnpm analyze
+```
 
-Built for the **AI Swarm Dynamics Hackathon**, hosted by AI Village and Grove Research.
+`data/` is gitignored. The committed report quotes single sentences from agent messages and never quotes a human, as the dataset terms ask.
 
-- **AI Village** — supplies the >170k-message, >2M-computer-use-turn transcript corpus. Every fixture and precision/recall claim is measured against labelled real swarm data rather than synthetic-only inputs. Remove it and the tool has no ground truth at all.
-- **Grove Research** — shaped the claim-lineage model. Independent-derivation counting over citation edges is what separates *widespread agreement* from *manufactured agreement*; it is the seam the whole tool exists to expose.
-- **Anthropic** — used only to classify semantic intent on DAG subtrees the deterministic kernel has already isolated. Attribution itself never touches a model: with no API key reachable, all 13 fixtures resolve byte-identically.
+## Sources
 
-Each integration carries a measured ablation in [`lib/sponsors.ts`](lib/sponsors.ts) and is written up in `docs/SPONSOR_INTEGRATIONS.md` and `docs/SPONSOR_FINDINGS.md`.
+- AI Village: AI Digest, "AI Village dataset", 2026. https://theaidigest.org/village
+- Grove Research: the framing of independent derivation paths, as opposed to assertion counts, that the kernel measures.
 
-## Credits
-
-Assets and open-source attributions are listed in [`CREDITS.md`](CREDITS.md).
+No model provider is listed because nothing in this repository calls a model.

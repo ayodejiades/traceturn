@@ -1,24 +1,17 @@
-# Sponsor Integration Field Findings
+# Sponsor findings
 
-Concrete engineering findings observed while wiring each sponsor seam and how they are guarded in `lib/kernel.ts`.
+## AI Village
 
-## AI Village (`CAPTURE`)
-- **Finding**: Truncated turns cannot support a lineage claim
-- **Environment**: AI Village transcript slice, SWARM-07 fixture
-- **Observed**: A turn marked '[transcript truncated]' was used by an agent to assert that a library entry had been updated again.
-- **Deterministic Fix (`evidence/campaign-report.json`)**: INV-5 in lib/kernel.ts forces ABSTAIN_AMBIGUOUS_SOURCE whenever the source scope is ambiguous, so a truncated turn can never produce a blame assignment.
-- **Boundary Honesty (Not Claimed)**: traceturn does not claim to have reproduced the Hugging Face incident itself; findings are scoped to committed fixtures only.
+- **Finding:** Agents reported repairs that other agents then found still broken
+- **Observed:** 8 of the repair claims in the committed report were followed by another agent reporting the same URL still failing.
+- **Handled by:** INV-3 keeps every self-reported repair in WAITING_TO_VERIFY until a different agent reports its own observation of the URL working (lib/lineage.ts findRepairs).
+- **Proven:** 946 claim episodes traced; 727 end in manufactured agreement; 98 of 2491 restatements carry the agent's own observation; 108 of 119 self-reported repairs were never confirmed by another agent.
+- **Not claimed:** The classifier has not been scored against human labels. Computer-use sessions, where agents may have verified silently, are not read.
 
-## Grove Research (`KERNEL_DB`)
-- **Finding**: An agent asserted its own repair without independent proof
-- **Environment**: AI Village transcript slice, SWARM-05 fixture
-- **Observed**: Agent-44 stated the missing derivation was supplied and the premise now held; no later turn contained an independent confirming observation.
-- **Deterministic Fix (`lib/kernel.ts#evaluateDeterministicKernel`)**: INV-3 holds the case in WAITING_TO_VERIFY until subsequentObservationProvesFix is set by a genuinely independent turn.
-- **Boundary Honesty (Not Claimed)**: Absence of a derivation edge is a lower bound, not proof of fabrication. Coordination via side channels is explicitly out of scope.
+## Grove Research
 
-## Anthropic (`EXTRACTION`)
-- **Finding**: LLM assistance is structurally unable to touch the attribution layer
-- **Environment**: DEMO_MODE=1 with no API key configured
-- **Observed**: Every fixture produced byte-identical verdicts, invariants, and digests with no model reachable.
-- **Deterministic Fix (`lib/kernel.ts#evaluateSafetyKernel`)**: The model call is confined to labelling; lib/kernel.ts graph construction and verdict selection are pure functions with no I/O.
-- **Boundary Honesty (Not Claimed)**: The model never participates in attribution or in any state transition. It may only label subtrees the kernel has already flagged.
+- **Finding:** Most repeats in the corpus credit their source
+- **Observed:** 1162 of 2491 restatements name where the number came from; counting them as corroboration would inflate agreement, counting them as echoes would accuse honest agents.
+- **Handled by:** CITED restatements count toward neither side; an episode with only credited repeats resolves BENIGN_CONTROL_NO_DRIFT (INV-4).
+- **Proven:** On the constructed sample, four agents state 412 signups with one derivation path (MATERIAL_DRIFT_DETECTED), while three agents who each report their own count of 1,240 visitors resolve ON_TRACK.
+- **Not claimed:** A missing derivation edge is a lower bound, not proof of fabrication. Coordination outside the transcript is out of scope.
