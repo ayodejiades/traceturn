@@ -375,7 +375,9 @@ export function analyzeLineage(
     let group: Occurrence[] = [];
     const flush = () => {
       if (new Set(group.map((o) => o.turn.agent)).size >= p.minSpeakers) {
-        episodes.push(buildEpisode(claim, group, mention, p, sessionsByAgent));
+        const ep = buildEpisode(claim, group, mention, p, sessionsByAgent);
+        // Skipping questions and doubts can leave fewer speakers than the threshold.
+        if (ep && ep.assertions.length >= p.minSpeakers) episodes.push(ep);
       }
       group = [];
     };
@@ -469,12 +471,15 @@ function buildEpisode(
   mention: Map<string, RegExp>,
   p: LineageParams,
   sessionsByAgent: Map<string, Session[]>,
-): Episode {
+): Episode | null {
   const pattern = numberPattern(claim);
   // Stem of the counted word, so "claims" also matches "claim" and "files" matches "file".
   const unitWord = claim.split(" ")[1] ?? "";
   const unit = unitWord.length > 4 ? unitWord.slice(0, -1) : unitWord;
   const assertions: Assertion[] = [];
+  // The origin is the first occurrence that is an assertion; a question or doubt that
+  // mentions the value first is skipped, so this is not always occs[0].
+  let originTurn: Turn | null = null;
   const firstIndexByAgent = new Map<string, number>();
   const shingleCache: Set<string>[] = [];
 
@@ -526,7 +531,7 @@ function buildEpisode(
       // Own observation outranks everything: an agent that re-ran the check is a
       // separate derivation path even when it credits or reuses someone's wording.
       if (!firsthand && !attributed && !turn.human) {
-        session = sessionCheck(sessionsByAgent.get(turn.agent), occs[0].turn.ts, turn.ts, pattern, unit);
+        session = sessionCheck(sessionsByAgent.get(turn.agent), originTurn!.ts, turn.ts, pattern, unit);
       }
       if ((firsthand || session) && !turn.human) {
         role = "INDEPENDENT";
@@ -558,6 +563,7 @@ function buildEpisode(
     }
 
     firstIndexByAgent.set(turn.agent, idx);
+    if (idx === 0) originTurn = turn;
     assertions.push({
       turnId: turn.id,
       agent: turn.agent,
@@ -579,21 +585,22 @@ function buildEpisode(
   const cited = count("CITED");
   const promised = 1 + independent + echoes;
   const observed = 1 + independent;
-  const origin = occs[0];
+  if (!originTurn) return null;
+  const origin = originTurn;
 
   const decision = evaluateDeterministicKernel({
     caseId: claim,
-    sourceCaptureT0: origin.turn.text,
+    sourceCaptureT0: origin.text,
     extractedExcerpt: assertions[0].excerpt,
     promisedDerivations: promised,
     observedDerivations: observed,
     isCosmeticRewrite: echoes === 0 && independent === 0 && cited > 0,
     // A claim a person introduced, or one whose origin sentence was scrubbed, has no
     // judgeable first author inside the swarm: abstain rather than blame an agent.
-    isAmbiguousSource: origin.turn.human === true || SCRUB_RE.test(assertions[0].excerpt),
+    isAmbiguousSource: origin.human === true || SCRUB_RE.test(assertions[0].excerpt),
   });
 
-  return { id: "", claim, assertions, promised, observed, decision, originText: origin.turn.text };
+  return { id: "", claim, assertions, promised, observed, decision, originText: origin.text };
 }
 
 function sessionSnippet(goal: string, pattern: RegExp): string {

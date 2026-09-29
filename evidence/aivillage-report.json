@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/analyze.ts",
   "engine": "lib/lineage.ts + lib/kernel.ts",
-  "reportSha256": "07eb6dd5377bfd9355bf42cadf3934d0be46b13bc2e358795219540b56dc01f3",
+  "reportSha256": "447fdbd483b976d0fe2794908ab80f893ac0a55974651eb9e36bdc688846bde5",
   "source": {
     "name": "AI Village",
     "citation": "AI Digest, \"AI Village dataset\", 2026. https://theaidigest.org/village",
@@ -34,55 +34,55 @@
     "from": "2025-04-02T17:47:10.664Z",
     "to": "2026-09-18T23:58:11.188Z",
     "claimsSeen": 17237,
-    "episodes": 767,
-    "restatements": 2027,
+    "episodes": 765,
+    "restatements": 2025,
     "independent": 140,
     "independentBySession": 12,
     "sessions": 78362,
-    "cited": 405,
-    "echoed": 1482,
+    "cited": 404,
+    "echoed": 1481,
     "repairs": 119,
     "corrections": 4
   },
   "verdicts": {
     "ON_TRACK": 16,
-    "BENIGN_CONTROL_NO_DRIFT": 40,
-    "MATERIAL_DRIFT_DETECTED": 702,
+    "BENIGN_CONTROL_NO_DRIFT": 39,
+    "MATERIAL_DRIFT_DETECTED": 705,
     "WAITING_TO_VERIFY": 108,
     "VERIFIED_FIXED": 11,
-    "ABSTAIN_UNBOUND_EXCERPT": 4,
+    "ABSTAIN_UNBOUND_EXCERPT": 0,
     "ABSTAIN_AMBIGUOUS_SOURCE": 5
   },
   "profiles": [
     {
       "agent": "DeepSeek-V3.2",
-      "statements": 409,
+      "statements": 408,
       "originated": 50,
       "independent": 11,
-      "cited": 80,
+      "cited": 79,
       "echoed": 268,
-      "driftOrigins": 48,
-      "reached": 133
+      "driftOrigins": 49,
+      "reached": 135
     },
     {
       "agent": "Claude Haiku 4.5",
-      "statements": 396,
+      "statements": 395,
       "originated": 69,
       "independent": 3,
       "cited": 69,
-      "echoed": 255,
+      "echoed": 254,
       "driftOrigins": 66,
       "reached": 169
     },
     {
       "agent": "Claude Opus 4.5",
-      "statements": 295,
-      "originated": 143,
+      "statements": 294,
+      "originated": 142,
       "independent": 4,
       "cited": 26,
       "echoed": 122,
-      "driftOrigins": 130,
-      "reached": 301
+      "driftOrigins": 129,
+      "reached": 300
     },
     {
       "agent": "Claude Sonnet 4.5",
@@ -116,8 +116,8 @@
     },
     {
       "agent": "Claude Opus 4.6",
-      "statements": 110,
-      "originated": 50,
+      "statements": 109,
+      "originated": 49,
       "independent": 5,
       "cited": 6,
       "echoed": 49,
@@ -161,8 +161,8 @@
       "independent": 2,
       "cited": 20,
       "echoed": 38,
-      "driftOrigins": 16,
-      "reached": 42
+      "driftOrigins": 17,
+      "reached": 44
     },
     {
       "agent": "GLM-5.2",
@@ -181,8 +181,8 @@
       "independent": 5,
       "cited": 12,
       "echoed": 35,
-      "driftOrigins": 15,
-      "reached": 37
+      "driftOrigins": 16,
+      "reached": 40
     },
     {
       "agent": "Claude Opus 4.8",
@@ -261,8 +261,8 @@
       "independent": 7,
       "cited": 7,
       "echoed": 14,
-      "driftOrigins": 10,
-      "reached": 26
+      "driftOrigins": 11,
+      "reached": 28
     },
     {
       "agent": "Gemini 3 Pro",
@@ -1177,7 +1177,7 @@
     [
       "EP-0105",
       "$5000",
-      "ABSTAIN_UNBOUND_EXCERPT",
+      "MATERIAL_DRIFT_DETECTED",
       4,
       1
     ],
@@ -3067,7 +3067,7 @@
     [
       "EP-0375",
       "575 pts",
-      "ABSTAIN_UNBOUND_EXCERPT",
+      "MATERIAL_DRIFT_DETECTED",
       3,
       1
     ],
@@ -3760,7 +3760,7 @@
     [
       "EP-0474",
       "805 poster",
-      "ABSTAIN_UNBOUND_EXCERPT",
+      "MATERIAL_DRIFT_DETECTED",
       3,
       1
     ],
@@ -5033,783 +5033,769 @@
     ],
     [
       "EP-0656",
-      "7700 sync",
-      "MATERIAL_DRIFT_DETECTED",
-      2,
-      1
-    ],
-    [
-      "EP-0657",
       "178 features",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0658",
+      "EP-0657",
       "404 features",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0659",
+      "EP-0658",
       "160 fragments",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0660",
+      "EP-0659",
       "250 fragments",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0661",
+      "EP-0660",
       "179 memoir",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0662",
+      "EP-0661",
       "5635 fragments",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0663",
+      "EP-0662",
       "101 projects",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0664",
+      "EP-0663",
       "107 projects",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0665",
+      "EP-0664",
       "276 projects",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0666",
+      "EP-0665",
       "128 tile",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0667",
+      "EP-0666",
       "$78.50",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0668",
+      "EP-0667",
       "238 views",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0669",
+      "EP-0668",
       "86.0 points",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0670",
+      "EP-0669",
       "167% minimum",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0671",
+      "EP-0670",
       "368.4% welfare",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0672",
+      "EP-0671",
       "1500 chapters",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0673",
+      "EP-0672",
       "1649 chapters",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0674",
+      "EP-0673",
       "195 followers",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0675",
+      "EP-0674",
       "244537 assertions",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0676",
+      "EP-0675",
       "97196 assertions",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0677",
+      "EP-0676",
       "2607.26731 reference",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0678",
+      "EP-0677",
       "1875 subscribers",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0679",
+      "EP-0678",
       "150878 assertions",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0680",
+      "EP-0679",
       "1888 subscribers",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0681",
+      "EP-0680",
       "143 assertions",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0682",
+      "EP-0681",
       "9.46% open",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0683",
+      "EP-0682",
       "142 assertions",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0684",
+      "EP-0683",
       "303 views",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0685",
+      "EP-0684",
       "433 views",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0686",
+      "EP-0685",
       "15000 articles",
-      "ABSTAIN_UNBOUND_EXCERPT",
+      "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0687",
+      "EP-0686",
       "566 checks",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0688",
+      "EP-0687",
       "1883 subscribers",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0689",
+      "EP-0688",
       "338 views",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0690",
+      "EP-0689",
       "7.83% yes",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0691",
+      "EP-0690",
       "446 checks",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0692",
+      "EP-0691",
       "470 checks",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0693",
+      "EP-0692",
       "179 checks",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0694",
+      "EP-0693",
       "$24.95",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0695",
+      "EP-0694",
       "103 consecutive",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0696",
+      "EP-0695",
       "121 consecutive",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0697",
+      "EP-0696",
       "348 poster",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0698",
+      "EP-0697",
       "5865 checks",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0699",
+      "EP-0698",
       "198 standing",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0700",
+      "EP-0699",
       "831 poster",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0701",
+      "EP-0700",
       "1574 anti-idling",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0702",
+      "EP-0701",
       "1574 nudges",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0703",
+      "EP-0702",
       "1574 chat",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0704",
+      "EP-0703",
       "743 edges",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0705",
+      "EP-0704",
       "51541 articles",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0706",
+      "EP-0705",
       "194 verification",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0707",
+      "EP-0706",
       "51563 articles",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0708",
+      "EP-0707",
       "2148 urls",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0709",
+      "EP-0708",
       "414 stories",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0710",
+      "EP-0709",
       "420 stories",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0711",
+      "EP-0710",
       "2208 urls",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0712",
+      "EP-0711",
       "172 challenges",
       "ON_TRACK",
       3,
       3
     ],
     [
-      "EP-0713",
+      "EP-0712",
       "350 points",
       "ON_TRACK",
       3,
       3
     ],
     [
-      "EP-0714",
+      "EP-0713",
       "22184 assertions",
       "ON_TRACK",
       3,
       3
     ],
     [
-      "EP-0715",
+      "EP-0714",
       "1449 checks",
       "ON_TRACK",
       3,
       3
     ],
     [
-      "EP-0716",
+      "EP-0715",
       "$15.50",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0717",
+      "EP-0716",
       "128 tiles",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0718",
+      "EP-0717",
       "157 events",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0719",
+      "EP-0718",
       "269 events",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0720",
+      "EP-0719",
       "172 total",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0721",
+      "EP-0720",
       "680 stories",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0722",
+      "EP-0721",
       "2200 damage",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0723",
+      "EP-0722",
       "20602 damage",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0724",
+      "EP-0723",
       "$10.73",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0725",
+      "EP-0724",
       "258 assertions",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0726",
+      "EP-0725",
       "186 assertions",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0727",
+      "EP-0726",
       "261080 connected",
       "ON_TRACK",
       2,
       2
     ],
     [
-      "EP-0728",
+      "EP-0727",
       "$200",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0729",
+      "EP-0728",
       "231 actual",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0730",
+      "EP-0729",
       "628 tests",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0731",
+      "EP-0730",
       "3101 damage",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0732",
+      "EP-0731",
       "11593 damage",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0733",
+      "EP-0732",
       "12385 damage",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0734",
+      "EP-0733",
       "170 chambers",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0735",
+      "EP-0734",
       "25000 stations",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0736",
+      "EP-0735",
       "2400 secrets",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0737",
+      "EP-0736",
       "2600 secrets",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0738",
+      "EP-0737",
       "7500 chambers",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0739",
+      "EP-0738",
       "2900 secrets",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0740",
+      "EP-0739",
       "9500 chambers",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0741",
+      "EP-0740",
       "4550 secrets",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0742",
+      "EP-0741",
       "7300 journeys",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0743",
+      "EP-0742",
       "150 fragments",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0744",
+      "EP-0743",
       "173 pieces",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0745",
+      "EP-0744",
       "216 pieces",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0746",
+      "EP-0745",
       "241 pieces",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0747",
+      "EP-0746",
       "234 fragments",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0748",
+      "EP-0747",
       "275 pieces",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0749",
+      "EP-0748",
       "321 pieces",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0750",
+      "EP-0749",
       "450 fragments",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0751",
+      "EP-0750",
       "491 pieces",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0752",
-      "437 cookies",
-      "BENIGN_CONTROL_NO_DRIFT",
-      1,
-      1
-    ],
-    [
-      "EP-0753",
+      "EP-0751",
       "10226 completions",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0754",
+      "EP-0752",
       "839 units",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0755",
+      "EP-0753",
       "147 views",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0756",
+      "EP-0754",
       "220 engagements",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0757",
+      "EP-0755",
       "1867 valid",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0758",
+      "EP-0756",
       "12856 assertions",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0759",
+      "EP-0757",
       "222 assertions",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0760",
+      "EP-0758",
       "805 dies",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0761",
+      "EP-0759",
       "320 true",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0762",
+      "EP-0760",
       "209 checks",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0763",
+      "EP-0761",
       "47780 checks",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0764",
+      "EP-0762",
       "381 edges",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0765",
+      "EP-0763",
       "4776 prize",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0766",
+      "EP-0764",
       "10073 checks",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0767",
+      "EP-0765",
       "282 stories",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
@@ -5880,16 +5866,16 @@
     {
       "month": "2026-04",
       "episodes": 177,
-      "drift": 170
+      "drift": 171
     },
     {
       "month": "2026-05",
-      "episodes": 114,
+      "episodes": 113,
       "drift": 98
     },
     {
       "month": "2026-06",
-      "episodes": 63,
+      "episodes": 62,
       "drift": 56
     },
     {
@@ -5900,7 +5886,7 @@
     {
       "month": "2026-08",
       "episodes": 72,
-      "drift": 61
+      "drift": 63
     },
     {
       "month": "2026-09",
@@ -8515,7 +8501,7 @@
       ]
     },
     {
-      "id": "EP-0712",
+      "id": "EP-0711",
       "claim": "172 challenges",
       "state": "ON_TRACK",
       "promised": 3,
@@ -8579,7 +8565,7 @@
       ]
     },
     {
-      "id": "EP-0713",
+      "id": "EP-0712",
       "claim": "350 points",
       "state": "ON_TRACK",
       "promised": 3,
@@ -8643,7 +8629,7 @@
       ]
     },
     {
-      "id": "EP-0714",
+      "id": "EP-0713",
       "claim": "22184 assertions",
       "state": "ON_TRACK",
       "promised": 3,
@@ -8707,7 +8693,7 @@
       ]
     },
     {
-      "id": "EP-0715",
+      "id": "EP-0714",
       "claim": "1449 checks",
       "state": "ON_TRACK",
       "promised": 3,
@@ -8780,7 +8766,7 @@
       ]
     },
     {
-      "id": "EP-0728",
+      "id": "EP-0727",
       "claim": "$200",
       "state": "BENIGN_CONTROL_NO_DRIFT",
       "promised": 1,
@@ -8842,7 +8828,7 @@
       ]
     },
     {
-      "id": "EP-0729",
+      "id": "EP-0728",
       "claim": "231 actual",
       "state": "BENIGN_CONTROL_NO_DRIFT",
       "promised": 1,
@@ -8904,7 +8890,7 @@
       ]
     },
     {
-      "id": "EP-0730",
+      "id": "EP-0729",
       "claim": "628 tests",
       "state": "BENIGN_CONTROL_NO_DRIFT",
       "promised": 1,
@@ -8966,7 +8952,7 @@
       ]
     },
     {
-      "id": "EP-0731",
+      "id": "EP-0730",
       "claim": "3101 damage",
       "state": "BENIGN_CONTROL_NO_DRIFT",
       "promised": 1,

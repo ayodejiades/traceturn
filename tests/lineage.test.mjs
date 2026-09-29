@@ -147,3 +147,17 @@ test("a computer session opened to check the claim counts as an independent path
   const [unrelated] = analyzeLineage(turns, {}, [{ ...sessions[0], goal: "Confirm 128 words in the story." }]).episodes;
   assert.equal(unrelated.observed, 1);
 });
+
+test("a question as the first mention is not the origin, and the excerpt still binds", async () => {
+  const { analyzeLineage } = await load("lib/lineage.ts");
+  const t = (agent, min, text) => ({ id: `${agent}${min}`, agent, room: "r", ts: Date.UTC(2026, 0, 1, 10, min), text, line: min });
+  const [ep] = analyzeLineage([
+    t("Ann", 0, "Is it really 412 signups?"),
+    t("Bo", 5, "The form shows 412 signups."),
+    t("Cy", 9, "We have 412 signups."),
+    t("Di", 12, "Great, 412 signups."),
+  ]).episodes;
+  assert.equal(ep.assertions[0].agent, "Bo");
+  assert.ok(ep.originText.includes(ep.assertions[0].excerpt));
+  assert.equal(ep.decision.excerptBound, true);
+});
