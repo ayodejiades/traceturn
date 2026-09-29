@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-shell";
 import { BTN_GHOST_ON_ART, BTN_PRIMARY, PageHero, Section, SectionHead } from "@/components/page-hero";
-import { ReportView } from "@/components/report-view";
+import { ReportView, type Tab } from "@/components/report-view";
 import { CORPORA, FIXTURES, FIXTURES_PASSING, type CorpusId } from "@/lib/evidence";
 import { STATE, TONE_TEXT, fmtInt, pct } from "@/lib/tones";
 import type { KernelState } from "@/lib/kernel";
@@ -33,8 +33,9 @@ const HERO: Record<CorpusId, (c: (typeof CORPORA)[CorpusId]) => { eyebrow: strin
   }),
 };
 
-export default async function ProofPage({ searchParams }: { searchParams: Promise<{ ep?: string; corpus?: string }> }) {
-  const { ep, corpus: requested } = await searchParams;
+export default async function ProofPage({ searchParams }: { searchParams: Promise<{ ep?: string; corpus?: string; tab?: string }> }) {
+  const { ep, corpus: requested, tab } = await searchParams;
+  const initialTab: Tab = tab === "corrections" || tab === "repairs" || tab === "agents" ? tab : "episodes";
   const id: CorpusId = requested === "collusion" ? "collusion" : "aivillage";
   const corpus = CORPORA[id];
   const report = corpus.report;
@@ -94,7 +95,7 @@ export default async function ProofPage({ searchParams }: { searchParams: Promis
             title="Every statement, in order, with its source"
             lede={`The ${report.episodes.length} lineages below are the widest gaps plus every kind of control. All ${fmtInt(report.totals.episodes)} verdicts are in the report's ledger.`}
           />
-          <ReportView key={id} report={report} initialEpisode={ep} verifyCorpus={id} actor={corpus.actor} />
+          <ReportView key={id} report={report} initialEpisode={ep} verifyCorpus={id} actor={corpus.actor} initialTab={initialTab} />
         </Section>
 
         <Section id="fixtures" band>

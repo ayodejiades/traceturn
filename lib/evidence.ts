@@ -56,6 +56,10 @@ export const HEADLINE = {
   repairsDisputed: VILLAGE.repairs.filter((r) => r.disputedBy).length,
 };
 
+/** Wrong values that spread to 3+ agents before one of them corrected it. */
+export const CORRECTIONS = VILLAGE.corrections ?? [];
+export const TOP_CORRECTION = CORRECTIONS[0] ?? null;
+
 /** The landing page's featured lineage: the widest drift episode with a quotable origin. */
 export const FEATURED =
   VILLAGE.episodes.find((e) => e.state === "MATERIAL_DRIFT_DETECTED" && e.source && e.assertions.length >= 6) ??

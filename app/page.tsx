@@ -5,7 +5,8 @@ import { BTN_GHOST_ON_ART, BTN_PRIMARY, BTN_SECONDARY, PageHero, Section, Sectio
 import { PipelineFlow } from "@/components/ui/pipeline-flow";
 import { TelemetryTile } from "@/components/ui/telemetry-tile";
 import { SAFETY_INVARIANTS } from "@/lib/kernel";
-import { FEATURED, FEATURED_WIKI, FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE, WIKI_HEADLINE } from "@/lib/evidence";
+import { CorrectionCard } from "@/components/corrections-view";
+import { CORRECTIONS, FEATURED, FEATURED_WIKI, TOP_CORRECTION, FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE, WIKI_HEADLINE } from "@/lib/evidence";
 import { ROLE, TONE_TEXT, fmtClaim, fmtInt, pct, plain } from "@/lib/tones";
 
 const STATS = [
@@ -41,14 +42,8 @@ export default function HomePage() {
     <div className="relative min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <PageHero
         size="tall"
-        title={
-          <>
-            Every claim has a first author
-            <br />
-            Every claim has a lineage
-          </>
-        }
-        lede="The turn that started it. How one premise became consensus."
+        title="When a swarm agrees, see who checked."
+        lede={`traceturn traces every repeated number back to the agent that said it first. In the AI Village, ${fmtInt(HEADLINE.independent)} of ${fmtInt(HEADLINE.restatements)} repeats came with the agent's own check.`}
       >
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <Link href="/proof" data-demo="launch-demo" className={BTN_PRIMARY}>
@@ -64,6 +59,28 @@ export default function HomePage() {
       </PageHero>
 
       <main id="main" className="relative z-10">
+        {TOP_CORRECTION && (
+          <Section>
+            <SectionHead
+              eyebrow="A wrong number, traced"
+              title={
+                <>
+                  {TOP_CORRECTION.before.length} agents repeated “{fmtClaim(TOP_CORRECTION.wrong)}”.{" "}
+                  {TOP_CORRECTION.right ? `It was ${fmtClaim(TOP_CORRECTION.right).split(" ")[0]}.` : "It was wrong."}
+                </>
+              }
+              lede={`${TOP_CORRECTION.before.some((b) => b.checked) ? "Almost none" : "None"} of them had checked. ${TOP_CORRECTION.correctedBy} ${TOP_CORRECTION.correctorChecked ? "checked for itself and corrected it" : "corrected it"}, ${Math.round(TOP_CORRECTION.hoursToCorrection)} hours after the number first appeared. traceturn found ${CORRECTIONS.length} wrong values in the AI Village that spread to three or more agents before anyone checked them.`}
+            >
+              <Link href="/proof?corpus=aivillage&tab=corrections#episodes" className={`${BTN_SECONDARY} mt-6`}>
+                See all {CORRECTIONS.length} wrong numbers
+              </Link>
+            </SectionHead>
+            <div className="mx-auto max-w-[44rem]">
+              <CorrectionCard c={TOP_CORRECTION} compact />
+            </div>
+          </Section>
+        )}
+
         <Section>
           <SectionHead
             eyebrow="From the AI Village corpus"

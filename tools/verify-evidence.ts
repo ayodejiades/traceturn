@@ -53,7 +53,19 @@ function checkReport(name: string) {
     if (e.source === null || (excerpt && e.source.includes(excerpt))) bound++;
     else fail(`${tag} ${e.id}: origin excerpt not verbatim in its source (INV-1)`);
   }
-  return { report, manifestsOk, bound };
+  // Corrections: a wrong value 3+ agents stated, corrected afterwards, in a sentence that names it.
+  const corrections = report.corrections ?? [];
+  if (report.totals.corrections !== corrections.length) fail(`${tag}: totals.corrections ${report.totals.corrections} != ${corrections.length} listed`);
+  let correctionsOk = 0;
+  for (const c of corrections) {
+    const num = c.wrong.split(" ")[0].replace(/^[$£€]/, "");
+    const grouped = num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const named = c.excerpt.includes(num) || c.excerpt.includes(grouped);
+    const ordered = c.before.every((b, i) => i === 0 || b.at >= c.before[i - 1].at) && c.at > c.before[0].at;
+    if (c.before.length >= 3 && named && ordered) correctionsOk++;
+    else fail(`${tag} ${c.id}: correction of ${c.wrong} fails spread/order/binding`);
+  }
+  return { report, manifestsOk, bound, correctionsOk };
 }
 
 const V = checkReport("aivillage");
@@ -111,6 +123,7 @@ const ledger = [
   `| Abstained (human or scrubbed origin) | ${v.ABSTAIN_AMBIGUOUS_SOURCE} | Re-counted from the ledger |`,
   `| Restatements with the agent's own check | ${t.independent} of ${t.restatements} (${pct(t.independent, t.restatements)}); ${t.independentBySession} of them via a computer session | Report totals, covered by the body sha256 |`,
   `| Self-reported repairs never confirmed | ${v.WAITING_TO_VERIFY} of ${t.repairs} | Report totals, covered by the body sha256 |`,
+  `| Wrong values that reached 3+ agents before a correction | ${V.correctionsOk} (${village.corrections.map((c) => c.wrong + " to " + (c.right ?? "?")).join("; ")}) | Each has 3+ prior statements in time order, and the correcting sentence names the wrong value |`,
   `| Pinned episode manifests that re-derive | ${V.manifestsOk} of ${village.episodes.length} | rederive() through the kernel |`,
   `| Origin excerpts verbatim in source (INV-1) | ${V.bound} of ${village.episodes.length} | Substring check |`,
   "",

@@ -62,6 +62,17 @@ test("sample transcript: every verdict type comes out as constructed", async () 
   // A number a human introduced is never blamed on the first agent to repeat it.
   assert.equal(by["$2500"].decision.state, "ABSTAIN_AMBIGUOUS_SOURCE");
 
+  // Ember checks the sheet and corrects the number four agents had repeated.
+  assert.equal(r.corrections.length, 1);
+  const [c] = r.corrections;
+  assert.equal(c.wrong, "412 signups");
+  assert.equal(c.right, "388 signups");
+  assert.equal(c.correctedBy, "Ember");
+  assert.equal(c.correctorChecked, true);
+  assert.deepEqual(c.before.map((b) => b.agent), ["Atlas", "Birch", "Cedar", "Delta"]);
+  // The correction names 412 to reject it, so it is not a fifth statement of 412.
+  assert.equal(by["412 signups"].promised, 4);
+
   const repairs = Object.fromEntries(r.repairs.map((x) => [x.url, x]));
   assert.equal(repairs["example.org/signup"].decision.state, "WAITING_TO_VERIFY");
   assert.equal(repairs["example.org/signup"].disputedBy.agent, "Ember");

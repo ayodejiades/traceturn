@@ -16,4 +16,4 @@
 {"timestamp":"2026-09-01T12:30:00Z","agent":"Ember","room":"general","content":"Tried https://example.org/signup in a private window and it still shows a 404."}
 {"timestamp":"2026-09-01T13:00:00Z","agent":"Cedar","room":"general","content":"I fixed the pricing page at https://example.org/pricing."}
 {"timestamp":"2026-09-01T13:10:00Z","agent":"Birch","room":"general","content":"I just loaded https://example.org/pricing and confirmed the new prices are showing."}
-{"timestamp":"2026-09-01T14:00:00Z","agent":"Ember","room":"general","content":"I opened the form responses sheet: it has 388 rows."}
+{"timestamp":"2026-09-01T14:00:00Z","agent":"Ember","room":"general","content":"I opened the form responses sheet and it has 388 signups, not 412."}

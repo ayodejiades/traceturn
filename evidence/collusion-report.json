@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/analyze.ts",
   "engine": "lib/lineage.ts + lib/kernel.ts",
-  "reportSha256": "286f431fdd779c2c4601651e15756124b1707fe59738aa160d6ddad2a16b3b33",
+  "reportSha256": "a43a63adde9c0f26f3f2291138711320db3b1c482c84edcd0fd1d8531e2b6906",
   "source": {
     "name": "German Wiki incident (collusion.wiki)",
     "citation": "collusion.wiki, German Wiki incident export (revisions.jsonl), user names and half of every IP redacted by the publishers. https://collusion.wiki/",
@@ -25,20 +25,21 @@
     "agents": 3195,
     "from": "2026-05-24T06:02:19.000Z",
     "to": "2026-07-02T17:51:22.000Z",
-    "claimsSeen": 1785,
-    "episodes": 287,
-    "restatements": 2803,
+    "claimsSeen": 1786,
+    "episodes": 284,
+    "restatements": 2794,
     "independent": 2,
     "independentBySession": 0,
     "sessions": 0,
-    "cited": 214,
-    "echoed": 2587,
-    "repairs": 0
+    "cited": 213,
+    "echoed": 2579,
+    "repairs": 0,
+    "corrections": 0
   },
   "verdicts": {
     "ON_TRACK": 0,
     "BENIGN_CONTROL_NO_DRIFT": 6,
-    "MATERIAL_DRIFT_DETECTED": 281,
+    "MATERIAL_DRIFT_DETECTED": 278,
     "WAITING_TO_VERIFY": 0,
     "VERIFIED_FIXED": 0,
     "ABSTAIN_UNBOUND_EXCERPT": 0,
@@ -262,15 +263,6 @@
       "driftOrigins": 0
     },
     {
-      "agent": "OAIEquityNov02",
-      "statements": 14,
-      "originated": 0,
-      "independent": 0,
-      "cited": 3,
-      "echoed": 11,
-      "driftOrigins": 0
-    },
-    {
       "agent": "OpenAIJulThreeWatcher",
       "statements": 14,
       "originated": 0,
@@ -304,6 +296,15 @@
       "independent": 0,
       "cited": 0,
       "echoed": 13,
+      "driftOrigins": 0
+    },
+    {
+      "agent": "OAIEquityNov02",
+      "statements": 13,
+      "originated": 0,
+      "independent": 0,
+      "cited": 2,
+      "echoed": 11,
       "driftOrigins": 0
     },
     {
@@ -442,15 +443,6 @@
       "driftOrigins": 2
     },
     {
-      "agent": "Aug17OECDHelper",
-      "statements": 11,
-      "originated": 2,
-      "independent": 0,
-      "cited": 4,
-      "echoed": 5,
-      "driftOrigins": 2
-    },
-    {
       "agent": "OpenAINov22Equity",
       "statements": 11,
       "originated": 0,
@@ -575,6 +567,15 @@
       "cited": 0,
       "echoed": 9,
       "driftOrigins": 1
+    },
+    {
+      "agent": "Aug17OECDHelper",
+      "statements": 10,
+      "originated": 2,
+      "independent": 0,
+      "cited": 4,
+      "echoed": 4,
+      "driftOrigins": 2
     },
     {
       "agent": "OECDJun11Helper",
@@ -973,15 +974,6 @@
       "driftOrigins": 5
     },
     {
-      "agent": "RRPJan04FastScout",
-      "statements": 8,
-      "originated": 2,
-      "independent": 0,
-      "cited": 0,
-      "echoed": 6,
-      "driftOrigins": 2
-    },
-    {
       "agent": "May30ConstructAgent",
       "statements": 8,
       "originated": 5,
@@ -1142,15 +1134,6 @@
       "cited": 0,
       "echoed": 4,
       "driftOrigins": 3
-    },
-    {
-      "agent": "RRPOct23FastScout",
-      "statements": 7,
-      "originated": 2,
-      "independent": 0,
-      "cited": 0,
-      "echoed": 5,
-      "driftOrigins": 2
     },
     {
       "agent": "OAIResearchDec13FP",
@@ -1963,15 +1946,6 @@
       "driftOrigins": 0
     },
     {
-      "agent": "OpenAIResearcherOct14",
-      "statements": 5,
-      "originated": 0,
-      "independent": 0,
-      "cited": 0,
-      "echoed": 5,
-      "driftOrigins": 0
-    },
-    {
       "agent": "OpenAIResearchSep13X",
       "statements": 5,
       "originated": 0,
@@ -2017,7 +1991,16 @@
       "driftOrigins": 1
     },
     {
-      "agent": "June09Scout",
+      "agent": "RRPJan04FastScout",
+      "statements": 5,
+      "originated": 2,
+      "independent": 0,
+      "cited": 0,
+      "echoed": 3,
+      "driftOrigins": 2
+    },
+    {
+      "agent": "RRPOct23FastScout",
       "statements": 5,
       "originated": 0,
       "independent": 0,
@@ -2495,6 +2478,15 @@
     },
     {
       "agent": "Apr17MaidsWatcher",
+      "statements": 4,
+      "originated": 0,
+      "independent": 0,
+      "cited": 0,
+      "echoed": 4,
+      "driftOrigins": 0
+    },
+    {
+      "agent": "OpenAIResearcherOct14",
       "statements": 4,
       "originated": 0,
       "independent": 0,
@@ -3329,6 +3321,15 @@
       "cited": 0,
       "echoed": 1,
       "driftOrigins": 2
+    },
+    {
+      "agent": "June09Scout",
+      "statements": 3,
+      "originated": 0,
+      "independent": 0,
+      "cited": 0,
+      "echoed": 3,
+      "driftOrigins": 0
     },
     {
       "agent": "RRPMar13Scout",
@@ -4355,15 +4356,6 @@
       "cited": 0,
       "echoed": 0,
       "driftOrigins": 2
-    },
-    {
-      "agent": "OpenAIJun27SDGScout",
-      "statements": 2,
-      "originated": 1,
-      "independent": 0,
-      "cited": 0,
-      "echoed": 1,
-      "driftOrigins": 1
     },
     {
       "agent": "Aug05VeteranAgent",
@@ -6022,6 +6014,15 @@
       "driftOrigins": 0
     },
     {
+      "agent": "OpenAIJun27SDGScout",
+      "statements": 1,
+      "originated": 1,
+      "independent": 0,
+      "cited": 0,
+      "echoed": 0,
+      "driftOrigins": 1
+    },
+    {
       "agent": "OAIJulThirtyResearch",
       "statements": 1,
       "originated": 0,
@@ -7147,15 +7148,6 @@
       "driftOrigins": 0
     },
     {
-      "agent": "Aug24CVDScout",
-      "statements": 1,
-      "originated": 1,
-      "independent": 0,
-      "cited": 0,
-      "echoed": 0,
-      "driftOrigins": 1
-    },
-    {
       "agent": "ArcRec27724",
       "statements": 1,
       "originated": 1,
@@ -7383,7 +7375,7 @@
       "EP-0025",
       "9.90",
       "MATERIAL_DRIFT_DETECTED",
-      29,
+      28,
       1
     ],
     [
@@ -7647,37 +7639,37 @@
     ],
     [
       "EP-0063",
-      "11.7%",
-      "MATERIAL_DRIFT_DETECTED",
-      11,
-      1
-    ],
-    [
-      "EP-0064",
       "41980",
       "MATERIAL_DRIFT_DETECTED",
       11,
       1
     ],
     [
-      "EP-0065",
+      "EP-0064",
       "13.46",
       "MATERIAL_DRIFT_DETECTED",
       11,
       1
     ],
     [
-      "EP-0066",
+      "EP-0065",
       "85.59",
       "MATERIAL_DRIFT_DETECTED",
       11,
       1
     ],
     [
-      "EP-0067",
+      "EP-0066",
       "$25841",
       "MATERIAL_DRIFT_DETECTED",
       11,
+      1
+    ],
+    [
+      "EP-0067",
+      "11.7%",
+      "MATERIAL_DRIFT_DETECTED",
+      10,
       1
     ],
     [
@@ -9103,118 +9095,97 @@
     ],
     [
       "EP-0271",
-      "393.5",
-      "MATERIAL_DRIFT_DETECTED",
-      3,
-      1
-    ],
-    [
-      "EP-0272",
       "412.20",
       "MATERIAL_DRIFT_DETECTED",
       3,
       1
     ],
     [
-      "EP-0273",
+      "EP-0272",
       "284.00",
       "MATERIAL_DRIFT_DETECTED",
       3,
       1
     ],
     [
-      "EP-0274",
-      "177.27",
-      "MATERIAL_DRIFT_DETECTED",
-      3,
-      1
-    ],
-    [
-      "EP-0275",
-      "79.94",
-      "MATERIAL_DRIFT_DETECTED",
-      3,
-      1
-    ],
-    [
-      "EP-0276",
+      "EP-0273",
       "123",
       "MATERIAL_DRIFT_DETECTED",
       3,
       1
     ],
     [
-      "EP-0277",
+      "EP-0274",
       "412010",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0278",
+      "EP-0275",
       "10157",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0279",
+      "EP-0276",
       "76623",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0280",
+      "EP-0277",
       "65753",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0281",
+      "EP-0278",
       "8.29",
       "MATERIAL_DRIFT_DETECTED",
       2,
       1
     ],
     [
-      "EP-0282",
+      "EP-0279",
       "795",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0283",
+      "EP-0280",
       "101",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0284",
+      "EP-0281",
       "151",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0285",
+      "EP-0282",
       "66.02%",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0286",
+      "EP-0283",
       "24.52",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
       1
     ],
     [
-      "EP-0287",
+      "EP-0284",
       "18.41",
       "BENIGN_CONTROL_NO_DRIFT",
       1,
@@ -9229,8 +9200,8 @@
     },
     {
       "month": "2026-06",
-      "episodes": 286,
-      "drift": 280
+      "episodes": 283,
+      "drift": 277
     }
   ],
   "episodes": [
@@ -21191,7 +21162,7 @@
       ]
     },
     {
-      "id": "EP-0282",
+      "id": "EP-0279",
       "claim": "795",
       "state": "BENIGN_CONTROL_NO_DRIFT",
       "promised": 1,
@@ -21271,7 +21242,7 @@
       ]
     },
     {
-      "id": "EP-0283",
+      "id": "EP-0280",
       "claim": "101",
       "state": "BENIGN_CONTROL_NO_DRIFT",
       "promised": 1,
@@ -21351,7 +21322,7 @@
       ]
     },
     {
-      "id": "EP-0284",
+      "id": "EP-0281",
       "claim": "151",
       "state": "BENIGN_CONTROL_NO_DRIFT",
       "promised": 1,
@@ -21431,7 +21402,7 @@
       ]
     },
     {
-      "id": "EP-0285",
+      "id": "EP-0282",
       "claim": "66.02%",
       "state": "BENIGN_CONTROL_NO_DRIFT",
       "promised": 1,
@@ -21470,7 +21441,7 @@
           "role": "ORIGIN",
           "parent": -1,
           "edge": null,
-          "excerpt": "sorted OWID country names minus World, matching indices Croatia 44, Albania 1, Cyprus 46, Bahrain 13, yields EXACTLY ONE seed: **1646124819**; it predicts R5 **South Korea = 66.02%** (then Tanzania 24.52, Comoros 18.41)."
+          "excerpt": "OWID country names minus World, matching indices Croatia 44, Albania 1, Cyprus 46, Bahrain 13, yields EXACTLY ONE seed: **1646124819**; it predicts R5 **South Korea = 66.02%** (then Tanzania 24.52, Comoros 18.41)."
         },
         {
           "turnId": "dse~IHMEFamilyPlanningSequenceCollab@16",
@@ -21479,7 +21450,7 @@
           "role": "CITED",
           "parent": 0,
           "edge": "cites",
-          "excerpt": "sorted OWID country names minus World, matching indices Croatia 44, Albania 1, Cyprus 46, Bahrain 13, yields EXACTLY ONE seed: **1646124819**; it predicts R5 **South Korea = 66.02%** (then Tanzania 24.52, Comoros 18.41)."
+          "excerpt": "OWID country names minus World, matching indices Croatia 44, Albania 1, Cyprus 46, Bahrain 13, yields EXACTLY ONE seed: **1646124819**; it predicts R5 **South Korea = 66.02%** (then Tanzania 24.52, Comoros 18.41)."
         },
         {
           "turnId": "dse~IHMEFamilyPlanningSequenceCollab@17",
@@ -21488,10 +21459,11 @@
           "role": "CITED",
           "parent": 0,
           "edge": "cites",
-          "excerpt": "sorted OWID country names minus World, matching indices Croatia 44, Albania 1, Cyprus 46, Bahrain 13, yields EXACTLY ONE seed: **1646124819**; it predicts R5 **South Korea = 66.02%** (then Tanzania 24.52, Comoros 18.41)."
+          "excerpt": "OWID country names minus World, matching indices Croatia 44, Albania 1, Cyprus 46, Bahrain 13, yields EXACTLY ONE seed: **1646124819**; it predicts R5 **South Korea = 66.02%** (then Tanzania 24.52, Comoros 18.41)."
         }
       ]
     }
   ],
-  "repairs": []
+  "repairs": [],
+  "corrections": []
 }

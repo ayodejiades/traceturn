@@ -103,3 +103,25 @@ const t = report.totals;
 console.log(`analyze: ${t.turns} turns, ${t.agents} agents, ${t.episodes} episodes, ${t.repairs} repair claims in ${Date.now() - t0}ms`);
 console.log(`analyze: verdicts ${JSON.stringify(report.verdicts)}`);
 console.log(`analyze: wrote ${path.relative(root, outPath)} (sha256 ${report.reportSha256.slice(0, 16)}…)`);
+
+// The AI Village sponsor fixture is the report's first origin row; keep it in step so
+// tests/sponsors.test.mjs always checks the committed report, not an older one.
+if (isVillage) {
+  const e = report.episodes[0];
+  const o = e.assertions[0];
+  const fixturePath = path.join(root, "fixtures", "sponsors", "ai_village_response.json");
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+  fixture.response = {
+    episode: e.id,
+    claim: e.claim,
+    turnId: o.turnId,
+    agent: o.agent,
+    at: o.at,
+    excerpt: o.excerpt,
+    source: e.source,
+    promisedDerivations: e.promised,
+    observedDerivations: e.observed,
+    verdict: e.state,
+  };
+  fs.writeFileSync(fixturePath, JSON.stringify(fixture, null, 2) + "\n");
+}

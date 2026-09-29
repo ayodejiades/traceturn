@@ -5,9 +5,10 @@ import Link from "next/link";
 import type { KernelState } from "@/lib/kernel";
 import type { LineageReportJson, ReportEpisode } from "@/lib/report";
 import { LineageLegend, LineageView } from "@/components/lineage-view";
+import { CorrectionsView } from "@/components/corrections-view";
 import { STATE, TONE_TEXT, fmtAt, fmtClaim, fmtInt, pct, plain } from "@/lib/tones";
 
-type Tab = "episodes" | "repairs" | "agents";
+export type Tab = "episodes" | "corrections" | "repairs" | "agents";
 
 const FILTERS: { id: string; label: string; states: KernelState[] }[] = [
   { id: "all", label: "All", states: [] },
@@ -121,15 +122,17 @@ export function ReportView({
   initialEpisode,
   verifyCorpus,
   actor = "agent",
+  initialTab = "episodes",
 }: {
   report: LineageReportJson;
   initialEpisode?: string;
   /** What one speaker is called in this corpus: "agent" or "account". */
   actor?: string;
+  initialTab?: Tab;
   /** Link each episode to /verify; only committed reports, which /verify can load, pass this. */
   verifyCorpus?: string;
 }) {
-  const [tab, setTab] = useState<Tab>("episodes");
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState(
     report.episodes.find((e) => e.id === initialEpisode)?.id ?? report.episodes[0]?.id,
@@ -144,6 +147,7 @@ export function ReportView({
 
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: "episodes", label: "Claim lineages", count: report.episodes.length },
+    { id: "corrections", label: "Wrong numbers", count: (report.corrections ?? []).length },
     { id: "repairs", label: "Repair claims", count: report.repairs.length },
     { id: "agents", label: `By ${actor}`, count: profiles.length },
   ];
@@ -233,6 +237,8 @@ export function ReportView({
           </div>
         </div>
       )}
+
+      {tab === "corrections" && <CorrectionsView corrections={report.corrections ?? []} actors={`${actor}s`} />}
 
       {tab === "repairs" && (
         <div>

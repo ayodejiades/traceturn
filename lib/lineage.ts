@@ -65,6 +65,42 @@ export interface Episode {
   originText: string;
 }
 
+/** One agent's statement of a value that was later corrected. */
+export interface WrongStatement {
+  agent: string;
+  turnId: string;
+  ts: number;
+  excerpt: string;
+  /** The statement reports the agent's own observation of the value. */
+  checked: boolean;
+}
+
+/**
+ * A value several agents stated and one later corrected ("8 patterns, not 4"). The
+ * trail shows how far the wrong value travelled before anyone checked it.
+ */
+export interface Correction {
+  id: string;
+  /** Claim key of the value that was corrected, e.g. "4 patterns". */
+  wrong: string;
+  /** Claim key of the value the corrector gave instead, when the sentence names one. */
+  right: string | null;
+  correctedBy: string;
+  turnId: string;
+  ts: number;
+  /** Verbatim correcting sentence; bound to the correcting turn (INV-1). */
+  excerpt: string;
+  /** The corrector reports its own observation ("I re-ran…", "`wc -l` returns…"). */
+  correctorChecked: boolean;
+  /** Each agent's first statement of the wrong value before the correction, oldest first. */
+  before: WrongStatement[];
+  /** Agents who stated the wrong value again after it was corrected. */
+  after: WrongStatement[];
+  /** Later agents who corrected the same value again. */
+  alsoCorrectedBy: string[];
+  sourceText: string;
+}
+
 export interface RepairClaim {
   id: string;
   url: string;
@@ -96,6 +132,7 @@ export interface LineageReport {
   claimsSeen: number;
   episodes: Episode[];
   repairs: RepairClaim[];
+  corrections: Correction[];
   profiles: AgentProfile[];
   verdicts: Record<KernelState, number>;
   params: LineageParams;
@@ -132,6 +169,8 @@ const LABEL_WORDS = new Set(
     " ",
   ),
 );
+// Words that make a status code a status rather than a count: "410 Gone", "404 error".
+const HTTP_WORDS = new Set("gone conflict response responses status forbidden unauthorized redirect redirects found bad internal service gateway method unprocessable teapot payload request requests code codes page ok".split(" "));
 const HTTP_CODES = new Set(["200", "201", "204", "301", "302", "304", "400", "401", "403", "404", "405", "409", "410", "418", "422", "429", "500", "502", "503", "504"]);
 
 export interface ClaimHit {
@@ -166,13 +205,14 @@ export function extractClaims(text: string, mode: ClaimKey = "quantity"): ClaimH
     // own, not facts passed from one agent to another. Round money amounts stay.
     if (!cur && !frac && /^[1-9]0+$/.test(digits)) continue;
     if (!cur && !pct && !frac && /^(19|20)\d\d$/.test(digits)) continue; // years
-    if (!cur && !pct && HTTP_CODES.has(digits)) continue;
     const before = /([A-Za-z]+)[\s#:.-]*$/.exec(masked.slice(Math.max(0, m.index! - 24), m.index!));
     if (before && LABEL_WORDS.has(before[1].toLowerCase())) continue;
     const num = `${cur}${digits}${frac}${pct}`;
     const after = masked.slice(m.index! + m[0].length);
     const u = UNIT_RE.exec(after);
     const unit = u ? u[1].toLowerCase().replace(/'s$/, "") : "";
+    // "409 Conflict" is a status; "409 events" is a count.
+    if (!cur && !pct && !frac && HTTP_CODES.has(digits) && (!unit || HTTP_WORDS.has(unit) || mode === "value")) continue;
     let key: string;
     if (mode === "value" || cur) key = num; // money is distinctive on its own
     else if (unit && !STOP_UNITS.has(unit)) key = `${num} ${unit}`;
@@ -208,6 +248,16 @@ function sentenceSpan(text: string, start: number, end: number, scan: number, ma
     const rel = start - s;
     const from = Math.max(0, Math.min(rel - Math.floor(max / 3), out.length - max));
     out = out.slice(from, from + max);
+    // Snap to word boundaries so an excerpt never opens or closes mid-word. Both edges
+    // move inward, so the result is still a verbatim substring of the source.
+    if (from > 0) {
+      const sp = out.search(/\s/);
+      if (sp >= 0 && sp < 24) out = out.slice(sp + 1);
+    }
+    if (from + max < e - s) {
+      const sp = out.search(/\s\S*$/);
+      if (sp > out.length - 24) out = out.slice(0, sp);
+    }
   }
   return out.trim();
 }
@@ -281,6 +331,8 @@ export function analyzeLineage(
   const byClaim = new Map<string, Occurrence[]>();
   for (const turn of turns) {
     for (const hit of extractClaims(turn.text, p.claimKey)) {
+      // "388 signups, not 412" names 412 to reject it; that is not a statement of 412.
+      if (/\bnot\s+\(?$/i.test(turn.text.slice(Math.max(0, hit.start - 8), hit.start))) continue;
       let list = byClaim.get(hit.key);
       if (!list) byClaim.set(hit.key, (list = []));
       list.push({ turn, hit });
@@ -323,6 +375,7 @@ export function analyzeLineage(
   episodes.forEach((e, i) => (e.id = `EP-${String(i + 1).padStart(4, "0")}`));
 
   const repairs = findRepairs(turns, gapMs);
+  const corrections = findCorrections(turns, byClaim, p.claimKey);
 
   const verdicts = {
     ON_TRACK: 0,
@@ -343,6 +396,7 @@ export function analyzeLineage(
     claimsSeen: byClaim.size,
     episodes,
     repairs,
+    corrections,
     profiles: buildProfiles(episodes),
     verdicts,
     params: p,
@@ -529,6 +583,111 @@ function normUrl(u: string): string {
   const bare = u.replace(/[.,;:!?`*_]+$/, "").replace(/^https?:\/\//i, "").replace(/[?#].*$/, "").replace(/\/+$/, "");
   const slash = bare.indexOf("/");
   return slash < 0 ? bare.toLowerCase() : bare.slice(0, slash).toLowerCase() + bare.slice(slash);
+}
+
+// ---------------------------------------------------------------------------
+// Corrections: a value several agents stated, then one agent corrected.
+
+// "8 patterns (P452–P459), not 4" · "4,432 bytes, not 4,423 bytes" · "819 words (not 769)"
+const NOT_RE = /(?<![\w.-])([$£€]?\d[\d,]*(?:\.\d+)?%?)\s+([A-Za-z][A-Za-z'-]{2,})[^.!?\n]{0,40}?[,;(—–-]\s*\(?not\s+([$£€]?\d[\d,]*(?:\.\d+)?%?)(?![\d])/g;
+// "my previous count of 32 implementations was inaccurate" · "the 110 total ... was misleading"
+// The adjective must describe this number: no other number, comma or "but" in between, and
+// not "was stale at 487" (which condemns the 487, not the number before it).
+const WRONG_RE = /(?<![\w.])([$£€]?\d[\d,]*(?:\.\d+)?%?)\s+([A-Za-z][A-Za-z'-]{2,})[^.!?\n\d,;]{0,40}?\b(?:was|is|were|are)\s+(?:wrong|incorrect|inaccurate|misleading|inflated|overstated|off by)\b(?!\s+(?:at|from|with)\s+\d)/g;
+// "409 events (previously reported 413)". Not "(was stale at 487)": a stale value was true
+// when stated and simply aged, which is not a wrong number spreading.
+const STALE_RE = /(?<![\w.-])([$£€]?\d[\d,]*(?:\.\d+)?%?)\s+([A-Za-z][A-Za-z'-]{2,})[^.!?\n\d]{0,20}?\((?:previously\s+(?:reported|stated|listed)(?:\s+as)?|incorrectly\s+(?:reported|listed)\s+as|wrongly\s+(?:reported|listed)\s+as)\s+([$£€]?\d[\d,]*(?:\.\d+)?%?)\)/g;
+const MIN_SPREAD = 3;
+const CORRECTION_LOOKBACK_MS = 14 * 24 * 3600_000;
+
+function claimKeyOf(num: string, unit: string, mode: ClaimKey): string | null {
+  const hits = extractClaims(`${num} ${unit}`, mode);
+  return hits.length ? hits[0].key : null;
+}
+
+function findCorrections(turns: Turn[], byClaim: Map<string, Occurrence[]>, mode: ClaimKey): Correction[] {
+  const out: Correction[] = [];
+  const seen = new Set<string>();
+
+  for (const t of turns) {
+    if (t.human) continue;
+    const found: { wrong: string; right: string | null; start: number; end: number }[] = [];
+    for (const m of t.text.matchAll(NOT_RE)) {
+      const [, rightNum, unit, wrongNum] = m;
+      const wrong = claimKeyOf(wrongNum, unit, mode);
+      // The corrected-to value is only displayed, never traced, so small numbers are fine.
+      const right = claimKeyOf(rightNum, unit, mode) ?? `${rightNum.replace(/,/g, "")} ${unit.toLowerCase()}`;
+      if (wrong && wrong !== right) found.push({ wrong, right, start: m.index!, end: m.index! + m[0].length });
+    }
+    for (const m of t.text.matchAll(STALE_RE)) {
+      const [, rightNum, unit, wrongNum] = m;
+      const wrong = claimKeyOf(wrongNum, unit, mode);
+      const right = claimKeyOf(rightNum, unit, mode) ?? `${rightNum.replace(/,/g, "")} ${unit.toLowerCase()}`;
+      if (wrong && wrong !== right) found.push({ wrong, right, start: m.index!, end: m.index! + m[0].length });
+    }
+    for (const m of t.text.matchAll(WRONG_RE)) {
+      const wrong = claimKeyOf(m[1], m[2], mode);
+      if (wrong) found.push({ wrong, right: null, start: m.index!, end: m.index! + m[0].length });
+    }
+
+    for (const f of found) {
+      const dedupe = `${f.wrong}|${t.id}`;
+      if (seen.has(dedupe)) continue;
+      seen.add(dedupe);
+
+      // Earlier statements of the wrong value, one per agent, within the lookback.
+      const byAgent = new Map<string, WrongStatement>();
+      const later = new Map<string, WrongStatement>();
+      for (const o of byClaim.get(f.wrong) ?? []) {
+        if (o.turn.human || o.turn.id === t.id) continue;
+        const sentence = sentenceSpan(o.turn.text, o.hit.start, o.hit.end, 600, 1200);
+        // A statement that is itself a correction of this value is not a use of it.
+        if (/\bnot\s+[$£€]?\d/.test(sentence) && sentence.includes(`not ${f.wrong.split(" ")[0]}`)) continue;
+        const st: WrongStatement = {
+          agent: o.turn.agent,
+          turnId: o.turn.id,
+          ts: o.turn.ts,
+          excerpt: sentenceAround(o.turn.text, o.hit.start, o.hit.end),
+          checked: FIRSTHAND_RE.test(sentence) || TOOL_OBSERVATION_RE.test(sentence),
+        };
+        if (o.turn.ts < t.ts && t.ts - o.turn.ts <= CORRECTION_LOOKBACK_MS) {
+          if (!byAgent.has(o.turn.agent)) byAgent.set(o.turn.agent, st);
+        } else if (o.turn.ts > t.ts && o.turn.ts - t.ts <= CORRECTION_LOOKBACK_MS && o.turn.agent !== t.agent) {
+          if (!later.has(o.turn.agent)) later.set(o.turn.agent, st);
+        }
+      }
+      // Spread means several agents stated it; a slip one or two agents made is not.
+      if (byAgent.size < MIN_SPREAD) continue;
+
+      // The same wrong value corrected again within the window is one case, not two.
+      const prior = out.find((c) => c.wrong === f.wrong && t.ts - c.ts <= CORRECTION_LOOKBACK_MS);
+      if (prior) {
+        if (t.agent !== prior.correctedBy && !prior.alsoCorrectedBy.includes(t.agent)) prior.alsoCorrectedBy.push(t.agent);
+        prior.after = prior.after.filter((a) => a.agent !== t.agent);
+        continue;
+      }
+
+      const sentence = sentenceSpan(t.text, f.start, f.end, 600, 1200);
+      out.push({
+        id: "",
+        wrong: f.wrong,
+        right: f.right,
+        correctedBy: t.agent,
+        turnId: t.id,
+        ts: t.ts,
+        excerpt: sentenceAround(t.text, f.start, f.end, 260),
+        correctorChecked: FIRSTHAND_RE.test(sentence) || TOOL_OBSERVATION_RE.test(sentence),
+        before: [...byAgent.values()].sort((a, b) => a.ts - b.ts),
+        after: [...later.values()].sort((a, b) => a.ts - b.ts),
+        alsoCorrectedBy: [],
+        sourceText: t.text,
+      });
+    }
+  }
+  // Widest spread first.
+  out.sort((a, b) => b.before.length - a.before.length || a.ts - b.ts);
+  out.forEach((c, i) => (c.id = `WN-${String(i + 1).padStart(4, "0")}`));
+  return out;
 }
 
 function findRepairs(turns: Turn[], gapMs: number): RepairClaim[] {

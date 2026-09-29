@@ -3,7 +3,7 @@
  * (/dashboard) and the findings page (/proof). One shape, one builder, so a number on
  * the landing page and a number computed from a dropped file come from the same code.
  */
-import { SCRUB_RE, analyzeLineage, type Episode, type LineageParams, type RepairClaim, type Role } from "./lineage";
+import { SCRUB_RE, analyzeLineage, type Correction, type Episode, type LineageParams, type RepairClaim, type Role } from "./lineage";
 import { evaluateDeterministicKernel, type KernelState } from "./kernel";
 import { canonicalJson, sha256Hex } from "./sha256";
 import type { ParseResult } from "./transcript";
@@ -50,6 +50,23 @@ export interface ReportRepair {
   disputedBy: { agent: string; turnId: string; at: string; excerpt: string } | null;
 }
 
+export interface ReportCorrection {
+  id: string;
+  wrong: string;
+  right: string | null;
+  correctedBy: string;
+  alsoCorrectedBy: string[];
+  turnId: string;
+  at: string;
+  excerpt: string;
+  correctorChecked: boolean;
+  /** Hours from the first statement of the wrong value to its correction. */
+  hoursToCorrection: number;
+  link: string | null;
+  before: { agent: string; turnId: string; at: string; excerpt: string; checked: boolean }[];
+  after: { agent: string; turnId: string; at: string; excerpt: string }[];
+}
+
 export interface ReportProfile {
   agent: string;
   statements: number;
@@ -82,6 +99,7 @@ export interface LineageReportJson {
     cited: number;
     echoed: number;
     repairs: number;
+    corrections: number;
   };
   verdicts: Record<KernelState, number>;
   profiles: ReportProfile[];
@@ -91,6 +109,8 @@ export interface LineageReportJson {
   monthly: { month: string; episodes: number; drift: number }[];
   episodes: ReportEpisode[];
   repairs: ReportRepair[];
+  /** Every wrong value that spread to 3+ agents and was later corrected. */
+  corrections: ReportCorrection[];
 }
 
 export interface BuildOptions {
@@ -164,6 +184,25 @@ function exportRepair(r: RepairClaim, days?: Map<string, number>): ReportRepair 
   };
 }
 
+function exportCorrection(c: Correction, days?: Map<string, number>): ReportCorrection {
+  const st = (w: Correction["before"][number]) => ({ agent: w.agent, turnId: w.turnId, at: iso(w.ts), excerpt: w.excerpt, checked: w.checked });
+  return {
+    id: c.id,
+    wrong: c.wrong,
+    right: c.right,
+    correctedBy: c.correctedBy,
+    alsoCorrectedBy: c.alsoCorrectedBy,
+    turnId: c.turnId,
+    at: iso(c.ts),
+    excerpt: c.excerpt,
+    correctorChecked: c.correctorChecked,
+    hoursToCorrection: Math.round(((c.ts - c.before[0].ts) / 3600_000) * 10) / 10,
+    link: villageLink(c.ts, days),
+    before: c.before.map(st),
+    after: c.after.map(({ agent, turnId, ts, excerpt }) => ({ agent, turnId, at: iso(ts), excerpt })),
+  };
+}
+
 export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageReportJson {
   // Answer boards pass bare values; chat passes quantities (see ClaimKey).
   const params = { claimKey: parsed.format === "collusion-wiki" ? ("value" as const) : ("quantity" as const), ...opts.params };
@@ -220,6 +259,7 @@ export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageRep
       cited: roleCount("CITED"),
       echoed: roleCount("ECHO"),
       repairs: report.repairs.length,
+      corrections: report.corrections.length,
     },
     verdicts: report.verdicts,
     profiles: report.profiles,
@@ -229,6 +269,7 @@ export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageRep
     monthly: [...months.entries()].sort(([a], [b]) => (a < b ? -1 : 1)).map(([month, v]) => ({ month, ...v })),
     episodes: episodes.map((e) => exportEpisode(e, days)),
     repairs: repairs.map((r) => exportRepair(r, days)),
+    corrections: report.corrections.map((c) => exportCorrection(c, days)),
   };
 
   return {
