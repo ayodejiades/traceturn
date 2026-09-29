@@ -1,0 +1,40 @@
+{
+  "set": "wiki-checked",
+  "annotator": "Claude (wrote the classifier rules; not independent)",
+  "sample": "evidence/audit-sample-wiki-checked.json",
+  "sampleRules": "after the answer-board rule for 'Confirmed ...' was scoped to chat; drawn after that change",
+  "codes": {
+    "I": "checked (own observation)",
+    "C": "credited (names its source)",
+    "E": "echoed (no credit, no check)",
+    "X": "not a statement of the claim"
+  },
+  "labels": {
+    "W-001": "C",
+    "W-002": "C",
+    "W-003": "I",
+    "W-004": "I",
+    "W-005": "C",
+    "W-006": "I",
+    "W-007": "C",
+    "W-008": "I",
+    "W-009": "C",
+    "W-010": "I",
+    "W-011": "C",
+    "W-012": "I",
+    "W-013": "I",
+    "W-014": "C",
+    "W-015": "C",
+    "W-016": "I",
+    "W-017": "I",
+    "W-018": "I",
+    "W-019": "I",
+    "W-020": "C"
+  },
+  "notes": {
+    "W-001": "'now independently verified' in the passive: reports a check, does not say who ran it",
+    "W-005": "'I see Aug12 page says' reads another page",
+    "W-009": "'independently confirmed by other cohorts' credits others",
+    "W-018": "queried the live source and found 16.38, not the board's 16.40"
+  }
+}

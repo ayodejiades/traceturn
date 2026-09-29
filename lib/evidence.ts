@@ -60,6 +60,8 @@ export const HEADLINE = {
 /** Wrong values that spread to 3+ agents before one of them corrected it. */
 export const CORRECTIONS = VILLAGE.corrections ?? [];
 export const TOP_CORRECTION = CORRECTIONS[0] ?? null;
+export const WIKI_CORRECTIONS = COLLUSION.corrections ?? [];
+export const TOP_WIKI_CORRECTION = WIKI_CORRECTIONS.find((c) => c.right) ?? null;
 
 /** The landing page's featured lineage: the widest drift episode with a quotable origin. */
 export const FEATURED =
@@ -95,6 +97,21 @@ export const WIKI_HEADLINE = {
   independent: w.independent,
   echoed: w.echoed,
 };
+
+/**
+ * Accounts that first posted the values others repeated, ranked by how many shared values
+ * they seeded. On an answer board this is who fed the ring.
+ */
+export function seeders(report: LineageReportJson, top = 10) {
+  const ranked = report.profiles
+    .filter((p) => p.driftOrigins > 0)
+    .sort((a, b) => b.driftOrigins - a.driftOrigins || b.reached - a.reached);
+  const total = report.verdicts.MATERIAL_DRIFT_DETECTED;
+  const head = ranked.slice(0, top);
+  const seeded = head.reduce((a, p) => a + p.driftOrigins, 0);
+  return { ranked: head, originators: ranked.length, total, share: total ? seeded / total : 0 };
+}
+export const WIKI_SEEDERS = seeders(COLLUSION);
 
 /**
  * The wiki's featured lineage: a value its origin posted as a guess ("Hypothesis only",

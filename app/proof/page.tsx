@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-shell";
 import { BTN_GHOST_ON_ART, BTN_PRIMARY, PageHero, Section, SectionHead } from "@/components/page-hero";
 import { ReportView, type Tab } from "@/components/report-view";
-import { CHECK_RATE, CORPORA, FIXTURES, FIXTURES_PASSING, type CorpusId } from "@/lib/evidence";
+import { CHECK_RATE, CORPORA, FIXTURES, FIXTURES_PASSING, WIKI_SEEDERS, type CorpusId } from "@/lib/evidence";
 import { STATE, TONE_TEXT, fmtInt, pct } from "@/lib/tones";
 import type { KernelState } from "@/lib/kernel";
 
@@ -29,7 +29,7 @@ const HERO: Record<CorpusId, (c: (typeof CORPORA)[CorpusId]) => { eyebrow: strin
   collusion: (c) => ({
     eyebrow: "Findings · German Wiki incident",
     title: `${fmtInt(c.report.totals.echoed)} answers repeated, ${c.report.totals.independent} checked`,
-    lede: `${fmtInt(c.report.totals.turns)} wiki edits by ${fmtInt(c.report.totals.agents)} account labels, counting only the lines each edit added. ${fmtInt(c.report.verdicts.MATERIAL_DRIFT_DETECTED)} shared values trace to a single first post.`,
+    lede: `${fmtInt(c.report.totals.turns)} wiki edits by ${fmtInt(c.report.totals.agents)} account labels, counting only the lines each edit added. ${fmtInt(c.report.verdicts.MATERIAL_DRIFT_DETECTED)} shared values trace to a single first post, and ${(c.report.corrections ?? []).length} of the most-submitted answers were rounded display values that accounts querying the live source later corrected.`,
   }),
 };
 
@@ -97,6 +97,39 @@ export default async function ProofPage({ searchParams }: { searchParams: Promis
           />
           <ReportView key={id} report={report} initialEpisode={ep} verifyCorpus={id} actor={corpus.actor} initialTab={initialTab} />
         </Section>
+
+        {id === "collusion" && (
+          <Section id="seeders" band>
+            <SectionHead
+              eyebrow="Who fed the board"
+              title={`${WIKI_SEEDERS.ranked.length} accounts first posted ${pct(WIKI_SEEDERS.share, 1, 0)} of the shared values`}
+              lede={`${fmtInt(WIKI_SEEDERS.originators)} of ${fmtInt(report.totals.agents)} account labels first posted any value that three or more accounts went on to repeat. These are the ones that seeded the most. One label is one account; several labels may share an operator.`}
+            />
+            <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+              <table className="w-full min-w-[560px] text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--border)] text-left">
+                    {["Account", "Values first posted", "Repeats by other accounts", "Its own edits with values"].map((h, i) => (
+                      <th key={h} className={`eyebrow px-4 py-3 font-medium ${i > 0 ? "text-right" : ""}`}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {WIKI_SEEDERS.ranked.map((p) => (
+                    <tr key={p.agent} className="border-b border-[var(--border)] last:border-b-0">
+                      <td className="px-4 py-2.5 font-mono text-xs text-[var(--fg)]">{p.agent}</td>
+                      <td className="tnum px-4 py-2.5 text-right text-[var(--danger)]">{p.driftOrigins}</td>
+                      <td className="tnum px-4 py-2.5 text-right text-[var(--fg)]">{fmtInt(p.reached)}</td>
+                      <td className="tnum px-4 py-2.5 text-right text-[var(--fg-muted)]">{p.statements}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Section>
+        )}
 
         <Section id="fixtures" band>
           <SectionHead

@@ -123,6 +123,8 @@ export interface AgentProfile {
   echoed: number;
   /** Episodes this agent originated that ended in MATERIAL_DRIFT_DETECTED. */
   driftOrigins: number;
+  /** Other speakers who stated a value this agent originated, summed over those episodes. */
+  reached: number;
 }
 
 export interface LineageReport {
@@ -218,7 +220,9 @@ export function extractClaims(text: string, mode: ClaimKey = "quantity"): ClaimH
     if (/\b(?:hit|reach|reaching|toward|towards|beat|surpass)\s+(?:the\s+)?$/i.test(masked.slice(Math.max(0, m.index! - 16), m.index!))) continue;
     if (/^\s*(?:[A-Za-z-]+\s+){0,2}(?:goal|target)s?\b/i.test(after)) continue;
     let key: string;
-    if (mode === "value" || cur) key = num; // money is distinctive on its own
+    // On answer boards "16.40%" and "16.40" are the same answer.
+    if (mode === "value") key = `${cur}${digits}${frac}`;
+    else if (cur) key = num; // money is distinctive on its own
     else if (unit && !STOP_UNITS.has(unit)) key = `${num} ${unit}`;
     else continue;
     if (seen.has(key)) continue;
@@ -280,7 +284,9 @@ const FIRSTHAND_RE =
 // A check reported without "I": "Pulled latest main…", "**Tested**: …", "Confirmed: $25 raised",
 // "Independently reran verify.py…", "We independently reproduced…".
 const TELEGRAPHIC_RE =
-  /(?:^|\n)[\s*•✅>-]*(?:\*\*)?(?:pulled|verified|confirmed|checked|tested|re-?ran|reran|counted|queried|measured|reproduced|inspected)\b|\b(?:independently|we(?:\s+just)?(?:\s+independently)?)\s+(?:re-?ran|reran|verified|reproduced|re-?checked|checked|confirmed|counted|measured|tested|pulled)\b/i;
+  /(?:^|\n)[\s*•✅>-]*(?:\*\*)?(?:pulled|verified|confirmed|checked|tested|re-?ran|reran|counted|queried|measured|reproduced|inspected)\b/i;
+const INDEPENDENTLY_RE =
+  /\b(?:independently|we(?:\s+just)?(?:\s+independently)?)\s+(?:re-?ran|reran|verified|reproduced|re-?checked|checked|confirmed|counted|measured|tested|pulled|bypassed|queried|computed)\b/i;
 // Not an assertion of the number: a question, or a sentence doubting or rejecting it.
 const NON_ASSERTION_RE = /\?\s*$|\b(?:haven't seen|have not seen|did(?:n't| not) match|no evidence|even though|was that based|is it really)\b/i;
 // A command or endpoint reporting a value: "`wc -l` returns 236", "my instance shows 110".
@@ -508,7 +514,14 @@ function buildEpisode(
         }
       }
       const attributed = citedIdx >= 0 || ATTRIB_RE.test(sentence);
-      const firsthand = FIRSTHAND_RE.test(sentence) || TOOL_OBSERVATION_RE.test(sentence) || TELEGRAPHIC_RE.test(sentence);
+      // On answer boards a leading "Confirmed" or "R3 confirmed" reports that a round's
+      // question arrived, not a check of the answer, so there only "I …" and
+      // "independently …" count. In chat, "Pulled latest main: 228 events" is a check.
+      const firsthand =
+        FIRSTHAND_RE.test(sentence) ||
+        TOOL_OBSERVATION_RE.test(sentence) ||
+        INDEPENDENTLY_RE.test(sentence) ||
+        (p.claimKey === "quantity" && TELEGRAPHIC_RE.test(sentence));
 
       // Own observation outranks everything: an agent that re-ran the check is a
       // separate derivation path even when it credits or reuses someone's wording.
@@ -621,6 +634,9 @@ const WRONG_RE = /(?<![\w.])([$£€]?\d[\d,]*(?:\.\d+)?%?)\s+([A-Za-z][A-Za-z'-
 // "409 events (previously reported 413)". Not "(was stale at 487)": a stale value was true
 // when stated and simply aged, which is not a wrong number spreading.
 const STALE_RE = /(?<![\w.-])([$£€]?\d[\d,]*(?:\.\d+)?%?)\s+([A-Za-z][A-Za-z'-]{2,})[^.!?\n\d]{0,20}?\((?:previously\s+(?:reported|stated|listed)(?:\s+as)?|incorrectly\s+(?:reported|listed)\s+as|wrongly\s+(?:reported|listed)\s+as)\s+([$£€]?\d[\d,]*(?:\.\d+)?%?)\)/g;
+// Answer boards drop the unit and may qualify the rejected value:
+// "literal Poland tooltip is 16.38 (raw 16.37683), not workbook-display 16.40".
+const NOT_VALUE_RE = /(?<![\w.-])([$£€]?\d[\d,]*(?:\.\d+)?%?)[^.!?\n]{0,40}?[,;(—–-]\s*\(?not\s+(?:[A-Za-z-]+\s+){0,2}([$£€]?\d[\d,]*(?:\.\d+)?%?)(?![\d])/g;
 const MIN_SPREAD = 3;
 const CORRECTION_LOOKBACK_MS = 14 * 24 * 3600_000;
 
@@ -636,6 +652,17 @@ function findCorrections(turns: Turn[], byClaim: Map<string, Occurrence[]>, mode
   for (const t of turns) {
     if (t.human) continue;
     const found: { wrong: string; right: string | null; start: number; end: number }[] = [];
+    if (mode === "value") {
+      for (const m of t.text.matchAll(NOT_VALUE_RE)) {
+        const [, rightNum, wrongNum] = m;
+        const wrong = claimKeyOf(wrongNum, "", mode);
+        // "(not padded XLSX 9.70/9.90)" rejects a list; which right value pairs with which
+        // wrong one is not recoverable, so name no right value rather than a wrong one.
+        const listed = /^[/,]\s*\d/.test(t.text.slice(m.index! + m[0].length));
+        const right = listed ? null : claimKeyOf(rightNum, "", mode);
+        if (wrong && wrong !== right) found.push({ wrong, right, start: m.index!, end: m.index! + m[0].length });
+      }
+    }
     for (const m of t.text.matchAll(NOT_RE)) {
       const [, rightNum, unit, wrongNum] = m;
       const wrong = claimKeyOf(wrongNum, unit, mode);
@@ -782,7 +809,7 @@ function buildProfiles(episodes: Episode[]): AgentProfile[] {
   const m = new Map<string, AgentProfile>();
   const get = (agent: string) => {
     let p = m.get(agent);
-    if (!p) m.set(agent, (p = { agent, statements: 0, originated: 0, independent: 0, cited: 0, echoed: 0, driftOrigins: 0 }));
+    if (!p) m.set(agent, (p = { agent, statements: 0, originated: 0, independent: 0, cited: 0, echoed: 0, driftOrigins: 0, reached: 0 }));
     return p;
   };
   for (const e of episodes) {
@@ -792,7 +819,10 @@ function buildProfiles(episodes: Episode[]): AgentProfile[] {
       p.statements++;
       if (a.role === "ORIGIN") {
         p.originated++;
-        if (e.decision.state === "MATERIAL_DRIFT_DETECTED") p.driftOrigins++;
+        if (e.decision.state === "MATERIAL_DRIFT_DETECTED") {
+          p.driftOrigins++;
+          p.reached += e.assertions.length - 1;
+        }
       } else if (a.role === "INDEPENDENT") p.independent++;
       else if (a.role === "CITED") p.cited++;
       else p.echoed++;

@@ -22,33 +22,39 @@ const root = process.cwd();
 // The dev set (evidence/audit-sample-dev.json) was drawn before the audit fixes and used to
 // write them. The test set is drawn with a different salt after the rules were frozen, and
 // excludes every dev item, so its numbers are not fitted to the rules.
-const SET = process.argv[2] === "dev" ? "dev" : "test";
-const SALT = SET === "dev" ? "" : "held-out-v1|";
+// `wiki-checked` is a later held-out set for the one stratum the first test set did not
+// cover: statements on the answer board the classifier calls checked. Drawn after the
+// answer-board rule for "Confirmed …" was fixed.
+const SET = process.argv[2] === "dev" ? "dev" : process.argv[2] === "wiki-checked" ? "wiki-checked" : "test";
+const SALT = SET === "dev" ? "" : SET === "test" ? "held-out-v1|" : "held-out-wiki-v1|";
 const devIds = new Set<string>(
-  SET === "test" && fs.existsSync(path.join(root, "evidence", "audit-sample-dev.json"))
+  SET !== "dev" && fs.existsSync(path.join(root, "evidence", "audit-sample-dev.json"))
     ? JSON.parse(fs.readFileSync(path.join(root, "evidence", "audit-sample-dev.json"), "utf8")).items.map((i: { corpus: string; turnId: string; claim: string }) => `${i.corpus}|${i.turnId}|${i.claim}`)
     : [],
 );
 const gz = (f: string) => zlib.gunzipSync(fs.readFileSync(path.join(root, f))).toString("utf8");
 
 // Items per (corpus, stratum). Strata follow the classifier's own output.
-const PLAN: Record<string, Record<string, number>> = {
-  aivillage: { "INDEPENDENT/statement": 20, "INDEPENDENT/session": 10, CITED: 20, ECHO: 25 },
-  collusion: { ECHO: 15, CITED: 10 },
+const PLANS: Record<string, Record<string, Record<string, number>>> = {
+  dev: { aivillage: { "INDEPENDENT/statement": 20, "INDEPENDENT/session": 10, CITED: 20, ECHO: 25 }, collusion: { ECHO: 15, CITED: 10 } },
+  test: { aivillage: { "INDEPENDENT/statement": 20, "INDEPENDENT/session": 10, CITED: 20, ECHO: 25 }, collusion: { ECHO: 15, CITED: 10 } },
+  "wiki-checked": { aivillage: {}, collusion: { "INDEPENDENT/statement": 20 } },
 };
+const PLAN = PLANS[SET];
 
-const corpora: { id: string; mode: ClaimKey; texts: string[] }[] = [
+const corpora: { id: string; mode: ClaimKey; files: string[] }[] = [
   {
     id: "aivillage",
     mode: "quantity",
-    texts: ["data/aivillage/agents.jsonl.gz", "data/aivillage/chat_messages.jsonl.gz", "data/aivillage/computer_use_sessions.jsonl.gz"].map(gz),
+    files: ["data/aivillage/agents.jsonl.gz", "data/aivillage/chat_messages.jsonl.gz", "data/aivillage/computer_use_sessions.jsonl.gz"],
   },
-  { id: "collusion", mode: "value", texts: [gz("data/collusion/revisions.jsonl.gz")] },
+  { id: "collusion", mode: "value", files: ["data/collusion/revisions.jsonl.gz"] },
 ];
 
 const items: unknown[] = [];
 for (const c of corpora) {
-  const parsed = parseJsonl(...c.texts);
+  if (Object.keys(PLAN[c.id]).length === 0) continue;
+  const parsed = parseJsonl(...c.files.map(gz));
   const byId = new Map(parsed.turns.map((t) => [t.id, t]));
   const report = analyzeLineage(parsed.turns, { claimKey: c.mode }, parsed.sessions);
   const pool = new Map<string, { key: string; row: Record<string, unknown> }[]>();
@@ -83,7 +89,7 @@ for (const c of corpora) {
     for (const p of picked) items.push(p.row);
   }
 }
-const prefix = SET === "dev" ? "A" : "T";
+const prefix = SET === "dev" ? "A" : SET === "test" ? "T" : "W";
 items.forEach((it, i) => ((it as { id: string }).id = `${prefix}-${String(i + 1).padStart(3, "0")}`));
 const out = `evidence/audit-sample-${SET}.json`;
 fs.writeFileSync(path.join(root, out), JSON.stringify({ generatedBy: "tools/audit-sample.ts", set: SET, plan: PLAN, items }, null, 2) + "\n");

@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/analyze.ts",
   "engine": "lib/lineage.ts + lib/kernel.ts",
-  "reportSha256": "2c05c42ce141472f28bc9377360bc73e9238766f118b553e76327b81a4944b03",
+  "reportSha256": "07eb6dd5377bfd9355bf42cadf3934d0be46b13bc2e358795219540b56dc01f3",
   "source": {
     "name": "AI Village",
     "citation": "AI Digest, \"AI Village dataset\", 2026. https://theaidigest.org/village",
@@ -61,7 +61,8 @@
       "independent": 11,
       "cited": 80,
       "echoed": 268,
-      "driftOrigins": 48
+      "driftOrigins": 48,
+      "reached": 133
     },
     {
       "agent": "Claude Haiku 4.5",
@@ -70,7 +71,8 @@
       "independent": 3,
       "cited": 69,
       "echoed": 255,
-      "driftOrigins": 66
+      "driftOrigins": 66,
+      "reached": 169
     },
     {
       "agent": "Claude Opus 4.5",
@@ -79,7 +81,8 @@
       "independent": 4,
       "cited": 26,
       "echoed": 122,
-      "driftOrigins": 130
+      "driftOrigins": 130,
+      "reached": 301
     },
     {
       "agent": "Claude Sonnet 4.5",
@@ -88,7 +91,8 @@
       "independent": 5,
       "cited": 29,
       "echoed": 75,
-      "driftOrigins": 31
+      "driftOrigins": 31,
+      "reached": 78
     },
     {
       "agent": "Claude Sonnet 4.6",
@@ -97,7 +101,8 @@
       "independent": 2,
       "cited": 19,
       "echoed": 54,
-      "driftOrigins": 49
+      "driftOrigins": 49,
+      "reached": 139
     },
     {
       "agent": "GPT-5.2",
@@ -106,7 +111,8 @@
       "independent": 18,
       "cited": 11,
       "echoed": 61,
-      "driftOrigins": 37
+      "driftOrigins": 37,
+      "reached": 96
     },
     {
       "agent": "Claude Opus 4.6",
@@ -115,7 +121,8 @@
       "independent": 5,
       "cited": 6,
       "echoed": 49,
-      "driftOrigins": 45
+      "driftOrigins": 45,
+      "reached": 153
     },
     {
       "agent": "Claude 3.7 Sonnet",
@@ -124,7 +131,8 @@
       "independent": 7,
       "cited": 14,
       "echoed": 48,
-      "driftOrigins": 25
+      "driftOrigins": 25,
+      "reached": 67
     },
     {
       "agent": "GPT-5.1",
@@ -133,7 +141,8 @@
       "independent": 15,
       "cited": 10,
       "echoed": 46,
-      "driftOrigins": 8
+      "driftOrigins": 8,
+      "reached": 29
     },
     {
       "agent": "GPT-5.4",
@@ -142,7 +151,8 @@
       "independent": 11,
       "cited": 1,
       "echoed": 45,
-      "driftOrigins": 22
+      "driftOrigins": 22,
+      "reached": 61
     },
     {
       "agent": "DeepSeek-V4-Pro",
@@ -151,7 +161,8 @@
       "independent": 2,
       "cited": 20,
       "echoed": 38,
-      "driftOrigins": 16
+      "driftOrigins": 16,
+      "reached": 42
     },
     {
       "agent": "GLM-5.2",
@@ -160,7 +171,8 @@
       "independent": 2,
       "cited": 13,
       "echoed": 36,
-      "driftOrigins": 20
+      "driftOrigins": 20,
+      "reached": 48
     },
     {
       "agent": "Gemini 3.1 Pro",
@@ -169,7 +181,8 @@
       "independent": 5,
       "cited": 12,
       "echoed": 35,
-      "driftOrigins": 15
+      "driftOrigins": 15,
+      "reached": 37
     },
     {
       "agent": "Claude Opus 4.8",
@@ -178,7 +191,8 @@
       "independent": 12,
       "cited": 12,
       "echoed": 18,
-      "driftOrigins": 16
+      "driftOrigins": 16,
+      "reached": 34
     },
     {
       "agent": "Opus 4.5 (Claude Code)",
@@ -187,7 +201,8 @@
       "independent": 1,
       "cited": 2,
       "echoed": 26,
-      "driftOrigins": 27
+      "driftOrigins": 27,
+      "reached": 91
     },
     {
       "agent": "GPT-5",
@@ -196,7 +211,8 @@
       "independent": 6,
       "cited": 4,
       "echoed": 41,
-      "driftOrigins": 1
+      "driftOrigins": 1,
+      "reached": 4
     },
     {
       "agent": "Grok 4.5",
@@ -205,7 +221,8 @@
       "independent": 0,
       "cited": 7,
       "echoed": 32,
-      "driftOrigins": 6
+      "driftOrigins": 6,
+      "reached": 15
     },
     {
       "agent": "Claude Opus 5",
@@ -214,7 +231,8 @@
       "independent": 0,
       "cited": 1,
       "echoed": 4,
-      "driftOrigins": 26
+      "driftOrigins": 26,
+      "reached": 77
     },
     {
       "agent": "GPT-5.5",
@@ -223,7 +241,8 @@
       "independent": 0,
       "cited": 1,
       "echoed": 25,
-      "driftOrigins": 12
+      "driftOrigins": 12,
+      "reached": 30
     },
     {
       "agent": "Gemini 2.5 Pro",
@@ -232,7 +251,8 @@
       "independent": 6,
       "cited": 6,
       "echoed": 19,
-      "driftOrigins": 6
+      "driftOrigins": 6,
+      "reached": 13
     },
     {
       "agent": "Gemini 3.5 Flash",
@@ -241,7 +261,8 @@
       "independent": 7,
       "cited": 7,
       "echoed": 14,
-      "driftOrigins": 10
+      "driftOrigins": 10,
+      "reached": 26
     },
     {
       "agent": "Gemini 3 Pro",
@@ -250,7 +271,8 @@
       "independent": 3,
       "cited": 5,
       "echoed": 21,
-      "driftOrigins": 8
+      "driftOrigins": 8,
+      "reached": 35
     },
     {
       "agent": "Gemini 3.8 Flash",
@@ -259,7 +281,8 @@
       "independent": 3,
       "cited": 6,
       "echoed": 15,
-      "driftOrigins": 13
+      "driftOrigins": 13,
+      "reached": 32
     },
     {
       "agent": "o3",
@@ -268,7 +291,8 @@
       "independent": 2,
       "cited": 0,
       "echoed": 17,
-      "driftOrigins": 12
+      "driftOrigins": 12,
+      "reached": 34
     },
     {
       "agent": "Claude Opus 4.1",
@@ -277,7 +301,8 @@
       "independent": 1,
       "cited": 9,
       "echoed": 8,
-      "driftOrigins": 12
+      "driftOrigins": 12,
+      "reached": 36
     },
     {
       "agent": "Kimi K2.6",
@@ -286,7 +311,8 @@
       "independent": 1,
       "cited": 2,
       "echoed": 21,
-      "driftOrigins": 6
+      "driftOrigins": 6,
+      "reached": 16
     },
     {
       "agent": "GPT-4.1",
@@ -295,7 +321,8 @@
       "independent": 0,
       "cited": 3,
       "echoed": 19,
-      "driftOrigins": 1
+      "driftOrigins": 1,
+      "reached": 3
     },
     {
       "agent": "Claude Fable 5",
@@ -304,7 +331,8 @@
       "independent": 0,
       "cited": 7,
       "echoed": 6,
-      "driftOrigins": 8
+      "driftOrigins": 8,
+      "reached": 21
     },
     {
       "agent": "Claude Opus 4.7",
@@ -313,7 +341,8 @@
       "independent": 0,
       "cited": 1,
       "echoed": 10,
-      "driftOrigins": 6
+      "driftOrigins": 6,
+      "reached": 15
     },
     {
       "agent": "Claude 3.5 Sonnet",
@@ -322,7 +351,8 @@
       "independent": 2,
       "cited": 1,
       "echoed": 12,
-      "driftOrigins": 2
+      "driftOrigins": 2,
+      "reached": 5
     },
     {
       "agent": "Claude Opus 4",
@@ -331,7 +361,8 @@
       "independent": 1,
       "cited": 3,
       "echoed": 8,
-      "driftOrigins": 4
+      "driftOrigins": 4,
+      "reached": 8
     },
     {
       "agent": "GLM-5.3 Flash",
@@ -340,7 +371,8 @@
       "independent": 1,
       "cited": 7,
       "echoed": 5,
-      "driftOrigins": 3
+      "driftOrigins": 3,
+      "reached": 8
     },
     {
       "agent": "Claude Sonnet 5",
@@ -349,7 +381,8 @@
       "independent": 0,
       "cited": 4,
       "echoed": 6,
-      "driftOrigins": 6
+      "driftOrigins": 6,
+      "reached": 16
     },
     {
       "agent": "Fine-Tuned Leader",
@@ -358,7 +391,8 @@
       "independent": 0,
       "cited": 0,
       "echoed": 7,
-      "driftOrigins": 0
+      "driftOrigins": 0,
+      "reached": 0
     },
     {
       "agent": "o1",
@@ -367,7 +401,8 @@
       "independent": 0,
       "cited": 0,
       "echoed": 5,
-      "driftOrigins": 2
+      "driftOrigins": 2,
+      "reached": 4
     },
     {
       "agent": "Muse Spark 1.3",
@@ -376,7 +411,8 @@
       "independent": 1,
       "cited": 3,
       "echoed": 1,
-      "driftOrigins": 0
+      "driftOrigins": 0,
+      "reached": 0
     },
     {
       "agent": "GPT-4o",
@@ -385,7 +421,8 @@
       "independent": 3,
       "cited": 0,
       "echoed": 1,
-      "driftOrigins": 0
+      "driftOrigins": 0,
+      "reached": 0
     },
     {
       "agent": "Claude Fable 5.1",
@@ -394,7 +431,8 @@
       "independent": 0,
       "cited": 1,
       "echoed": 0,
-      "driftOrigins": 2
+      "driftOrigins": 2,
+      "reached": 4
     },
     {
       "agent": "Grok 4",
@@ -403,7 +441,8 @@
       "independent": 0,
       "cited": 0,
       "echoed": 0,
-      "driftOrigins": 1
+      "driftOrigins": 1,
+      "reached": 2
     }
   ],
   "ledger": [

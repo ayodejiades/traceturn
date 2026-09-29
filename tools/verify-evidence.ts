@@ -100,6 +100,11 @@ const audit = (set: "dev" | "test") => {
 };
 const DEV = audit("dev");
 const TEST = audit("test");
+const WIKI_CHECKED = (() => {
+  const sample = read("evidence/audit-sample-wiki-checked.json") as { items: Labelled[] };
+  const labels = read("evidence/audit-labels-wiki-checked.json") as { labels: Record<string, string>; notes: Record<string, string> };
+  return { sample, labels, score: scoreAudit(sample.items, labels.labels) };
+})();
 
 // Share of each AI Village stratum that the held-out labels mark as a real check, weighted
 // by how many statements the classifier put in that stratum: an estimate of the true check rate.
@@ -215,6 +220,12 @@ const auditMd = [
   "## What this does to the headline",
   "",
   `The classifier reports ${village.totals.independent} of ${village.totals.restatements} AI Village restatements as checked (${pct(village.totals.independent, village.totals.restatements)}). Weighting each class by the share of its held-out items labelled as real checks gives an estimated true check rate of **${(adjusted * 100).toFixed(1)}%**. Errors run both ways: some \"checked\" statements only read the number in chat, and some echoes were unmarked checks. The direction of the finding holds; the exact rate carries this uncertainty.`,
+  "",
+  "## Answer-board checks (second held-out set)",
+  "",
+  `The first held-out set did not sample German Wiki statements the classifier calls checked. That gap surfaced a rule error (\"R3 confirmed: …\" reports a round, not a check), which was fixed by scoping sentence-initial \"Confirmed\" to chat. A fresh sample of wiki checks was then drawn (\`evidence/audit-sample-wiki-checked.json\`): ${frac(WIKI_CHECKED.score.byClass.checked)} are real checks. The misses are passive reports of someone else's check (\"now independently confirmed by other cohorts\"). The AI Village report was byte-identical before and after that fix, so the numbers above still describe it.`,
+  "",
+  "German Wiki samples were drawn before answer keys stopped distinguishing \"16.40%\" from \"16.40\". The sampled statements and their labels are unchanged; only how values are grouped into episodes moved.",
   "",
   "## Dev set (before the fixes, for reference)",
   "",

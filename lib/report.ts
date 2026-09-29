@@ -75,6 +75,7 @@ export interface ReportProfile {
   cited: number;
   echoed: number;
   driftOrigins: number;
+  reached: number;
 }
 
 export interface LineageReportJson {

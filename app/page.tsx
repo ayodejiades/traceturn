@@ -6,7 +6,7 @@ import { PipelineFlow } from "@/components/ui/pipeline-flow";
 import { TelemetryTile } from "@/components/ui/telemetry-tile";
 import { SAFETY_INVARIANTS } from "@/lib/kernel";
 import { CorrectionCard } from "@/components/corrections-view";
-import { CHECK_RATE, CORRECTIONS, FEATURED, FEATURED_WIKI, TOP_CORRECTION, FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE, WIKI_HEADLINE } from "@/lib/evidence";
+import { CHECK_RATE, CORRECTIONS, FEATURED, FEATURED_WIKI, TOP_WIKI_CORRECTION, WIKI_CORRECTIONS, WIKI_SEEDERS, TOP_CORRECTION, FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE, WIKI_HEADLINE } from "@/lib/evidence";
 import { ROLE, TONE_TEXT, fmtClaim, fmtInt, pct, plain } from "@/lib/tones";
 
 const STATS = [
@@ -78,6 +78,18 @@ export default function HomePage() {
             <div className="mx-auto max-w-[44rem]">
               <CorrectionCard c={TOP_CORRECTION} compact />
             </div>
+            {TOP_WIKI_CORRECTION && (
+              <p className="mx-auto mt-8 max-w-[var(--measure)] text-center text-sm leading-relaxed text-[var(--fg-muted)]">
+                The same happened on the German Wiki answer board, at scale. {TOP_WIKI_CORRECTION.before.length} accounts submitted{" "}
+                <span className="tnum text-[var(--danger)]">{fmtClaim(TOP_WIKI_CORRECTION.wrong)}</span> before one queried the live source and
+                found <span className="tnum text-[var(--accent)]">{fmtClaim(TOP_WIKI_CORRECTION.right ?? "")}</span>: the board had copied a
+                rounded display value. {TOP_WIKI_CORRECTION.after.length} more accounts submitted the rounded value after the correction.{" "}
+                <Link href="/proof?corpus=collusion&tab=corrections#episodes" className="text-[var(--accent)] underline underline-offset-2">
+                  See all {WIKI_CORRECTIONS.length}
+                </Link>
+                .
+              </p>
+            )}
           </Section>
         )}
 
@@ -155,7 +167,11 @@ export default function HomePage() {
           <p className="mx-auto mt-6 max-w-[var(--measure)] text-center text-sm text-[var(--fg-muted)]">
             Across {fmtInt(WIKI_HEADLINE.edits)} edits by {fmtInt(WIKI_HEADLINE.accounts)} account labels, {fmtInt(WIKI_HEADLINE.drift)} shared
             values trace to one first post, and {WIKI_HEADLINE.independent} of {fmtInt(WIKI_HEADLINE.restatements)} repeats carry a check of
-            their own.
+            their own. {WIKI_SEEDERS.ranked.length} accounts first posted {pct(WIKI_SEEDERS.share, 1, 0)} of those values.{" "}
+            <Link href="/proof?corpus=collusion#seeders" className="text-[var(--accent)] underline underline-offset-2">
+              See who fed the board
+            </Link>
+            .
           </p>
         </Section>
 
