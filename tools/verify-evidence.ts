@@ -128,6 +128,38 @@ function adjustedCheckRate() {
 }
 const adjusted = adjustedCheckRate();
 
+const frac = (x: { agree: number; n: number }) => `${x.agree}/${x.n} (${x.n ? Math.round((x.agree / x.n) * 100) : 0}%)`;
+const pct = (a: number, b: number) => `${((a / b) * 100).toFixed(1)}%`;
+
+// 4. The findings write-up quotes numbers; each must still match the reports.
+{
+  const findings = fs.readFileSync(path.join(root, "docs", "FINDINGS.md"), "utf8");
+  const n = (x: number) => x.toLocaleString("en-US");
+  const vt = village.totals;
+  const wt = wiki.totals;
+  const wikiSeeders = [...wiki.profiles].filter((p) => p.driftOrigins > 0).sort((a, b) => b.driftOrigins - a.driftOrigins || b.reached - a.reached);
+  const top10 = wikiSeeders.slice(0, 10).reduce((a, p) => a + p.driftOrigins, 0);
+  const expected: [string, string][] = [
+    ["AI Village messages", n(vt.turns)],
+    ["AI Village restatements", n(vt.restatements)],
+    ["AI Village checked", `${vt.independent} (${pct(vt.independent, vt.restatements)})`],
+    ["audit-adjusted check rate", `${(adjusted * 100).toFixed(1)}%`],
+    ["repairs never confirmed", `${village.verdicts.WAITING_TO_VERIFY} were never confirmed`],
+    ["wiki edits", n(wt.turns)],
+    ["wiki labels", n(wt.agents)],
+    ["wiki originators", `${wikiSeeders.length} of the ${n(wt.agents)}`],
+    ["wiki top-10 share", `first posted ${top10} of the ${wiki.verdicts.MATERIAL_DRIFT_DETECTED} shared values`],
+    ...village.corrections.map((c) => [`AI Village correction ${c.wrong}`, `| ${c.wrong.replace(/ .*/, "")} `] as [string, string]),
+    ...wiki.corrections.slice(0, 4).map((c) => [`wiki correction ${c.wrong}`, `| ${c.before.length} | ${c.after.length} |`] as [string, string]),
+    ["held-out checked", frac(TEST.score.byClass.checked)],
+    ["held-out credited", frac(TEST.score.byClass.credited)],
+    ["held-out echoed", frac(TEST.score.byClass.echoed)],
+  ];
+  for (const [what, text] of expected) {
+    if (!findings.includes(text)) fail(`docs/FINDINGS.md: ${what} should read "${text}"`);
+  }
+}
+
 if (failures.length) {
   console.error(`claim:verify FAILED (${failures.length}):\n  ${failures.join("\n  ")}`);
   process.exit(1);
@@ -136,7 +168,6 @@ if (failures.length) {
 // 3. Write the ledger from what was just proved --------------------------------
 const t = village.totals;
 const v = village.verdicts;
-const pct = (a: number, b: number) => `${((a / b) * 100).toFixed(1)}%`;
 const passing = fixtureRows.length;
 const now = new Date().toISOString();
 
@@ -187,7 +218,6 @@ const ledger = [
   "",
 ].join("\n");
 
-const frac = (x: { agree: number; n: number }) => `${x.agree}/${x.n} (${x.n ? Math.round((x.agree / x.n) * 100) : 0}%)`;
 const auditMd = [
   "# Classifier accuracy audit",
   "",

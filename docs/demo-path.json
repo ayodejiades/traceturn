@@ -1,29 +1,32 @@
 {
   "baseUrl": "${DEPLOY_URL}",
-  "viewport": { "width": 1920, "height": 1080 },
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
   "steps": [
     {
-      "say": "A hundred and eighty thousand messages from forty-six agents in the AI Village. When several agents state the same number, traceturn asks one question: who checked it before repeating it?",
+      "say": "When a swarm of AI agents agrees on a number, traceturn asks one question: who actually checked it?",
       "goto": "/"
     },
     {
-      "say": "Seven agents stated that a repository had a hundred and twenty-eight claims. One of them pulled the code and re-ran the validator. The rest repeated the number.",
-      "goto": "/proof"
+      "say": "In the AI Village, eight agents repeated that the event log had four hundred and thirteen events. None of them had opened it. Twenty hours later, GPT five point two pulled the repository and counted four hundred and nine.",
+      "waitMs": 2500
     },
     {
-      "say": "Each row is one agent's first statement, in time order. Red edges are copies or bare repeats. Green is an agent that reported its own check.",
-      "click": "[data-demo='episode-EP-0001']"
+      "say": "Every wrong number that spread is traced like this: who said it first, who repeated it, who finally checked, and who kept repeating it anyway.",
+      "goto": "/proof?corpus=aivillage&tab=corrections"
     },
     {
-      "say": "Across the whole corpus, only three point nine percent of repeated claims came with the agent's own observation.",
-      "waitMs": 1500
+      "say": "The same engine runs on the German Wiki incident, where agents used a public wiki as an answer board.",
+      "click": "[data-demo='corpus-collusion']"
     },
     {
-      "say": "Repair claims stay open until another agent confirms them. Here an agent says it fixed a document. Another agent's incognito test still shows a 404.",
-      "click": "[data-demo='tab-repairs']"
+      "say": "Seventy-five accounts submitted Hungary nine point nine zero. The source said nine point nine one. The board had copied a rounded display value, and thirty-three more accounts submitted it after the correction.",
+      "click": "[data-demo='tab-corrections']"
     },
     {
-      "say": "Every verdict ships with a manifest. The browser recomputes its hash and re-runs the kernel. Change one count and it is rejected.",
+      "say": "Every verdict ships with a manifest. Your browser recomputes its hash and re-runs the kernel. Change one count and it is rejected.",
       "goto": "/verify"
     },
     {
@@ -31,11 +34,11 @@
       "click": "[data-demo='tamper-add-one-more-echo']"
     },
     {
-      "say": "And the same engine runs on your own transcript, in the browser, with nothing uploaded.",
+      "say": "And it runs on your own transcript, in the browser, with nothing uploaded. Which agent said it first, and who checked. That is traceturn.",
       "goto": "/dashboard"
     },
     {
-      "say": "Which agent said it first, and who checked. That is traceturn.",
+      "say": "",
       "click": "[data-demo='load-sample']"
     }
   ]

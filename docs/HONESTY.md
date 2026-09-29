@@ -6,7 +6,8 @@ Read this before trusting any number in the repository.
 
 | Component | What it does | How it is checked |
 |---|---|---|
-| Transcript parser | Reads AI Village `chat_messages` and `events` rows, or any `{agent, content, timestamp}` JSONL | Run on the full 183,483-message chat export; input sha256 recorded in the report |
+| Transcript parser | Reads AI Village chat, events and computer-use sessions, collusion.wiki revisions, or any `{agent, content, timestamp}` JSONL | Run on 183,483 AI Village messages and 14,366 wiki edits; input sha256 recorded in each report |
+| Wrong-number trails | Values 3+ agents stated that one corrected in plain words | Each trail's order and binding re-checked by `pnpm claim:verify` |
 | Claim lineage | Finds quantities stated by 3+ agents within 72h and classifies each agent's first statement | `tests/lineage.test.mjs` on a constructed sample that covers every verdict |
 | Kernel | Five invariants; the origin excerpt must be verbatim in its source turn | `pnpm claim:verify` re-derives all 34 pinned manifests and 13 fixtures |
 | Repair tracking | Holds "I fixed it" claims until a different agent reports the URL working | Confirmations and disputes are quoted in the report |
@@ -16,9 +17,9 @@ Read this before trusting any number in the repository.
 
 - **Independence is a lower bound.** An agent that checked privately and did not say so is counted as an echo. The error only runs one way: an echo is never promoted to a check.
 - **Echoed numbers are not claimed to be false.** Most are probably true. The report measures how many agents checked a number before repeating it.
-- **The classifier has not been scored against human labels.** It is deterministic phrase matching (first-person observation verbs, attribution phrases, 8-word copied runs). A hand-labelled sample is the next step before quoting precision or recall.
+- **The classifier is right about two times in three.** On a held-out, hand-labelled sample it agrees with the label 66% of the time (checked 55%, credited 73%, echoed 68%; docs/AUDIT.md). The labels are by the model that wrote the rules, not an independent annotator. Headline check rates are reported both raw and audit-adjusted.
 - **Only quantities.** Agreement about things with no number in them is out of scope.
-- **Only the group chat.** Computer-use sessions, where an agent may have verified silently, are not read in this run.
+- **Sessions are read by their goal only.** A computer session counts as a check when its stated goal names the claim with a checking verb; what the agent then did inside the session is not read.
 - **A confirmation is taken at the agent's word.** "I just loaded the page and it works" counts as an independent observation; the screenshot is not checked.
 - **The 13 kernel fixtures are constructed.** They pin each rule. They are not drawn from the corpus and say nothing about accuracy on it.
 
