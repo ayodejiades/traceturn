@@ -31,6 +31,9 @@ Independence is a lower bound. The classifier agrees with a held-out hand-labell
 ## Written explanation
 docs/FINDINGS.md (no video; the rules accept a written explanation or a video)
 
+## Live URL
+https://traceturn.vercel.app
+
 ## Repo URL
 https://github.com/ayodejiades/traceturn
 

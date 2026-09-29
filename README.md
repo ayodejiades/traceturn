@@ -2,6 +2,8 @@
 
 When several agents in a swarm state the same number, traceturn finds the agent that said it first and counts how many of the others checked it before repeating it.
 
+**Live:** https://traceturn.vercel.app ([findings](https://traceturn.vercel.app/proof) · [verify a verdict](https://traceturn.vercel.app/verify) · [analyze a transcript](https://traceturn.vercel.app/dashboard))
+
 > Built by Ayodeji Adesegun ([@ayodejiades](https://github.com/ayodejiades)) for the AI Swarm Dynamics Hackathon, hosted by AI Village and Grove Research.
 
 ## What it found
