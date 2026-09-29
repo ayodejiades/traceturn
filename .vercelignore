@@ -1,0 +1,11 @@
+# Never upload: the gated AI Village corpus, the wiki export, local secrets and tooling.
+# The site only needs the committed reports in evidence/.
+data/
+.env
+.env.*
+!.env.example
+.claude/
+.kit/
+.next/
+node_modules/
+story/
