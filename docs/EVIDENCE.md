@@ -17,5 +17,3 @@
 - Verdict rules and invariants: `lib/kernel.ts` `evaluateDeterministicKernel`
 - Manifest re-derivation used by `/verify` and the CLI: `lib/report.ts` `rederive`
 - Report digest: `lib/sha256.ts`, checked against `node:crypto` in `tests/lineage.test.mjs`
-
-The demo video in `docs/demo.mp4` was recorded before this rewrite and shows the old interface. It needs to be re-recorded against the current demo path.

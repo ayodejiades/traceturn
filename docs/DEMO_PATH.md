@@ -8,6 +8,4 @@
 4. **Tamper check** (`/verify`). The committed verdict verifies. Click `[data-demo='tamper-add-one-more-echo']` and it is rejected.
 5. **Your own transcript** (`/dashboard`). Click `[data-demo='load-sample']`. The sample runs in the browser, including one wrong-number trail.
 
-The recorded video (`docs/demo.mp4`) predates this path and is being re-recorded from `docs/demo-path.json`.
-
 Everything off this path is out of scope; see [HONESTY.md](HONESTY.md).

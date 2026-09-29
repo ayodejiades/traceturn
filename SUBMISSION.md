@@ -28,8 +28,8 @@ Write-up: docs/FINDINGS.md. Accuracy: docs/AUDIT.md.
 ## Limits
 Independence is a lower bound. The classifier agrees with a held-out hand-labelled sample 66% of the time, and those labels are by the model that wrote the rules. See docs/HONESTY.md and docs/AUDIT.md.
 
-## Video URL
-<re-record: the existing docs/demo.mp4 shows the previous interface>
+## Written explanation
+docs/FINDINGS.md (no video; the rules accept a written explanation or a video)
 
 ## Repo URL
 https://github.com/ayodejiades/traceturn
