@@ -1,170 +1,123 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import type { ReportEpisode } from "@/lib/report";
+import { ROLE, STATE, TONE_TEXT, TONE_VAR, fmtAt } from "@/lib/tones";
 
 /**
- * Hero visual: the tool's actual finding, rendered.
+ * Landing-page graph of one real episode from the committed AI Village report.
+ * The origin sits in the centre; every later statement is a node on the ring, coloured
+ * by its role, with an edge to the statement it derives from. Nodes fade in in time
+ * order with a CSS animation (globals.css `lineage-in`), which the reduced-motion rule
+ * already disables. Counts are static, so no mid-animation number contradicts the copy.
  *
- * A premise asserted by 14 agents resolves to 1 independent origin. Edges light up
- * in sequence while the independent-origin count stays at one -- the gap that a
- * transcript summary cannot see.
- *
- * Deterministic: node positions and pulse order are fixed, not random, so the hero
- * renders identically on the server and the client.
+ * Deterministic layout, so server and client render the same markup.
  */
-
-const CITATIONS = 14;
-
 function polar(index: number, total: number, radius: number) {
   const angle = (index / total) * Math.PI * 2 - Math.PI / 2;
-  return {
-    x: 50 + Math.cos(angle) * radius,
-    y: 50 + Math.sin(angle) * radius,
-  };
+  return { x: 50 + Math.cos(angle) * radius, y: 50 + Math.sin(angle) * radius };
 }
 
-const LOG = [
-  { id: "SWARM-01", state: "MATERIAL_DRIFT", tone: "flag" },
-  { id: "SWARM-02", state: "ON_TRACK", tone: "pass" },
-  { id: "SWARM-03", state: "BENIGN", tone: "pass" },
-  { id: "SWARM-04", state: "MATERIAL_DRIFT", tone: "flag" },
-  { id: "SWARM-05", state: "WAITING", tone: "wait" },
-  { id: "SWARM-07", state: "ABSTAIN", tone: "wait" },
-] as const;
+export function LineageGraph({ episode }: { episode: ReportEpisode }) {
+  const rest = episode.assertions.slice(1);
+  const reveal = (i: number) => ({ animation: "lineage-in 360ms ease both", animationDelay: `${300 + i * 260}ms` });
 
-const TONE = {
-  flag: "text-[var(--accent)]",
-  pass: "text-[var(--fg-muted)]",
-  wait: "text-[var(--warn)]",
-} as const;
-
-export function LineageGraph() {
-  const [revealed, setRevealed] = useState(0);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setRevealed(CITATIONS);
-      return;
-    }
-    let i = 0;
-    const id = setInterval(() => {
-      i += 1;
-      setRevealed(i);
-      if (i >= CITATIONS) clearInterval(id);
-    }, 150);
-    return () => clearInterval(id);
-  }, []);
-
-  const origin = { x: 50, y: 50 };
-  const nodes = Array.from({ length: CITATIONS }, (_, i) => polar(i, CITATIONS, 37));
+  const pos = [{ x: 50, y: 50 }, ...rest.map((_, i) => polar(i, rest.length, 36))];
+  const counts = { checked: 0, credited: 0, echoed: 0 };
+  for (const a of rest) {
+    if (a.role === "INDEPENDENT") counts.checked++;
+    else if (a.role === "CITED") counts.credited++;
+    else if (a.role === "ECHO") counts.echoed++;
+  }
+  const state = STATE[episode.state];
 
   return (
-    <div className="relative">
-      {/* Glow bleeds 1rem so it stays inside the page gutter. At -inset-10 (2.5rem)
-          it pushed past --page-pad (1.5rem) and gave every viewport 16px of
-          horizontal scroll, which the visual check treats as a failure. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -inset-4 -z-10"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 60% 40%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 70%)",
-        }}
-      />
-
-      {/* The card IS the two panes -- no wrapper chrome. An earlier version stacked a
-          faux browser title bar, a padded frame and an inset panel here, which made a
-          static finding look like an embedded app screenshot. */}
-      <div className="relative grid gap-px overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2">
-        <div className="bg-[var(--surface)] p-5">
-          <div className="relative mx-auto aspect-square w-full max-w-[230px]">
-            <svg
-              viewBox="0 0 100 100"
-              className="h-full w-full overflow-visible"
-              role="img"
-              aria-label="A claim cited by 14 agents resolving to a single independent origin."
-            >
-              <defs>
-                <radialGradient id="originGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.45" />
-                  <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
-                </radialGradient>
-              </defs>
-              <circle cx={origin.x} cy={origin.y} r="27" fill="url(#originGlow)" />
-              {nodes.map((n, i) => (
-                <line
-                  key={"e" + i}
-                  x1={origin.x}
-                  y1={origin.y}
-                  x2={n.x}
-                  y2={n.y}
-                  stroke="var(--accent)"
-                  strokeWidth={i < revealed ? 0.45 : 0.25}
-                  strokeOpacity={i < revealed ? 0.7 : 0.14}
-                  style={{ transition: "stroke-opacity 320ms ease, stroke-width 320ms ease" }}
-                />
-              ))}
-              {nodes.map((n, i) => (
-                <circle
-                  key={"n" + i}
-                  cx={n.x}
-                  cy={n.y}
-                  r={i < revealed ? 2.1 : 1.5}
-                  fill={i < revealed ? "var(--accent)" : "var(--fg-subtle)"}
-                  fillOpacity={i < revealed ? 1 : 0.3}
-                  style={{ transition: "r 320ms ease, fill 320ms ease" }}
-                />
-              ))}
-              <circle cx={origin.x} cy={origin.y} r="5" fill="var(--bg)" stroke="var(--accent)" strokeWidth="1.6" />
-              <circle cx={origin.x} cy={origin.y} r="1.8" fill="var(--accent)" />
-            </svg>
-            <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-[calc(100%+16px)] text-center">
-              <div className="tnum text-base font-semibold text-[var(--accent)]">1</div>
-              <div className="text-[9px] leading-tight text-[var(--fg-subtle)]">
-                independent
-                <br />
-                origin
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-sm)] bg-[var(--border)]">
-            <div className="bg-[var(--bg)] px-3 py-2.5">
-              <div className="eyebrow mb-0.5">Asserted</div>
-              <div className="tnum text-lg font-semibold">{revealed}</div>
-            </div>
-            <div className="bg-[var(--bg)] px-3 py-2.5">
-              <div className="eyebrow mb-0.5">Corroborated by</div>
-              <div className="tnum text-lg font-semibold text-[var(--accent)]">1</div>
-            </div>
-          </div>
-        </div>
-        <div className="bg-[var(--surface)] p-5">
-          <div className="eyebrow mb-3">Verdict log</div>
-          <div className="space-y-1.5">
-            {LOG.map((row, i) => (
-              <div
-                key={row.id}
-                className="flex items-center justify-between rounded-[6px] border border-[var(--border)] bg-[var(--bg)] px-2.5 py-1.5"
-                style={{ opacity: i < revealed ? 1 : 0.25, transition: "opacity 320ms ease" }}
-              >
-                <span className="font-mono text-[10px] text-[var(--fg-subtle)]">{row.id}</span>
-                <span className={`font-mono text-[10px] ${TONE[row.tone]}`}>{row.state}</span>
-              </div>
-            ))}
-          </div>
-          <div
-            className="mt-3 rounded-[6px] border px-2.5 py-2"
-            style={{
-              borderColor: "color-mix(in oklab, var(--accent) 26%, transparent)",
-              background: "color-mix(in oklab, var(--accent) 8%, transparent)",
-            }}
+    <div className="grid gap-px overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--border)] sm:grid-cols-2">
+      <div className="bg-[var(--surface)] p-5">
+        <div className="mx-auto aspect-square w-full max-w-[260px]">
+          <svg
+            viewBox="0 0 100 100"
+            className="h-full w-full overflow-visible"
+            role="img"
+            aria-label={`${episode.assertions.length} agents stated “${episode.claim}”; ${episode.observed} had evidence of their own.`}
           >
-            <p className="text-[10px] leading-relaxed text-[var(--fg-muted)]">
-              Synthetic consensus: 14 assertions, one origin, zero independent corroboration.
-            </p>
-          </div>
+            {rest.map((a, i) => {
+              const from = pos[a.parent < 0 ? i + 1 : a.parent];
+              const to = pos[i + 1];
+              if (a.parent < 0 || !a.edge) return null;
+              return (
+                <line
+                  key={`e${i}`}
+                  x1={from.x}
+                  y1={from.y}
+                  x2={to.x}
+                  y2={to.y}
+                  stroke={a.edge === "cites" ? "var(--fg-subtle)" : "var(--danger)"}
+                  strokeWidth={0.5}
+                  strokeDasharray={a.edge === "exposed" ? "1.4 1.2" : undefined}
+                  strokeOpacity={0.8}
+                  style={reveal(i)}
+                />
+              );
+            })}
+            {rest.map((a, i) => {
+              const p = pos[i + 1];
+              const tone = TONE_VAR[ROLE[a.role].tone];
+              return (
+                <g key={`n${i}`} style={reveal(i)}>
+                  {a.role === "INDEPENDENT" && <circle cx={p.x} cy={p.y} r={4.2} fill="none" stroke={tone} strokeWidth={0.6} />}
+                  <circle cx={p.x} cy={p.y} r={2.4} fill={tone} />
+                  <text
+                    x={p.x}
+                    y={p.y + (p.y >= 50 ? 7.5 : -5)}
+                    textAnchor="middle"
+                    className="fill-[var(--fg-subtle)]"
+                    style={{ fontSize: 3.1 }}
+                  >
+                    {a.agent.length > 16 ? a.agent.slice(0, 15) + "…" : a.agent}
+                  </text>
+                </g>
+              );
+            })}
+            <circle cx={50} cy={50} r={6} fill="var(--bg)" stroke="var(--fg)" strokeWidth={1.2} />
+            <circle cx={50} cy={50} r={2.2} fill="var(--fg)" />
+            <text x={50} y={62} textAnchor="middle" className="fill-[var(--fg)]" style={{ fontSize: 3.4, fontWeight: 600 }}>
+              {episode.assertions[0].agent}
+            </text>
+          </svg>
         </div>
+      </div>
+
+      <div className="flex flex-col bg-[var(--surface)] p-5">
+        <div className="eyebrow mb-1">Claim</div>
+        <div className="tnum text-2xl font-semibold text-[var(--fg)]">“{episode.claim}”</div>
+        <div className="mt-1 font-mono text-[11px] text-[var(--fg-subtle)]">
+          {episode.id} · first stated {fmtAt(episode.assertions[0].at)}
+        </div>
+
+        <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--border)]">
+          {[
+            ["Stated as known", episode.promised, "fg"],
+            ["Independent paths", episode.observed, "accent"],
+            ["Echoed", counts.echoed, "danger"],
+            ["Credited", counts.credited, "muted"],
+          ].map(([label, value, tone]) => (
+            <div key={label as string} className="bg-[var(--bg)] px-3 py-2.5">
+              <dt className="eyebrow mb-0.5">{label}</dt>
+              <dd className={`tnum text-lg font-semibold ${TONE_TEXT[tone as keyof typeof TONE_TEXT]}`}>{value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-4 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5">
+          <div className={`text-sm font-medium ${TONE_TEXT[state.tone]}`}>{state.label}</div>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--fg-muted)]">{episode.summary}</p>
+        </div>
+
+        <Link
+          href={`/proof?ep=${episode.id}#episodes`}
+          className="mt-auto pt-4 text-sm font-medium text-[var(--accent)] hover:underline"
+        >
+          Read every statement in this lineage →
+        </Link>
       </div>
     </div>
   );

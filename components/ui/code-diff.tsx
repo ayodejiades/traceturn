@@ -1,93 +1,59 @@
-"use client";
-
-import { useState } from "react";
-
+/**
+ * Two versions of a text side by side, with changed lines marked. Used by /verify to
+ * show the pinned manifest against the edited one, so a single changed byte is visible.
+ * Line-level comparison is enough here: manifests are canonical JSON, one field a line.
+ */
 export function CodeDiff({
-  title = "Payload Inspection & Sanitization Diff",
-  beforeTitle = "Untrusted Client Input",
-  afterTitle = "Verified AST Output",
-  beforeCode = `// Incoming raw payload
-{
-  "user_id": "usr_99812",
-  "intent": "withdraw",
-  "amount_wei": "10000000000000000000",
-  "recipient": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-  "bypass_auth": true // [INJECTION ATTEMPT]
-}`,
-  afterCode = `// Deterministic sanitized payload
-{
-  "user_id": "usr_99812",
-  "intent": "withdraw",
-  "amount_wei": "10000000000000000000",
-  "recipient": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-  "auth_verified": true,
-  "signature_r": "0x3f8a...e12a",
-  "sanitized_at": 1727134200
-}`,
+  beforeTitle,
+  afterTitle,
+  beforeCode,
+  afterCode,
 }: {
-  title?: string;
-  beforeTitle?: string;
-  afterTitle?: string;
-  beforeCode?: string;
-  afterCode?: string;
+  beforeTitle: string;
+  afterTitle: string;
+  beforeCode: string;
+  afterCode: string;
 }) {
-  const [copied, setCopied] = useState(false);
+  const a = beforeCode.split("\n");
+  const b = afterCode.split("\n");
+  const n = Math.max(a.length, b.length);
+  const changed = Array.from({ length: n }, (_, i) => a[i] !== b[i]);
+  const count = changed.filter(Boolean).length;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(afterCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const pane = (lines: string[], title: string, tone: "before" | "after") => (
+    <div className="min-w-0">
+      <div className="flex items-baseline justify-between border-b border-[var(--border)] px-4 py-2.5">
+        <span className="text-xs font-medium text-[var(--fg)]">{title}</span>
+        {tone === "after" && (
+          <span className={`font-mono text-[10px] ${count ? "text-[var(--danger)]" : "text-[var(--accent)]"}`}>
+            {count ? `${count} line${count > 1 ? "s" : ""} differ` : "identical"}
+          </span>
+        )}
+      </div>
+      {/* Focusable so keyboard users can scroll long lines sideways. */}
+      <pre tabIndex={0} aria-label={title} className="overflow-x-auto py-2 font-mono text-[11px] leading-relaxed">
+        {Array.from({ length: n }, (_, i) => (
+          <div
+            key={i}
+            className={`px-4 ${
+              changed[i]
+                ? tone === "after"
+                  ? "bg-[var(--danger-surface)] text-[var(--fg)]"
+                  : "bg-[var(--surface-raised)] text-[var(--fg-muted)]"
+                : "text-[var(--fg-muted)]"
+            }`}
+          >
+            {lines[i] ?? " "}
+          </div>
+        ))}
+      </pre>
+    </div>
+  );
 
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--bg)] shadow-xl font-mono text-xs">
-      {/* Terminal Titlebar */}
-      <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-[var(--page-pad)] py-2.5">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[var(--warn)/80]" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent-dim)/80]" />
-          </div>
-          <span className="ml-2 font-medium text-[var(--fg)]">{title}</span>
-        </div>
-
-        <button
-          onClick={handleCopy}
-          className="rounded border border-[var(--border)] bg-[var(--surface-raised)] px-2.5 py-1 text-[11px] text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors"
-        >
-          {copied ? "Copied" : "Copy Output"}
-        </button>
-      </div>
-
-      {/* Split Code View */}
-      <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border)]">
-        {/* Left: Before */}
-        <div className="flex flex-col bg-red-950/5 p-4">
-          <div className="flex items-center justify-between text-[11px] text-red-400 font-semibold mb-2">
-            <span>{beforeTitle}</span>
-            <span className="rounded bg-red-900/30 px-1.5 py-0.5 border border-red-800/40 text-[10px]">
-              RAW / UNCHECKED
-            </span>
-          </div>
-          <pre className="overflow-x-auto text-[var(--fg-muted)] leading-relaxed">
-            <code>{beforeCode}</code>
-          </pre>
-        </div>
-
-        {/* Right: After */}
-        <div className="flex flex-col bg-[color-mix(in srgb, var(--accent) 10%, transparent)/5] p-4">
-          <div className="flex items-center justify-between text-[11px] text-[var(--accent)] font-semibold mb-2">
-            <span>{afterTitle}</span>
-            <span className="rounded bg-[color-mix(in srgb, var(--accent) 18%, transparent)/30] px-1.5 py-0.5 border border-[color-mix(in srgb, var(--accent) 30%, transparent)/40] text-[10px]">
-              VERIFIED / SANITIZED
-            </span>
-          </div>
-          <pre className="overflow-x-auto text-[var(--accent)/90] leading-relaxed">
-            <code>{afterCode}</code>
-          </pre>
-        </div>
-      </div>
+    <div className="grid overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg)] md:grid-cols-2 md:divide-x md:divide-[var(--border)]">
+      {pane(a, beforeTitle, "before")}
+      {pane(b, afterTitle, "after")}
     </div>
   );
 }

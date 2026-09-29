@@ -2,43 +2,50 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
+// One navigation for every page. The order is the order a judge should read in:
+// what was found, how to check it, then run it on your own data.
 const NAV = [
-  { href: "/proof", label: "Evidence" },
-  { href: "/verify", label: "Verification" },
-  { href: "/demo", label: "Live Demo" },
-  { href: "/lab", label: "Invariant Lab" },
+  { href: "/proof", label: "Findings" },
+  { href: "/verify", label: "Verify" },
+  { href: "/dashboard", label: "Workspace" },
+  { href: "/#method", label: "Method" },
 ] as const;
+
+const REPO = "https://github.com/ayodejiades/traceturn";
 
 const FOOTER_COLUMNS = [
   {
-    title: "Platform",
+    title: "Product",
     links: [
-      { label: "Evidence Ledger", href: "/proof" },
-      { label: "Kernel Verifier", href: "/verify" },
-      { label: "Incident Console", href: "/dashboard" },
-      { label: "Invariant Lab", href: "/lab" },
+      { label: "AI Village findings", href: "/proof" },
+      { label: "Tamper verifier", href: "/verify" },
+      { label: "Analyze a transcript", href: "/dashboard" },
     ],
   },
   {
-    title: "Learn",
+    title: "Method",
     links: [
-      { label: "How It Works", href: "/onboarding" },
-      { label: "Live Demo", href: "/demo" },
-      { label: "Try the console", href: "/dashboard" },
+      { label: "How it works", href: "/#method" },
+      { label: "What is not claimed", href: `${REPO}/blob/main/docs/HONESTY.md` },
+      { label: "Source code", href: REPO },
     ],
   },
   {
-    title: "Project",
+    title: "Data",
     links: [
-      { label: "GitHub", href: "https://github.com/ayodejiades/traceturn" },
-      { label: "Hackathon Brief", href: "https://swarmchasing.com/" },
+      { label: "AI Village dataset", href: "https://huggingface.co/datasets/aidigestorg/ai-village" },
+      { label: "The AI Village", href: "https://theaidigest.org/village" },
+      { label: "Hackathon brief", href: "https://swarmchasing.com/" },
     ],
   },
 ] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const isCurrent = (href: string) => !href.includes("#") && pathname === href;
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Close on Escape and on a click outside, so this behaves like a real disclosure.
@@ -62,7 +69,7 @@ export function SiteHeader() {
     <header className="relative z-20 mx-auto flex h-16 w-full max-w-[var(--content-max)] items-center justify-between gap-3 px-[var(--page-pad)] sm:h-20">
       <Link
         href="/"
-        className="text-lg font-semibold tracking-tight text-white transition-opacity hover:opacity-80 [text-shadow:0_1px_10px_rgba(16,13,10,0.85)]"
+        className="py-2 text-lg font-semibold tracking-tight text-white transition-opacity hover:opacity-80 [text-shadow:0_1px_10px_rgba(16,13,10,0.85)]"
       >
         traceturn
       </Link>
@@ -72,7 +79,8 @@ export function SiteHeader() {
           <Link
             key={item.href}
             href={item.href}
-            className="text-sm font-medium text-white transition-colors hover:text-white [text-shadow:0_1px_10px_rgba(16,13,10,0.85)]"
+            aria-current={isCurrent(item.href) ? "page" : undefined}
+            className="border-b border-transparent pb-0.5 text-sm font-medium text-white/85 transition-colors hover:text-white aria-[current=page]:border-white/70 aria-[current=page]:text-white [text-shadow:0_1px_10px_rgba(16,13,10,0.85)]"
           >
             {item.label}
           </Link>
@@ -81,17 +89,11 @@ export function SiteHeader() {
 
       <div className="flex items-center gap-2 sm:gap-3">
         <Link
-          href="/demo"
-          className="hidden rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium text-white transition-colors hover:text-white [text-shadow:0_1px_10px_rgba(16,13,10,0.85)] sm:inline-block"
-        >
-          Watch demo
-        </Link>
-        <Link
           href="/dashboard"
           data-demo="launch-demo"
-          className="rounded-full bg-[var(--accent)] px-4 py-2 text-xs font-semibold text-[var(--accent-contrast)] transition-all hover:bg-[var(--accent-dim)] hover:shadow-[0_0_16px_rgba(16,185,129,0.3)] sm:px-5"
+          className="inline-flex min-h-11 items-center rounded-full bg-[var(--accent)] px-4 text-xs font-semibold text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)] sm:min-h-9 sm:px-5"
         >
-          Open console
+          Analyze a transcript
         </Link>
 
         {/* Below md the inline nav is hidden, so the links must exist here or the
@@ -133,7 +135,8 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="rounded-[var(--radius-sm)] px-3 py-3 text-[15px] font-medium text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)]"
+                aria-current={isCurrent(item.href) ? "page" : undefined}
+                className="rounded-[var(--radius-sm)] px-3 py-3 text-[15px] font-medium text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)] aria-[current=page]:text-[var(--accent)]"
               >
                 {item.label}
               </Link>
@@ -199,7 +202,7 @@ export function SiteFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-xs text-white/80 hover:text-white transition-colors duration-150"
+                      className="inline-block py-1.5 text-xs text-white/80 transition-colors duration-150 hover:text-white"
                     >
                       {link.label}
                     </Link>
@@ -214,12 +217,9 @@ export function SiteFooter() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-white/90">
           <div className="flex flex-wrap items-center gap-6">
             <span>© Traceturn 2026</span>
-            <Link href="/onboarding" className="text-white/80 hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/verify" className="text-white/80 hover:text-white transition-colors">
-              Security
-            </Link>
+            <span className="text-white/80">
+              AI Village data: AI Digest, &ldquo;AI Village dataset&rdquo;, 2026
+            </span>
           </div>
 
           <div className="flex items-center gap-2">

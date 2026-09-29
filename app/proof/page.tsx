@@ -1,176 +1,154 @@
-"use client";
-
-import { useState } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import campaignData from "../../evidence/campaign-report.json";
-import { evaluateDeterministicKernel, type ReconciliationInput } from "@/lib/kernel";
+import { SiteFooter } from "@/components/site-shell";
+import { BTN_GHOST_ON_ART, BTN_PRIMARY, PageHero, Section, SectionHead } from "@/components/page-hero";
+import { ReportView } from "@/components/report-view";
+import { FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE } from "@/lib/evidence";
+import { STATE, TONE_TEXT, fmtInt, pct } from "@/lib/tones";
+import type { KernelState } from "@/lib/kernel";
 
-export default function Web2ProofPage() {
-  const [selectedCaseId, setSelectedCaseId] = useState(campaignData.cases[0].caseId);
+export const metadata: Metadata = {
+  title: "AI Village findings",
+  description: `Claim lineage over ${HEADLINE.messages.toLocaleString("en-US")} AI Village chat messages: who checked, who credited, who echoed.`,
+};
 
-  const activeCase =
-    (campaignData.cases.find((c) => c.caseId === selectedCaseId) as ReconciliationInput & {
-      title: string;
-      category: string;
-      expectedState: string;
-    }) ?? campaignData.cases[0];
+const NOT_CLAIMED = [
+  "Independence is a lower bound. An agent that checked privately and did not say so is counted as an echo, never the other way round.",
+  "Most echoed numbers here are probably true. What the report measures is how many agents checked a number before repeating it.",
+  "Claims are quantities (a number and what it counts). Agreement about things with no number in them is out of scope.",
+  "Only the group chat is read. Computer-use sessions, where an agent may have verified silently, are not in this run.",
+  "The classifier is deterministic phrase matching, not a model. It has not been scored against human labels yet.",
+];
 
-  const decision = evaluateDeterministicKernel(activeCase);
+export default async function ProofPage({ searchParams }: { searchParams: Promise<{ ep?: string }> }) {
+  const { ep } = await searchParams;
+  const v = VILLAGE.verdicts;
+  const strip: { state: KernelState; n: number }[] = [
+    { state: "MATERIAL_DRIFT_DETECTED", n: v.MATERIAL_DRIFT_DETECTED },
+    { state: "BENIGN_CONTROL_NO_DRIFT", n: v.BENIGN_CONTROL_NO_DRIFT },
+    { state: "ON_TRACK", n: v.ON_TRACK },
+    { state: "ABSTAIN_AMBIGUOUS_SOURCE", n: v.ABSTAIN_AMBIGUOUS_SOURCE },
+  ];
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
-      <header className="mx-auto flex h-16 w-full max-w-[var(--content-max)] items-center justify-between border-b border-[var(--border)] px-[var(--page-pad)]">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-lg font-bold tracking-tight text-[var(--fg)]">
-            traceturn
+      <PageHero
+        eyebrow="Findings · AI Village"
+        title={`Only ${pct(HEADLINE.independent, HEADLINE.restatements)} of repeated claims were reported as checked`}
+        lede={`${fmtInt(HEADLINE.episodes)} claims that three or more agents stated within 72 hours of each other, traced statement by statement through ${fmtInt(HEADLINE.messages)} messages.`}
+      >
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+          <a href="#episodes" className={BTN_PRIMARY}>
+            Read the lineages
+          </a>
+          <Link href="/verify" className={BTN_GHOST_ON_ART}>
+            Tamper-check a verdict
           </Link>
-          <span className="rounded border border-[var(--accent-dim)/30] bg-[var(--accent-dim)/10] px-2 py-0.5 text-xs text-[var(--accent)] font-mono">
-            /proof · EVIDENCE & SAFETY KERNEL
-          </span>
         </div>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/" className="text-[var(--fg-muted)] hover:text-[var(--fg)]">
-            Overview
-          </Link>
-          <Link href="/dashboard" className="text-[var(--fg-muted)] hover:text-[var(--fg)]">
-            Live Workspace
-          </Link>
-        </nav>
-      </header>
+      </PageHero>
 
-      <main id="main" className="mx-auto w-full max-w-[var(--content-max)] px-[var(--page-pad)] py-12 flex flex-col gap-12">
-        {/* Headline Measured Proof Banner */}
-        <section className="flex flex-col gap-4 border border-[var(--border)] bg-[var(--surface)] p-6 rounded-lg">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <span className="eyebrow mb-2 block">
-                Inspectable Production &amp; Campaign Proof (No Signup Required)
-              </span>
-              <h1 className="h-display text-3xl font-semibold text-[var(--fg)]">
-                AI Extracts; Deterministic Code Decides.
-              </h1>
-              <p className="text-sm text-[var(--fg-muted)] mt-1 max-w-3xl">
-                Every extracted commitment requires a verbatim substring in the immutable T0 source capture. Unbound claims fail closed, benign rewrites are ignored, and provider claims are held in <code className="text-[var(--warn)]">WAITING_TO_VERIFY</code> until a later observation reconciles.
+      <main id="main" className="relative z-10">
+        <section className="border-y border-[var(--border)] bg-[var(--bg-elevated)]">
+          <div className="mx-auto grid max-w-[var(--content-max)] grid-cols-2 gap-6 px-[var(--page-pad)] py-10 lg:grid-cols-4">
+            {strip.map(({ state, n }) => (
+              <div key={state} className="text-center">
+                <div className={`tnum text-3xl font-semibold ${TONE_TEXT[STATE[state].tone]}`}>{fmtInt(n)}</div>
+                <div className="mt-1 text-sm text-[var(--fg-muted)]">{STATE[state].label}</div>
+                <div className="font-mono text-[10px] text-[var(--fg-subtle)]">{state}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <Section id="episodes">
+          <SectionHead
+            eyebrow="The evidence"
+            title="Every statement, in order, with its source"
+            lede={`The ${VILLAGE.episodes.length} lineages below are the widest gaps plus every kind of control. All ${fmtInt(HEADLINE.episodes)} verdicts are in the report's ledger.`}
+          />
+          <ReportView report={VILLAGE} initialEpisode={ep} verifyLinks />
+        </Section>
+
+        <Section id="fixtures" band>
+          <SectionHead
+            eyebrow="Kernel fixtures"
+            title={`${FIXTURES_PASSING} of ${FIXTURES.length} constructed cases pass`}
+            lede="Hand-written cases that pin each kernel rule, run on every build. They are constructed to exercise the rules, not drawn from the corpus."
+          />
+          <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+            <table className="w-full min-w-[720px] text-sm">
+              <thead>
+                <tr className="border-b border-[var(--border)] text-left">
+                  {["Case", "What it pins", "Expected", "Kernel", ""].map((h) => (
+                    <th key={h} className="eyebrow px-4 py-3 font-medium">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {FIXTURES.map((f) => (
+                  <tr key={f.id} data-demo={`proof-case-${f.id}`} className="border-b border-[var(--border)] last:border-b-0">
+                    <td className="px-4 py-2.5 font-mono text-xs text-[var(--fg-subtle)]">{f.id}</td>
+                    <td className="px-4 py-2.5 text-[var(--fg)]">{f.title}</td>
+                    <td className="px-4 py-2.5 font-mono text-[11px] text-[var(--fg-muted)]">{f.expected}</td>
+                    <td className="px-4 py-2.5 font-mono text-[11px] text-[var(--fg-muted)]">{f.actual}</td>
+                    <td className={`px-4 py-2.5 text-right font-mono text-[11px] ${f.pass ? "text-[var(--accent)]" : "text-[var(--danger)]"}`}>
+                      {f.pass ? "PASS" : "FAIL"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Section>
+
+        <Section id="sources">
+          <SectionHead eyebrow="Provenance" title="Where these numbers come from" />
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+              <h3 className="text-base font-semibold text-[var(--fg)]">Source data</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--fg-muted)]">
+                {VILLAGE.source.citation} Gated research release
+                {VILLAGE.source.exportedAt ? `, export of ${VILLAGE.source.exportedAt.slice(0, 10)}` : ""}. The corpus is not in this
+                repository; the report quotes single sentences from agent messages and never quotes a human.
+              </p>
+              <dl className="mt-4 space-y-2 font-mono text-[11px]">
+                {VILLAGE.inputs.map((i) => (
+                  <div key={i.file} className="flex flex-wrap justify-between gap-2">
+                    <dt className="text-[var(--fg-muted)]">{i.file}</dt>
+                    <dd className="break-all text-[var(--fg-subtle)]">sha256 {i.sha256.slice(0, 24)}…</dd>
+                  </div>
+                ))}
+                <div className="flex flex-wrap justify-between gap-2 border-t border-[var(--border)] pt-2">
+                  <dt className="text-[var(--fg-muted)]">evidence/aivillage-report.json</dt>
+                  <dd className="break-all text-[var(--accent)]">sha256 {VILLAGE.reportSha256.slice(0, 24)}…</dd>
+                </div>
+              </dl>
+              <pre className="mt-5 overflow-x-auto rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg)] p-3 font-mono text-[11px] leading-relaxed text-[var(--fg-muted)]">
+{`pnpm analyze        # re-run over data/aivillage/
+pnpm claim:verify   # re-derive every total from the ledger`}
+              </pre>
+            </div>
+            <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+              <h3 className="text-base font-semibold text-[var(--fg)]">What is not claimed</h3>
+              <ul className="mt-3 space-y-3">
+                {NOT_CLAIMED.map((c) => (
+                  <li key={c} className="text-sm leading-relaxed text-[var(--fg-muted)]">
+                    {c}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 font-mono text-[11px] text-[var(--fg-subtle)]">
+                Parameters: episode gap {VILLAGE.params.episodeGapHours}h · min speakers {VILLAGE.params.minSpeakers} · copy shingle{" "}
+                {VILLAGE.params.shingleWords} words
               </p>
             </div>
-            <div className="flex flex-col items-end font-mono text-xs gap-1">
-              <span className="rounded bg-[var(--accent-dim)/15] text-[var(--accent)] px-2.5 py-1 border border-[var(--accent-dim)/30]">
-                verify:evidence {campaignData.summary.invariantsPassed} PASS
-              </span>
-              <span className="text-[var(--fg-muted)]">
-                Mechanism: {campaignData.mechanismVersion}
-              </span>
-            </div>
           </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-4 border-t border-[var(--border)] font-mono text-xs">
-            <div className="flex flex-col gap-1">
-              <span className="text-[var(--fg-muted)]">EXCERPT-BOUND</span>
-              <span className="text-base font-semibold text-[var(--accent)]">{campaignData.summary.evidenceBoundDecisions}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[var(--fg-muted)]">MATERIAL DRIFT</span>
-              <span className="text-base font-semibold text-[var(--fg)]">{campaignData.summary.materialDriftDetected}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[var(--fg-muted)]">BENIGN CONTROL</span>
-              <span className="text-base font-semibold text-[var(--fg)]">{campaignData.summary.benignChangesIgnored}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[var(--fg-muted)]">AMBIGUITY ABSTAIN</span>
-              <span className="text-base font-semibold text-[var(--fg)]">{campaignData.summary.ambiguityAbstention}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[var(--fg-muted)]">FALSE VERIFIED</span>
-              <span className="text-base font-semibold text-[var(--accent)]">{campaignData.summary.falseVerifiedClaims}</span>
-            </div>
-          </div>
-          <p className="text-xs font-mono text-[var(--fg-muted)] border-t border-[var(--border)] pt-3">
-            Disclosed calibration note: {campaignData.summary.benignChangesFirstRunNote}
-          </p>
-        </section>
-
-        {/* Interactive Case & Refusal Tester */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-5 flex flex-col gap-3">
-            <h2 className="text-sm font-mono uppercase tracking-wider text-[var(--fg-muted)]">
-              1. Select Verification Fixture (Happy, Control, Refusal)
-            </h2>
-            {campaignData.cases.map((c) => {
-              const isSelected = c.caseId === activeCase.caseId;
-              return (
-                <button
-                  key={c.caseId}
-                  type="button"
-                  onClick={() => setSelectedCaseId(c.caseId)}
-                  data-demo={`proof-case-${c.caseId}`}
-                  className={`text-left p-4 rounded-lg border transition-colors flex flex-col gap-1.5 ${
-                    isSelected
-                      ? "border-[var(--accent-dim)] bg-[var(--surface-raised)]"
-                      : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--fg-subtle)]"
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-[var(--accent)]">{c.category}</span>
-                    <span className="text-[var(--fg-muted)]">{c.expectedState}</span>
-                  </div>
-                  <p className="text-sm font-medium text-[var(--fg)]">{c.title}</p>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="lg:col-span-7 flex flex-col gap-4 border border-[var(--border)] bg-[var(--surface)] p-6 rounded-lg">
-            <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
-              <div>
-                <span className="text-xs font-mono text-[var(--accent)]">DETERMINISTIC KERNEL VERDICT</span>
-                <h3 className="text-lg font-semibold mt-0.5">{decision.state}</h3>
-              </div>
-              <span
-                className={`px-2.5 py-1 rounded text-xs font-mono border ${
-                  decision.excerptBound
-                    ? "bg-[var(--accent-dim)/15] text-[var(--accent)] border-[var(--accent-dim)/30]"
-                    : "bg-[var(--warn)/15] text-[var(--warn)] border-[var(--warn)/30]"
-                }`}
-              >
-                {decision.excerptBound ? "EXCERPT BOUND (INV-1 PASS)" : "UNBOUND EXCERPT -> FAIL CLOSED"}
-              </span>
-            </div>
-
-            <p className="text-sm text-[var(--fg-muted)]">{decision.summary}</p>
-
-            <div className="grid grid-cols-1 gap-3 text-xs font-mono">
-              <div className="rounded border border-[var(--border)] bg-[var(--bg)] p-3">
-                <div className="text-[var(--fg-muted)] mb-1">IMMUTABLE T0 SOURCE CAPTURE</div>
-                <div className="text-[var(--fg)]">{activeCase.sourceCaptureT0}</div>
-              </div>
-              <div className="rounded border border-[var(--border)] bg-[var(--bg)] p-3">
-                <div className="text-[var(--fg-muted)] mb-1">MODEL-EXTRACTED EXCERPT CANDIDATE</div>
-                <div className={decision.excerptBound ? "text-[var(--accent)]" : "text-[var(--danger)]"}>
-                  &ldquo;{activeCase.extractedExcerpt}&rdquo;
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 pt-2">
-              <span className="text-xs font-mono uppercase text-[var(--fg-muted)]">
-                Invariant Checks (lib/kernel.ts)
-              </span>
-              {decision.invariants.map((inv) => (
-                <div
-                  key={inv.id}
-                  className="flex items-center justify-between gap-4 rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-xs font-mono"
-                >
-                  <span>
-                    <strong className="text-[var(--accent)]">{inv.id}</strong> · {inv.name}
-                  </span>
-                  <span className="text-[var(--fg-muted)] truncate max-w-[320px]">{inv.detail}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        </Section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

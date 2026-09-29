@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "traceturn — deterministic forensics for AI agent swarms",
+    default: "traceturn: claim lineage for AI agent swarms",
     template: "%s · traceturn",
   },
   description:
-    "Reconstruct the turn a swarm incident started in, and trace how a single unverified premise became consensus. Deterministic graph analysis over multi-agent transcripts — no LLM in the attribution path.",
+    "Find the turn that introduced a claim and count how many agents checked it before repeating it. Deterministic analysis of multi-agent JSONL transcripts, run on the AI Village corpus. No model in the attribution path.",
   keywords: [
     "AI safety",
     "agent forensics",
@@ -33,16 +33,16 @@ export const metadata: Metadata = {
   authors: [{ name: "Ayodeji Adesegun" }],
   openGraph: {
     type: "website",
-    title: "traceturn — deterministic forensics for AI agent swarms",
+    title: "traceturn: claim lineage for AI agent swarms",
     description:
-      "Blame the turn. Trace the belief. Deterministic graph analysis over multi-agent transcripts.",
+      "Which agent said it first, and who checked before repeating it. Run on 183,483 AI Village messages.",
     siteName: "traceturn",
   },
   twitter: {
     card: "summary_large_image",
-    title: "traceturn — deterministic forensics for AI agent swarms",
+    title: "traceturn: claim lineage for AI agent swarms",
     description:
-      "Blame the turn. Trace the belief. Deterministic graph analysis over multi-agent transcripts.",
+      "Which agent said it first, and who checked before repeating it. Run on 183,483 AI Village messages.",
   },
   robots: { index: true, follow: true },
 };

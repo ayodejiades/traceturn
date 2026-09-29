@@ -38,18 +38,26 @@ All surfaces, borders, and text adhere to strict WCAG AA contrast ratios:
 | `--border-strong` | `#40352C` | High-emphasis hairline borders and interactive controls |
 | `--fg` | `#F0E8DD` | Primary typography — warm off-white |
 | `--fg-muted` | `#A89B8C` | Secondary prose, metric labels, descriptive copy |
-| `--fg-subtle` | `#7D7164` | Monospace tags, metadata labels, table headers |
+| `--fg-subtle` | `#908375` | Monospace tags, metadata labels, table headers |
 | `--accent` | `#10B981` | Single signal accent — graph origins, pass states, primary CTA, focus rings |
 | `--accent-dim` | `#0D9668` | Accent hover state |
 | `--accent-contrast` | `#04150C` | Foreground text on filled accent buttons |
 | `--warn` | `#D9A441` | Waiting states and unresolved gating indicators |
-| `--warn-strong` | `#9A3412` | Warning text needing more weight than the fill-level amber |
 | `--danger` | `#E2694F` | Drift detection, failure alerts, broken invariants |
 | `--danger-surface` | `rgba(226,105,79,0.12)` | Translucent danger tint — never a solid light fill on the dark canvas |
-| `--info` | `#4B8FD6` | Informational labels, current step in the progress strip |
-| `--ok` | `#16A34A` | "Held" / passing sub-state, distinct from the primary accent |
 | `--art-warm-multiply` | `#8A6234` | Art-direction wash over the cool footer painting |
 | `--art-warm-softlight` | `#C98A3C` | Second pass of the same warm art-direction |
+
+### State colours
+
+Each verdict and role has one colour on every page, defined once in `lib/tones.ts`:
+
+| Tone | Token | Means |
+|------|-------|-------|
+| accent | `--accent` | Evidence of its own: an independent check, a confirmed repair |
+| danger | `--danger` | Manufactured agreement, an uncredited echo |
+| warn | `--warn` | Still open: an unconfirmed repair, an abstention |
+| muted | `--fg-muted` | Neutral: a restatement that credits its source |
 
 ### Why the canvas is warm
 

@@ -4,7 +4,7 @@
   --bg-elevated: #17130f;
   --fg: #f0e8dd;
   --fg-muted: #a89b8c;
-  --fg-subtle: #7d7164;
+  --fg-subtle: #908375;
   --surface: #17130f;
   --surface-raised: #201a15;
   --border: #2e2620;
@@ -17,7 +17,6 @@
   --accent-contrast: #04150c;
 
   --warn: #d9a441;
-  --warn-strong: #9a3412;
   /* Art-direction washes, sampled from the hero's own amber and umber. Applied
      over the footer painting, which is natively a cool blue twilight. */
   --art-warm-multiply: #8a6234;
@@ -26,8 +25,6 @@
   /* Translucent tints, not solid light fills: these sit on the dark warm canvas,
      so a near-white background would read as a hole punched in the page. */
   --danger-surface: rgba(226, 105, 79, 0.12);
-  --info: #4b8fd6;
-  --ok: #16a34a;
   --radius: 0.5rem;
   --radius-sm: 0.3125rem;
   --radius-lg: 0.75rem;
@@ -65,105 +62,122 @@
   }
 }
 
-* {
-  border-color: var(--border);
+/* Tailwind v4 puts utilities in a cascade layer, and unlayered CSS beats every layer.
+   These defaults and helpers are layered so a utility on the element still wins:
+   `border-transparent` over the default border colour, `text-white` over .eyebrow. */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 }
 
-body {
-  background: var(--bg);
-  color: var(--fg);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+@layer components {
+  /* Display type: tight tracking, balanced wrapping. */
+  .h-display {
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .h-section {
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono), monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+    font-weight: 500;
+  }
+
+  .prose-measure {
+    max-width: 65ch;
+    text-wrap: pretty;
+    line-height: 1.65;
+    color: var(--fg-muted);
+  }
+
+  /* Numeric data reads as data. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono), monospace;
+  }
+
+  /* Hairline surface lift, used for cards and panels. */
+  .surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .surface-raised {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  /* Focus ring: visible for keyboards, quiet for mouse. */
+  :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-weight: 600;
+    border-radius: 0 0 var(--radius-sm) 0;
+  }
+
+  .skip-link:focus {
+    left: 0;
+  }
+
+  /* Hero backdrop: a faint grid that fades out, so the page has depth without
+     competing with the type. Pure CSS, no image request. */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 0%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 0%, transparent 78%);
+  }
 }
 
-/* Display type: tight tracking, balanced wrapping. */
-.h-display {
-  letter-spacing: -0.035em;
-  line-height: 1.02;
-  font-weight: 600;
-  text-wrap: balance;
-}
-
-.h-section {
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  font-weight: 600;
-  text-wrap: balance;
-}
-
-.eyebrow {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-subtle);
-  font-weight: 500;
-}
-
-.prose-measure {
-  max-width: 65ch;
-  text-wrap: pretty;
-  line-height: 1.65;
-  color: var(--fg-muted);
-}
-
-/* Numeric data reads as data. */
-.tnum {
-  font-variant-numeric: tabular-nums;
-  font-family: var(--font-mono), monospace;
-}
-
-/* Hairline surface lift, used for cards and panels. */
-.surface {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.surface-raised {
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-/* Focus ring: visible for keyboards, quiet for mouse. */
-:where(a, button, input, textarea, select, [tabindex]):focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
-
-.skip-link {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: 100;
-  padding: 0.75rem 1rem;
-  background: var(--accent);
-  color: var(--accent-contrast);
-  font-weight: 600;
-  border-radius: 0 0 var(--radius-sm) 0;
-}
-
-.skip-link:focus {
-  left: 0;
-}
-
-/* Hero backdrop: a faint grid that fades out, so the page has depth without
-   competing with the type. Pure CSS, no image request. */
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 0%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 0%, transparent 78%);
+/* Landing-page lineage graph: statements appear in the order agents made them. */
+@keyframes lineage-in {
+  from {
+    opacity: 0.15;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
