@@ -1,4 +1,6 @@
-// lib/env.ts — zod-validated environment. Fails loudly at boot rather than at demo time.
+// lib/env.ts — zod-validated environment. The site itself needs no external service: every
+// page reads the committed reports in evidence/. Only db/ needs DATABASE_URL, and it asks
+// for it when it opens a connection, so a deploy without a database builds and runs.
 import { z } from "zod";
 
 const schema = z.object({
@@ -21,12 +23,15 @@ function loadEnv() {
     console.error("lib/env.ts: invalid environment", parsed.error.flatten().fieldErrors);
     throw new Error("invalid environment — see lib/env.ts");
   }
-  if (!parsed.data.DEMO_MODE && !parsed.data.DATABASE_URL) {
-    throw new Error(
-      "lib/env.ts: DATABASE_URL is required unless DEMO_MODE=1 — copy .env.example to .env and fill it in",
-    );
-  }
   return parsed.data;
 }
 
 export const env = loadEnv();
+
+/** For db/ only: the connection string, or a clear error naming the fix. */
+export function requireDatabaseUrl(): string {
+  if (!env.DATABASE_URL) {
+    throw new Error("lib/env.ts: DATABASE_URL is required to use db/ outside DEMO_MODE; copy .env.example to .env and fill it in");
+  }
+  return env.DATABASE_URL;
+}

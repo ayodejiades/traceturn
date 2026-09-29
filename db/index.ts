@@ -6,7 +6,7 @@ import { desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { isDemoMode } from "@/lib/demo-mode";
-import { env } from "@/lib/env";
+import { requireDatabaseUrl } from "@/lib/env";
 import { records, type Record } from "./schema";
 
 type Store = { records: Record[]; nextId: number };
@@ -30,7 +30,7 @@ function getMemoryStore(): Store {
 let sqlClient: ReturnType<typeof postgres> | null = null;
 function getDrizzle() {
   if (!sqlClient) {
-    sqlClient = postgres(env.DATABASE_URL as string, { max: 5 });
+    sqlClient = postgres(requireDatabaseUrl(), { max: 5 });
   }
   return drizzle(sqlClient);
 }
