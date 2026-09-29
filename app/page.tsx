@@ -6,7 +6,7 @@ import { PipelineFlow } from "@/components/ui/pipeline-flow";
 import { TelemetryTile } from "@/components/ui/telemetry-tile";
 import { SAFETY_INVARIANTS } from "@/lib/kernel";
 import { CorrectionCard } from "@/components/corrections-view";
-import { CORRECTIONS, FEATURED, FEATURED_WIKI, TOP_CORRECTION, FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE, WIKI_HEADLINE } from "@/lib/evidence";
+import { CHECK_RATE, CORRECTIONS, FEATURED, FEATURED_WIKI, TOP_CORRECTION, FIXTURES, FIXTURES_PASSING, HEADLINE, VILLAGE, WIKI_HEADLINE } from "@/lib/evidence";
 import { ROLE, TONE_TEXT, fmtClaim, fmtInt, pct, plain } from "@/lib/tones";
 
 const STATS = [
@@ -16,9 +16,9 @@ const STATS = [
     sub: `within 72h, across ${fmtInt(HEADLINE.messages)} messages`,
   },
   {
-    value: pct(HEADLINE.independent, HEADLINE.restatements),
+    value: `${(CHECK_RATE.adjusted * 100).toFixed(0)}%`,
     label: "Repeats with the agent's own check",
-    sub: `${fmtInt(HEADLINE.independent)} of ${fmtInt(HEADLINE.restatements)}, ${VILLAGE.totals.independentBySession} via a computer session`,
+    sub: `audit-adjusted; classifier says ${pct(HEADLINE.independent, HEADLINE.restatements)}`,
   },
   {
     value: fmtInt(HEADLINE.echoed),
@@ -43,7 +43,7 @@ export default function HomePage() {
       <PageHero
         size="tall"
         title="When a swarm agrees, see who checked."
-        lede={`traceturn traces every repeated number back to the agent that said it first. In the AI Village, ${fmtInt(HEADLINE.independent)} of ${fmtInt(HEADLINE.restatements)} repeats came with the agent's own check.`}
+        lede={`traceturn traces every repeated number back to the agent that said it first. In the AI Village, about one repeat in ${CHECK_RATE.oneIn} came with the agent's own check.`}
       >
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <Link href="/proof" data-demo="launch-demo" className={BTN_PRIMARY}>

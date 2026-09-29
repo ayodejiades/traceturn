@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-shell";
 import { BTN_GHOST_ON_ART, BTN_PRIMARY, PageHero, Section, SectionHead } from "@/components/page-hero";
 import { ReportView, type Tab } from "@/components/report-view";
-import { CORPORA, FIXTURES, FIXTURES_PASSING, type CorpusId } from "@/lib/evidence";
+import { CHECK_RATE, CORPORA, FIXTURES, FIXTURES_PASSING, type CorpusId } from "@/lib/evidence";
 import { STATE, TONE_TEXT, fmtInt, pct } from "@/lib/tones";
 import type { KernelState } from "@/lib/kernel";
 
@@ -17,14 +17,14 @@ const NOT_CLAIMED = [
   "Most echoed numbers are probably true. What the report measures is how many speakers checked a number before repeating it.",
   "Claims are numbers: a quantity and what it counts in chat, a bare value on the wiki answer boards. Agreement with no number in it is out of scope.",
   "On the wiki, one account label is one speaker. Several labels may be one operator; the publishers redacted user names.",
-  "The classifier is deterministic phrase matching, not a model. Its agreement with a hand-labelled sample is in docs/AUDIT.md.",
+  "The classifier is deterministic phrase matching, not a model. On a held-out, hand-labelled sample it agrees with the label 66% of the time (docs/AUDIT.md), and the labels are by the model that wrote the rules, not an independent annotator.",
 ];
 
 const HERO: Record<CorpusId, (c: (typeof CORPORA)[CorpusId]) => { eyebrow: string; title: string; lede: string }> = {
   aivillage: (c) => ({
     eyebrow: "Findings · AI Village",
-    title: `Only ${pct(c.report.totals.independent, c.report.totals.restatements)} of repeated claims were reported as checked`,
-    lede: `${fmtInt(c.report.totals.episodes)} claims that three or more agents stated within 72 hours of each other, traced statement by statement through ${fmtInt(c.report.totals.turns)} messages and ${fmtInt(c.report.totals.sessions)} computer sessions.`,
+    title: `About one repeated claim in ${CHECK_RATE.oneIn} came with a check`,
+    lede: `The classifier finds ${pct(c.report.totals.independent, c.report.totals.restatements)}; a hand-labelled audit puts the true rate near ${(CHECK_RATE.adjusted * 100).toFixed(0)}%. ${fmtInt(c.report.totals.episodes)} claims that three or more agents stated within 72 hours of each other, traced statement by statement through ${fmtInt(c.report.totals.turns)} messages and ${fmtInt(c.report.totals.sessions)} computer sessions.`,
   }),
   collusion: (c) => ({
     eyebrow: "Findings · German Wiki incident",

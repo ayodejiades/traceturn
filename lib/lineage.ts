@@ -155,11 +155,12 @@ export const DEFAULT_PARAMS: LineageParams = { episodeGapHours: 72, minSpeakers:
 
 const URL_RE = /https?:\/\/[^\s)>\]"'`]+/g;
 // A quantity: $1,234.50 · 21,596 · 7.7% · 1234 — not part of a word, time, version or id.
-const QTY_RE = /(?<![\w:./#-])([$£€]?)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?(%?)(?![\w:/-]|\.\d)/g;
+// Not after a letter, URL/markup punctuation ("uniq=12345"), or a section/number sign ("§3252", "№134").
+const QTY_RE = /(?<![\w:./#§№=&-])([$£€]?)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?(%?)(?![\w:/-]|\.\d)/g;
 const UNIT_RE = /^[\s*_]*([A-Za-z][A-Za-z'-]{2,})/;
 
 const STOP_UNITS = new Set(
-  "session sessions update updates complete completed report summary recap progress and the for with from that this are was were has have had but not you your our their its into onto over than then also just now more less out per via all any each both one two new ago am pm utc pst est gmt px ms sec secs second seconds min mins minute minutes hour hours hrs day days week weeks month months year years times time error errors status code chars characters words tokens bytes items things steps step line lines row rows col page pages".split(
+  "session sessions update updates complete completed report summary recap progress and the for with from that this are was were has have had but not you your our their its into onto over than then also just now more less out per via all any each both one two new ago am pm utc pst est gmt px ms sec secs second seconds min mins minute minutes hour hours hrs day days week weeks month months year years times time error errors status code chars characters words tokens bytes kb mb gb kib mib items things steps step line lines row rows col page pages goal goals target targets".split(
     " ",
   ),
 );
@@ -212,7 +213,10 @@ export function extractClaims(text: string, mode: ClaimKey = "quantity"): ClaimH
     const u = UNIT_RE.exec(after);
     const unit = u ? u[1].toLowerCase().replace(/'s$/, "") : "";
     // "409 Conflict" is a status; "409 events" is a count.
-    if (!cur && !pct && !frac && HTTP_CODES.has(digits) && (!unit || HTTP_WORDS.has(unit) || mode === "value")) continue;
+    if (!cur && !pct && !frac && HTTP_CODES.has(digits) && (!unit || HTTP_WORDS.has(unit) || !unit.endsWith("s") || mode === "value")) continue;
+    // A target is not a claim: "when we hit $500", "a $7,000 combined goal".
+    if (/\b(?:hit|reach|reaching|toward|towards|beat|surpass)\s+(?:the\s+)?$/i.test(masked.slice(Math.max(0, m.index! - 16), m.index!))) continue;
+    if (/^\s*(?:[A-Za-z-]+\s+){0,2}(?:goal|target)s?\b/i.test(after)) continue;
     let key: string;
     if (mode === "value" || cur) key = num; // money is distinctive on its own
     else if (unit && !STOP_UNITS.has(unit)) key = `${num} ${unit}`;
@@ -228,6 +232,11 @@ export function extractClaims(text: string, mode: ClaimKey = "quantity"): ClaimH
 /** The sentence containing [start, end), trimmed to a readable window. Always a substring of text. */
 export function sentenceAround(text: string, start: number, end: number, max = 220): string {
   return sentenceSpan(text, start, end, max, max);
+}
+
+/** The full sentence the classifier reads for a claim at [start, end); used by the audit sampler. */
+export function claimSentence(text: string, start: number, end: number): string {
+  return sentenceSpan(text, start, end, 600, 1200);
 }
 
 /**
@@ -268,6 +277,12 @@ function sentenceSpan(text: string, start: number, end: number, scan: number, ma
 // First person, then within the same clause an observation verb. Hyphens include U+2011.
 const FIRSTHAND_RE =
   /(?:\bI\b|\bI'(?:ve|m)\b|\bmy (?:own )?(?:check|run|count|test|query|re-?run))[^.!?\n]{0,60}?\b(?:checked|re[-\u2011]?checked|double[-\u2011]checked|verified|confirmed|counted|re[-\u2011]?counted|measured|tested|ran|re[-\u2011]?ran|opened|refreshed|pulled|queried|looked|see|saw|observed|confirm|seeing|loaded|visited|inspected|reviewed|shows|showed|returned|returns)\b/i;
+// A check reported without "I": "Pulled latest main…", "**Tested**: …", "Confirmed: $25 raised",
+// "Independently reran verify.py…", "We independently reproduced…".
+const TELEGRAPHIC_RE =
+  /(?:^|\n)[\s*•✅>-]*(?:\*\*)?(?:pulled|verified|confirmed|checked|tested|re-?ran|reran|counted|queried|measured|reproduced|inspected)\b|\b(?:independently|we(?:\s+just)?(?:\s+independently)?)\s+(?:re-?ran|reran|verified|reproduced|re-?checked|checked|confirmed|counted|measured|tested|pulled)\b/i;
+// Not an assertion of the number: a question, or a sentence doubting or rejecting it.
+const NON_ASSERTION_RE = /\?\s*$|\b(?:haven't seen|have not seen|did(?:n't| not) match|no evidence|even though|was that based|is it really)\b/i;
 // A command or endpoint reporting a value: "`wc -l` returns 236", "my instance shows 110".
 const TOOL_OBSERVATION_RE =
   /(?:`[^`\n]{2,80}`\s+(?:now\s+|still\s+)?(?:shows|showed|returns|returned|reports|reported|outputs|prints|printed|says)|\bmy (?:instance|screen|terminal|browser|dashboard|output|query|count|run|copy|checkout|local copy) (?:now\s+|still\s+)?(?:shows|showed|returns|reports|says|has))\b/i;
@@ -405,7 +420,9 @@ export function analyzeLineage(
 
 // A session goal counts as a check of a claim when it is short enough to be a goal rather
 // than a pasted memory dump, and a checking verb sits near the claim's number.
-const VERIFY_RE = /\b(?:verif|check|confirm|test|count|validat|re-?run|audit|inspect|measure|recount|look up|double-check)/i;
+// Base-form verbs only: "verify", "count", "determine". "Verified at $205" reports someone
+// else's check and "validation" is a noun; neither is the agent setting out to check.
+const VERIFY_RE = /\b(?:verify|check|confirm|test|count|recount|validate|determine|re-?run|audit|inspect|measure|look up|double-check)\b/i;
 const MAX_GOAL = 1500;
 
 function numberPattern(claim: string): RegExp {
@@ -428,9 +445,14 @@ function sessionCheck(list: Session[] | undefined, from: number, to: number, pat
     if (s.goal.length > MAX_GOAL) continue;
     const m = pattern.exec(s.goal);
     if (!m) continue;
-    const near = s.goal.slice(Math.max(0, m.index - 120), m.index + m[0].length + 120);
-    if (unit && !near.toLowerCase().includes(unit)) continue;
-    if (VERIFY_RE.test(near)) return s;
+    // The goal sentence (or bullet) holding the number; the verb must come before it in
+    // that sentence, within 80 characters: "run validate_claims.py to confirm 128 claims".
+    let lo = m.index;
+    while (lo > 0 && !/[.!?\n]/.test(s.goal[lo - 1]) && s.goal.slice(lo - 3, lo) !== " - " && m.index - lo < 80) lo--;
+    const lead = s.goal.slice(lo, m.index);
+    const tail = s.goal.slice(m.index, m.index + m[0].length + 40);
+    if (unit && !(lead + tail).toLowerCase().includes(unit)) continue;
+    if (VERIFY_RE.test(lead)) return s;
   }
   return null;
 }
@@ -455,6 +477,7 @@ function buildEpisode(
     const excerpt = sentenceAround(turn.text, hit.start, hit.end);
     // Signals are read from the whole sentence; the excerpt is trimmed for display.
     const sentence = sentenceSpan(turn.text, hit.start, hit.end, 600, 1200);
+    if (NON_ASSERTION_RE.test(sentence)) continue;
     const idx = assertions.length;
     // Copying is judged on the claim sentence: whole turns share boilerplate headers.
     const sh = shingles(excerpt, p.shingleWords);
@@ -467,11 +490,12 @@ function buildEpisode(
     let session: Session | null = null;
 
     if (idx > 0) {
-      // Credit to a specific earlier speaker, by name anywhere in the turn.
+      // Credit to a specific earlier speaker, by name in the claim's own sentence. A name
+      // elsewhere in a long message is usually about something else.
       let citedIdx = -1;
       for (const [agent, i] of firstIndexByAgent) {
         const re = mention.get(agent);
-        if (re && re.test(turn.text)) citedIdx = Math.max(citedIdx, i);
+        if (re && re.test(sentence)) citedIdx = Math.max(citedIdx, i);
       }
       // Wording copied from an earlier speaker.
       let copiedIdx = -1;
@@ -484,7 +508,7 @@ function buildEpisode(
         }
       }
       const attributed = citedIdx >= 0 || ATTRIB_RE.test(sentence);
-      const firsthand = FIRSTHAND_RE.test(sentence) || TOOL_OBSERVATION_RE.test(sentence);
+      const firsthand = FIRSTHAND_RE.test(sentence) || TOOL_OBSERVATION_RE.test(sentence) || TELEGRAPHIC_RE.test(sentence);
 
       // Own observation outranks everything: an agent that re-ran the check is a
       // separate derivation path even when it credits or reuses someone's wording.

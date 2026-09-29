@@ -1,0 +1,99 @@
+{
+  "test": {
+    "items": 99,
+    "byClass": {
+      "checked": {
+        "agree": 16,
+        "n": 29
+      },
+      "credited": {
+        "agree": 22,
+        "n": 30
+      },
+      "echoed": {
+        "agree": 27,
+        "n": 40
+      }
+    },
+    "byStratum": {
+      "aivillage/INDEPENDENT/statement": {
+        "agree": 11,
+        "n": 20
+      },
+      "aivillage/INDEPENDENT/session": {
+        "agree": 5,
+        "n": 9
+      },
+      "aivillage/CITED": {
+        "agree": 16,
+        "n": 20
+      },
+      "aivillage/ECHO": {
+        "agree": 15,
+        "n": 25
+      },
+      "collusion/ECHO": {
+        "agree": 12,
+        "n": 15
+      },
+      "collusion/CITED": {
+        "agree": 6,
+        "n": 10
+      }
+    },
+    "notAClaim": 15,
+    "overall": {
+      "agree": 65,
+      "n": 99
+    }
+  },
+  "dev": {
+    "items": 100,
+    "byClass": {
+      "checked": {
+        "agree": 17,
+        "n": 30
+      },
+      "credited": {
+        "agree": 8,
+        "n": 30
+      },
+      "echoed": {
+        "agree": 23,
+        "n": 40
+      }
+    },
+    "byStratum": {
+      "aivillage/INDEPENDENT/statement": {
+        "agree": 16,
+        "n": 20
+      },
+      "aivillage/INDEPENDENT/session": {
+        "agree": 1,
+        "n": 10
+      },
+      "aivillage/CITED": {
+        "agree": 7,
+        "n": 20
+      },
+      "aivillage/ECHO": {
+        "agree": 11,
+        "n": 25
+      },
+      "collusion/ECHO": {
+        "agree": 12,
+        "n": 15
+      },
+      "collusion/CITED": {
+        "agree": 1,
+        "n": 10
+      }
+    },
+    "notAClaim": 27,
+    "overall": {
+      "agree": 48,
+      "n": 100
+    }
+  },
+  "adjustedCheckRate": 0.155
+}

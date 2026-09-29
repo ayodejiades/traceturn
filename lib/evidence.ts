@@ -12,6 +12,7 @@
 import villageJson from "@/evidence/aivillage-report.json";
 import collusionJson from "@/evidence/collusion-report.json";
 import campaignJson from "@/evidence/campaign-report.json";
+import auditJson from "@/evidence/audit-results.json";
 import { BENCHMARK_CASES, evaluateDeterministicKernel, evaluateSafetyKernel, type ReconciliationInput } from "./kernel";
 import type { LineageReportJson } from "./report";
 
@@ -64,6 +65,22 @@ export const TOP_CORRECTION = CORRECTIONS[0] ?? null;
 export const FEATURED =
   VILLAGE.episodes.find((e) => e.state === "MATERIAL_DRIFT_DETECTED" && e.source && e.assertions.length >= 6) ??
   VILLAGE.episodes[0];
+
+/**
+ * Held-out accuracy audit (docs/AUDIT.md). The adjusted rate re-weights the classifier's
+ * output by how often its held-out calls were right, so pages lead with it and show the
+ * classifier's raw rate beside it.
+ */
+export const AUDIT = auditJson as {
+  adjustedCheckRate: number;
+  test: { byClass: Record<"checked" | "credited" | "echoed", { agree: number; n: number }>; overall: { agree: number; n: number } };
+};
+export const CHECK_RATE = {
+  raw: t.restatements ? t.independent / t.restatements : 0,
+  adjusted: AUDIT.adjustedCheckRate,
+  /** "one in N": the adjusted rate as a plain ratio. */
+  oneIn: Math.round(1 / AUDIT.adjustedCheckRate),
+};
 
 const w = COLLUSION.totals;
 

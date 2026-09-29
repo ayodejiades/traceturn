@@ -15,7 +15,8 @@
     "visual:check": "node scripts/visual-check.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "analyze": "tsx tools/analyze.ts"
+    "analyze": "tsx tools/analyze.ts",
+    "audit:sample": "tsx tools/audit-sample.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
