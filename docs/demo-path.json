@@ -34,11 +34,11 @@
       "click": "[data-demo='tamper-add-one-more-echo']"
     },
     {
-      "say": "And it runs on your own transcript, in the browser, with nothing uploaded. Which agent said it first, and who checked. That is traceturn.",
+      "say": "And it runs on your own transcript, in the browser, with nothing uploaded.",
       "goto": "/dashboard"
     },
     {
-      "say": "",
+      "say": "Which agent said it first, and who checked. That is traceturn.",
       "click": "[data-demo='load-sample']"
     }
   ]
