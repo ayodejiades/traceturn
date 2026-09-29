@@ -91,7 +91,7 @@ export function SiteHeader() {
         <Link
           href="/dashboard"
           data-demo="launch-demo"
-          className="inline-flex min-h-11 items-center rounded-full bg-[var(--accent)] px-4 text-xs font-semibold text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)] sm:min-h-9 sm:px-5"
+          className="inline-flex min-h-11 items-center rounded-full bg-[var(--accent-fill)] px-4 text-xs font-semibold text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)] sm:min-h-9 sm:px-5"
         >
           Analyze a transcript
         </Link>

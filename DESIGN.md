@@ -40,8 +40,9 @@ All surfaces, borders, and text adhere to strict WCAG AA contrast ratios:
 | `--fg-muted` | `#A89B8C` | Secondary prose, metric labels, descriptive copy |
 | `--fg-subtle` | `#908375` | Monospace tags, metadata labels, table headers |
 | `--accent` | `#10B981` | Single signal accent — graph origins, pass states, primary CTA, focus rings |
-| `--accent-dim` | `#0D9668` | Accent hover state |
-| `--accent-contrast` | `#04150C` | Foreground text on filled accent buttons |
+| `--accent-fill` | `#047857` | Fill for buttons and other filled controls; white text on it is 5.5:1 |
+| `--accent-dim` | `#065F46` | Hover state of `--accent-fill` |
+| `--accent-contrast` | `#FFFFFF` | Text on `--accent-fill` |
 | `--warn` | `#D9A441` | Waiting states and unresolved gating indicators |
 | `--danger` | `#E2694F` | Drift detection, failure alerts, broken invariants |
 | `--danger-surface` | `rgba(226,105,79,0.12)` | Translucent danger tint — never a solid light fill on the dark canvas |

@@ -10,7 +10,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 // highlighted line) instead of an opacity fade. Secondary/ghost are
 // bracketed text, `[ Label ]`, not filled shapes.
 const VARIANTS: Record<Variant, string> = {
-  primary: "border border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-contrast)] hover:bg-transparent hover:text-[var(--accent)]",
+  primary: "border border-[var(--accent-fill)] bg-[var(--accent-fill)] text-[var(--accent-contrast)] hover:bg-transparent hover:text-[var(--accent)]",
   secondary: "border border-[var(--border)] bg-transparent text-[var(--fg)] hover:border-[var(--accent)] hover:text-[var(--accent)]",
   ghost: "border border-transparent bg-transparent text-[var(--fg-muted)] hover:text-[var(--accent)]",
 };

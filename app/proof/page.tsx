@@ -60,7 +60,7 @@ export default async function ProofPage({ searchParams }: { searchParams: Promis
               href={`/proof?corpus=${c}#episodes`}
               aria-current={c === id ? "page" : undefined}
               data-demo={`corpus-${c}`}
-              className="inline-flex min-h-11 items-center rounded-full px-5 text-sm font-medium text-white/80 transition-colors hover:text-white aria-[current=page]:bg-[var(--accent)] aria-[current=page]:text-[var(--accent-contrast)]"
+              className="inline-flex min-h-11 items-center rounded-full px-5 text-sm font-medium text-white/80 transition-colors hover:text-white aria-[current=page]:bg-[var(--accent-fill)] aria-[current=page]:text-[var(--accent-contrast)]"
             >
               {CORPORA[c].name}
             </Link>

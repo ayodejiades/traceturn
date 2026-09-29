@@ -128,7 +128,7 @@ export function Section({
 
 /** The two button styles the landing page uses, so every page's calls to action match. */
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center rounded-full bg-[var(--accent)] px-7 py-3 text-sm font-semibold text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]";
+  "inline-flex items-center justify-center rounded-full bg-[var(--accent-fill)] px-7 py-3 text-sm font-semibold text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]";
 export const BTN_SECONDARY =
   "inline-flex items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-6 py-3 text-sm font-medium text-[var(--fg)] transition-colors hover:border-[var(--accent)] hover:bg-[var(--surface-raised)]";
 export const BTN_GHOST_ON_ART =

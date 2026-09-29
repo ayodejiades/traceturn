@@ -23,7 +23,7 @@ export default function NotFound() {
           <div className="flex flex-wrap gap-3">
             <Link
               href="/"
-              className="rounded-[var(--radius-sm)] bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]"
+              className="rounded-[var(--radius-sm)] bg-[var(--accent-fill)] px-5 py-2.5 text-sm font-medium text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent-dim)]"
             >
               Back to overview
             </Link>

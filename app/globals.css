@@ -13,8 +13,11 @@
   /* Accent stays green: it carries meaning (flagged / corroborated) and must not
      drift toward the painting's amber, or a warning stops reading as one. */
   --accent: #10b981;
-  --accent-dim: #0d9668;
-  --accent-contrast: #04150c;
+  /* Filled controls use a deeper green than the accent so white text on them clears
+     WCAG AA: white on --accent-fill is 5.5:1 (on --accent it would be 2.5:1). */
+  --accent-fill: #047857;
+  --accent-dim: #065f46;
+  --accent-contrast: #ffffff;
 
   --warn: #d9a441;
   /* Art-direction washes, sampled from the hero's own amber and umber. Applied
@@ -145,7 +148,7 @@
     top: 0;
     z-index: 100;
     padding: 0.75rem 1rem;
-    background: var(--accent);
+    background: var(--accent-fill);
     color: var(--accent-contrast);
     font-weight: 600;
     border-radius: 0 0 var(--radius-sm) 0;
