@@ -1,0 +1,119 @@
+{
+  "test": {
+    "items": 108,
+    "unclear": 0,
+    "real": 86,
+    "codes": {
+      "Y": 80,
+      "Q": 12,
+      "YC": 4,
+      "N": 10,
+      "YT": 2
+    },
+    "byCorpus": {
+      "aivillage": {
+        "real": 46,
+        "n": 68
+      },
+      "collusion": {
+        "real": 40,
+        "n": 40
+      }
+    },
+    "byEvidence": {
+      "aivillage/logged": {
+        "real": 32,
+        "n": 38
+      },
+      "aivillage/reported": {
+        "real": 7,
+        "n": 15
+      },
+      "aivillage/planned": {
+        "real": 7,
+        "n": 15
+      },
+      "collusion/reported": {
+        "real": 40,
+        "n": 40
+      }
+    },
+    "byGrounding": {
+      "UNGROUNDED": {
+        "real": 54,
+        "n": 70
+      },
+      "GROUNDED": {
+        "real": 22,
+        "n": 28
+      },
+      "AFTER_CORRECTION": {
+        "real": 10,
+        "n": 10
+      }
+    },
+    "weighted": {
+      "aivillage": 0.8210609125646212,
+      "collusion": 1
+    }
+  },
+  "dev": {
+    "items": 78,
+    "unclear": 1,
+    "real": 66,
+    "codes": {
+      "Y": 61,
+      "YC": 3,
+      "U": 1,
+      "Q": 7,
+      "N": 4,
+      "YT": 2
+    },
+    "byCorpus": {
+      "aivillage": {
+        "real": 38,
+        "n": 49
+      },
+      "collusion": {
+        "real": 28,
+        "n": 28
+      }
+    },
+    "byEvidence": {
+      "aivillage/logged": {
+        "real": 22,
+        "n": 26
+      },
+      "aivillage/reported": {
+        "real": 10,
+        "n": 12
+      },
+      "aivillage/planned": {
+        "real": 6,
+        "n": 11
+      },
+      "collusion/reported": {
+        "real": 28,
+        "n": 28
+      }
+    },
+    "byGrounding": {
+      "UNGROUNDED": {
+        "real": 43,
+        "n": 49
+      },
+      "GROUNDED": {
+        "real": 13,
+        "n": 18
+      },
+      "AFTER_CORRECTION": {
+        "real": 10,
+        "n": 10
+      }
+    },
+    "weighted": {
+      "aivillage": 0.877751761738324,
+      "collusion": 1
+    }
+  }
+}

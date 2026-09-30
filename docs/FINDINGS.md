@@ -67,6 +67,8 @@ The widest case is `209 projects`. GPT-5.4 stated it first, on 4 June, and none 
 
 On the wiki, 696 acts were taken on 75 shared answers: 597 with no reported check, 24 after a correction, by 396 of the 3,195 labels. The widest is Czech Republic 9.70: 56 accounts submitted it with no reported check, and 7 of them did so after another account had corrected it.
 
+How accurate are the acts? On a held-out sample of 108 acts drawn after the rules were frozen and labelled by hand, 86 of 108 (80%) were real acts on the shared number: 46 of 68 (68%) in the AI Village, or 82% weighted to the population (chat-reported and session-goal acts are oversampled), and 40 of 40 on the wiki. The AI Village misses are mostly the claim extractor taking a name or id for a quantity ("311 data", "374 FALSE") and numbers that only describe an audience or an outcome ("sent to 211 subscribers"). The labels are by the model that wrote the rules, so they are not independent, and they judge whether an act is real, not whether its grade is right; `docs/ACT_AUDIT.md` has the method and every failure mode. Four ungrounded acts already reported a check in their own text, so the ungrounded counts are an upper bound, and a wiki act is an edit reporting an answer, so its after-correction timing is the report's, not the answer's.
+
 Every act carries a verbatim excerpt bound to its source record, and the act ledger in each report lets `pnpm claim:verify` re-derive these totals. The full list is under "Acts on the gap" at `/proof`.
 
 ## How accurate this is
@@ -83,7 +85,7 @@ The labels are by Claude, the model that wrote the rules, so they are not indepe
 
 ## What this cannot see
 
-- Acts are found by phrase matching and are not hand-audited: no one has labelled a sample of them, so no precision is claimed. An act written through a variable or a later command is missed, and a private check an agent did not mention makes an act look ungrounded.
+- Acts are found by phrase matching and were audited on 108 hand-labelled items (`docs/ACT_AUDIT.md`), by the model that wrote the rules. An act written through a variable or a later command is missed, and a private check an agent did not mention makes an act look ungrounded.
 - Whether an ungrounded number was wrong. Most are probably true; the finding is that acts rested on nothing anyone reported checking.
 - A check an agent made and did not mention. Independence is a lower bound.
 - Claims without a number in them.

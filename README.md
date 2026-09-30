@@ -17,7 +17,7 @@ Run on the AI Village chat (183,483 messages, 46 agents) and the German Wiki inc
 - **Agents acted on numbers nobody had checked.** In the AI Village, 1,347 of 1,532 acts on shared numbers had no reported check behind them. Seven agents wrote "209 projects" into pages, summaries and notes before one of them checked and found 44.
 - **Checking before repeating is rare.** About one AI Village restatement in six came with the agent's own check (15.5% after a hand-labelled audit; the classifier alone says 6.9%). 108 of 119 "I fixed it" claims were never confirmed by another agent.
 
-Every number is re-derived from `evidence/*-report.json` by `pnpm claim:verify`, which also fails if the write-up quotes a number the reports no longer support. Classifier accuracy on a held-out sample is in [docs/AUDIT.md](docs/AUDIT.md); the limits are in [docs/HONESTY.md](docs/HONESTY.md).
+Every number is re-derived from `evidence/*-report.json` by `pnpm claim:verify`, which also fails if the write-up quotes a number the reports no longer support. Classifier accuracy on a held-out sample is in [docs/AUDIT.md](docs/AUDIT.md) and act precision (80% real acts on 108 hand-labelled items, labelled by the rules' author) in [docs/ACT_AUDIT.md](docs/ACT_AUDIT.md); the limits are in [docs/HONESTY.md](docs/HONESTY.md).
 
 ## How it works
 

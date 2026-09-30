@@ -43,3 +43,77 @@ export function scoreAudit(items: AuditItem[], labels: Record<string, string>): 
   const n = Object.values(byClass).reduce((a, c) => a + c.n, 0);
   return { items: n, byClass, byStratum, notAClaim, overall: { agree, n } };
 }
+
+// ---------------------------------------------------------------------------
+// Act precision: is a detected act a real act on the shared quantity?
+
+/** Real acts: Y, plus YC (grounding missed a reported check) and YT (act preceded its correction). */
+export const REAL_ACT = new Set(["Y", "YC", "YT"]);
+
+export interface ActAuditItem {
+  id: string;
+  corpus: string;
+  stratum: string;
+  /** Acts in the pool this stratum was drawn from. */
+  population: number;
+  evidence: string;
+  grounding: string;
+}
+
+export interface ActAuditScore {
+  items: number;
+  /** Items labelled U (cannot tell), left out of every rate. */
+  unclear: number;
+  real: number;
+  codes: Record<string, number>;
+  byCorpus: Record<string, { real: number; n: number }>;
+  byEvidence: Record<string, { real: number; n: number }>;
+  byGrounding: Record<string, { real: number; n: number }>;
+  /** Precision weighted by each stratum's population, per corpus. */
+  weighted: Record<string, number>;
+}
+
+export function scoreActAudit(items: ActAuditItem[], labels: Record<string, string>): ActAuditScore {
+  const codes: Record<string, number> = {};
+  const bump = (m: Record<string, { real: number; n: number }>, k: string, real: boolean) => {
+    m[k] ??= { real: 0, n: 0 };
+    m[k].n++;
+    if (real) m[k].real++;
+  };
+  const byCorpus: ActAuditScore["byCorpus"] = {};
+  const byEvidence: ActAuditScore["byEvidence"] = {};
+  const byGrounding: ActAuditScore["byGrounding"] = {};
+  const strata = new Map<string, { corpus: string; pop: number; real: number; n: number }>();
+  let unclear = 0;
+  let real = 0;
+  for (const it of items) {
+    const label = labels[it.id];
+    if (!label) continue;
+    codes[label] = (codes[label] ?? 0) + 1;
+    if (label === "U") {
+      unclear++;
+      continue;
+    }
+    const ok = REAL_ACT.has(label);
+    if (ok) real++;
+    bump(byCorpus, it.corpus, ok);
+    bump(byEvidence, `${it.corpus}/${it.evidence}`, ok);
+    bump(byGrounding, it.grounding, ok);
+    const s = strata.get(`${it.corpus}|${it.stratum}`) ?? { corpus: it.corpus, pop: it.population, real: 0, n: 0 };
+    s.n++;
+    if (ok) s.real++;
+    strata.set(`${it.corpus}|${it.stratum}`, s);
+  }
+  const weighted: Record<string, number> = {};
+  for (const corpus of Object.keys(byCorpus)) {
+    let num = 0;
+    let den = 0;
+    for (const s of strata.values()) {
+      if (s.corpus !== corpus) continue;
+      num += (s.pop * s.real) / s.n;
+      den += s.pop;
+    }
+    weighted[corpus] = den ? num / den : 0;
+  }
+  return { items: items.filter((i) => labels[i.id]).length, unclear, real, codes, byCorpus, byEvidence, byGrounding, weighted };
+}
