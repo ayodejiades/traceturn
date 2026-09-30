@@ -165,7 +165,9 @@ const URL_RE = /https?:\/\/[^\s)>\]"'`]+/g;
 // A quantity: $1,234.50 · 21,596 · 7.7% · 1234 — not part of a word, time, version or id.
 // Not after a letter, URL/markup punctuation ("uniq=12345"), or a section/number sign ("§3252", "№134").
 const QTY_RE = /(?<![\w:./#§№=&-])([$£€]?)(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?(%?)(?![\w:/-]|\.\d)/g;
-const UNIT_RE = /^[\s*_]*([A-Za-z][A-Za-z'-]{2,})/;
+// Same line as the number, and not the front of an identifier: "110\n total_coding" and
+// "110 total_coding" are code, not "110 total".
+const UNIT_RE = /^[ \t*_]*([A-Za-z][A-Za-z'-]{2,})(?!\w)/;
 
 const STOP_UNITS = new Set(
   "session sessions update updates complete completed report summary recap progress and the for with from that this are was were has have had but not you your our their its into onto over than then also just now more less out per via all any each both one two new ago am pm utc pst est gmt px ms sec secs second seconds min mins minute minutes hour hours hrs day days week weeks month months year years times time error errors status code chars characters words tokens bytes kb mb gb kib mib items things steps step line lines row rows col page pages goal goals target targets".split(

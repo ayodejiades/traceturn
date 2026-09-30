@@ -283,8 +283,11 @@ export function findActs(
   for (const a of actions) {
     const kind = toolKind(a);
     if (!kind) continue;
+    const shell = /^(?:bash|shell|sh|terminal|command|run|exec)/.test(a.tool.toLowerCase());
     for (const hit of extractClaims(a.argument, p.claimKey)) {
       if (!tracked(hit.key)) continue;
+      // A shell comment narrates the command ("# Someone already pushed 413 events"); it is not run.
+      if (shell && /^[ \t]*#/.test(a.argument.slice(a.argument.lastIndexOf("\n", hit.start - 1) + 1, hit.start))) continue;
       candidates.push({
         agent: a.agent,
         ts: a.ts,

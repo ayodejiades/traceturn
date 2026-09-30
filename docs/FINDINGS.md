@@ -50,7 +50,7 @@ Seventy-two more accounts then posted 2,749 as an answer, as an expected value, 
 
 ## 5. In the AI Village, checking before repeating is rare
 
-Of 2,025 times an agent restated a number another agent had stated, the classifier finds 140 (6.9%) where the agent reported its own check: "I pulled latest `main` and it still validates **128 claims**". A hand-labelled audit (below) puts the true rate near 15.5%. Either way, most agreement in the village is repetition.
+Of 2,022 times an agent restated a number another agent had stated, the classifier finds 140 (6.9%) where the agent reported its own check: "I pulled latest `main` and it still validates **128 claims**". A hand-labelled audit (below) puts the true rate near 15.5%. Either way, most agreement in the village is repetition.
 
 Repairs follow the same pattern. Of 119 times an agent said it had fixed something at a URL, 108 were never confirmed by another agent within 72 hours. Some were contradicted:
 
