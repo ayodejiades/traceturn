@@ -182,6 +182,7 @@ async function main() {
       const c = inc.correction;
       console.log(`  corrected   by ${c.correctedBy} at ${c.at} to ${c.right ?? "(no value given)"}, ${c.hoursToCorrection}h after it first appeared; ${c.after.length} more stated it afterwards`);
     }
+    console.log(`  agents      ${inc.agents} acted on it with no reported check`);
     console.log(`  acts        ${inc.acts.total} taken on it: ${inc.acts.afterCorrection} after the correction, ${inc.acts.ungrounded} with no observation behind it, ${inc.acts.grounded} grounded`);
     for (const a of inc.top.slice(0, 5)) {
       console.log(`    ${a.id}  ${a.grounding.padEnd(16)} ${a.kind.padEnd(7)} ${a.agent} at ${a.at}: "${tail(a.excerpt)}"`);

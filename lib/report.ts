@@ -154,8 +154,8 @@ export interface LineageReportJson {
   repairs: ReportRepair[];
   /** Every wrong value that spread to 3+ agents and was later corrected. */
   corrections: ReportCorrection[];
-  /** [id, claim, grounding, evidence, kind, reach, state] for every act, so totals can be re-derived. */
-  actLedger: [string, string, Grounding, ActEvidence, ActKind, number, KernelState][];
+  /** [id, claim, grounding, evidence, kind, reach, state, agent] for every act, so totals can be re-derived. */
+  actLedger: [string, string, Grounding, ActEvidence, ActKind, number, KernelState, string][];
   /** Acts ranked by blast radius (see lib/acts.ts); a curated slice unless `full`. */
   acts: ReportAct[];
 }
@@ -314,9 +314,19 @@ export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageRep
   const actsIn = (g: Grounding) => acts.filter((a) => a.grounding === g);
   // Curated slice: every act on a corrected value, the widest ungrounded ones, and
   // grounded controls. The ledger keeps every act.
-  const actSlice = opts.full
+  const actSlice: Act[] = opts.full
     ? acts
     : [...actsIn("AFTER_CORRECTION"), ...actsIn("UNGROUNDED").slice(0, 40), ...actsIn("GROUNDED").slice(0, 8)];
+  // The worst incident's acts are always listed, whatever their rank among all acts.
+  const worst = rankIncidents(
+    acts.map((a) => ({ claim: a.claim, grounding: a.grounding, reach: a.reach, agent: a.agent })),
+    new Set(report.corrections.map((c) => c.wrong)),
+  )[0];
+  if (worst && !opts.full) {
+    const listed = new Set(actSlice.map((a) => a.id));
+    actSlice.push(...acts.filter((a) => a.claim === worst.claim && !listed.has(a.id)).slice(0, 24));
+    actSlice.sort((a, b) => acts.indexOf(a) - acts.indexOf(b));
+  }
 
   const restated = report.episodes.flatMap((e) => e.assertions.slice(1));
   const roleCount = (r: Role) => restated.filter((a) => a.role === r).length;
@@ -371,7 +381,7 @@ export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageRep
     repairs: repairs.map((r) => exportRepair(r, days)),
     corrections: report.corrections.map((c) => exportCorrection(c, acts, days)),
     actLedger: acts.map(
-      (a) => [a.id, a.claim, a.grounding, a.evidence, a.kind, a.reach, a.decision.state] as [string, string, Grounding, ActEvidence, ActKind, number, KernelState],
+      (a) => [a.id, a.claim, a.grounding, a.evidence, a.kind, a.reach, a.decision.state, a.agent] as [string, string, Grounding, ActEvidence, ActKind, number, KernelState, string],
     ),
     acts: actSlice.map((a) => exportAct(a, days)),
   };
@@ -492,29 +502,69 @@ export interface Incident {
   observed: number;
   correction: ReportCorrection | null;
   acts: { total: number; afterCorrection: number; ungrounded: number; grounded: number };
+  /** Distinct agents that acted on the claim with no reported check behind it (ungrounded or after a correction). */
+  agents: number;
   /** Listed acts on the claim, in blast-radius order. */
   top: ReportAct[];
 }
 
+interface ClaimActs {
+  claim: string;
+  after: number;
+  ungrounded: number;
+  grounded: number;
+  /** Agents that stated the value after an ungrounded or after-correction act. */
+  reach: number;
+  /** Distinct agents that acted with no reported check behind them. */
+  agents: number;
+  corrected: boolean;
+}
+
 /**
- * The report's worst incident: the claim with the most acts taken on it after a
- * correction, then the most acts with no observation behind them. Null when no act was
- * taken on a shared claim.
+ * Claims with acts on them, worst first. Blast radius, in order:
+ *  1. The value was later corrected. A number another agent showed to be wrong is an
+ *     incident; a widely repeated number nobody challenged may simply be true.
+ *  2. Distinct agents that acted on it with no reported check (ungrounded or after a
+ *     correction). One agent re-saving a value many times is one decision; several agents
+ *     each relying on it is a swarm failure.
+ *  3. Acts taken after the correction.
+ *  4. Downstream reach: agents that stated the value after such an act.
+ *  5. Ungrounded acts.
  */
-export function topIncident(r: LineageReportJson): Incident | null {
-  const byClaim = new Map<string, { after: number; ungrounded: number; grounded: number }>();
-  for (const [, claim, g] of r.actLedger) {
-    const row = byClaim.get(claim) ?? { after: 0, ungrounded: 0, grounded: 0 };
+export function rankIncidents(rows: { claim: string; grounding: Grounding; reach: number; agent: string }[], corrected: Set<string>): ClaimActs[] {
+  const byClaim = new Map<string, ClaimActs & { who: Set<string> }>();
+  for (const { claim, grounding: g, reach, agent } of rows) {
+    const row = byClaim.get(claim) ?? { claim, after: 0, ungrounded: 0, grounded: 0, reach: 0, agents: 0, corrected: corrected.has(claim), who: new Set<string>() };
     if (g === "AFTER_CORRECTION") row.after++;
     else if (g === "UNGROUNDED") row.ungrounded++;
     else row.grounded++;
+    if (g !== "GROUNDED") {
+      row.reach += reach;
+      row.who.add(agent);
+      row.agents = row.who.size;
+    }
     byClaim.set(claim, row);
   }
-  const ranked = [...byClaim].sort(
-    ([a, x], [b, y]) => y.after - x.after || y.after + y.ungrounded - (x.after + x.ungrounded) || (a < b ? -1 : 1),
+  return [...byClaim.values()].sort(
+    (x, y) =>
+      Number(y.corrected) - Number(x.corrected) ||
+      y.agents - x.agents ||
+      y.after - x.after ||
+      y.reach - x.reach ||
+      y.ungrounded - x.ungrounded ||
+      (x.claim < y.claim ? -1 : 1),
+  );
+}
+
+/** The report's worst incident (see rankIncidents). Null when no act was taken on a shared claim. */
+export function topIncident(r: LineageReportJson): Incident | null {
+  const ranked = rankIncidents(
+    r.actLedger.map(([, claim, grounding, , , reach, , agent]) => ({ claim, grounding, reach, agent })),
+    new Set(r.corrections.map((c) => c.wrong)),
   );
   if (ranked.length === 0) return null;
-  const [claim, n] = ranked[0];
+  const n = ranked[0];
+  const claim = n.claim;
   const episode = r.episodes.find((e) => e.claim === claim) ?? null;
   const row = r.ledger.find((l) => l[1] === claim);
   return {
@@ -524,6 +574,7 @@ export function topIncident(r: LineageReportJson): Incident | null {
     observed: episode?.observed ?? row?.[4] ?? 0,
     correction: r.corrections.find((c) => c.wrong === claim) ?? null,
     acts: { total: n.after + n.ungrounded + n.grounded, afterCorrection: n.after, ungrounded: n.ungrounded, grounded: n.grounded },
+    agents: n.agents,
     top: r.acts.filter((a) => a.claim === claim),
   };
 }

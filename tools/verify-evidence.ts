@@ -80,6 +80,8 @@ function checkReport(name: string) {
     if ((g === "GROUNDED") !== (state === "ON_TRACK") && state !== "ABSTAIN_UNBOUND_EXCERPT" && state !== "ABSTAIN_AMBIGUOUS_SOURCE")
       fail(`${tag} ${id}: ledger grounding ${g} disagrees with verdict ${state}`);
   }
+  const actors = new Set(ledger.filter((r) => r[2] !== "GROUNDED").map((r) => r[7]));
+  if (actors.size !== t.agentsActingUngrounded) fail(`${tag}: ${actors.size} agents acted without a check in the ledger, totals say ${t.agentsActingUngrounded}`);
   let actsOk = 0;
   for (const a of report.acts ?? []) {
     const d = rederiveAct(actManifest(a));

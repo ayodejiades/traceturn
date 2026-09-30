@@ -34,9 +34,7 @@ export function IncidentPanel({ incident }: { incident: Incident }) {
     <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8" data-demo="incident">
       <p className="eyebrow">Worst incident in this corpus</p>
       <h3 className="tnum mt-2 text-3xl font-semibold text-[var(--fg)]">
-        {acts.afterCorrection > 0
-          ? `${plural(acts.afterCorrection, "act")} on ${fmtClaim(incident.claim)} came after ${correction ? `${correction.correctedBy} corrected it${correction.right ? ` to ${fmtClaim(correction.right)}` : ""}` : "it was corrected"}`
-          : `${fmtInt(acts.ungrounded)} of ${plural(acts.total, "act")} on ${fmtClaim(incident.claim)} had no reported check behind ${acts.ungrounded === 1 ? "it" : "them"}`}
+        {`${plural(incident.agents, "agent")} acted on ${fmtClaim(incident.claim)} with no reported check behind it`}
       </h3>
       <p className="mt-2 text-sm text-[var(--fg-muted)]">
         {plural(acts.total, "act")} in all on this value: {fmtInt(acts.afterCorrection)} after the correction, {fmtInt(acts.ungrounded)} with no reported check, {fmtInt(acts.grounded)} grounded.
@@ -97,7 +95,7 @@ function ActRow({ a, compact = false }: { a: ReportAct; compact?: boolean }) {
           {fmtAt(a.at)} · {EVIDENCE[a.evidence]}
         </span>
       </div>
-      <p className="mt-1 text-[13px] leading-snug text-[var(--fg-muted)]">&ldquo;{plain(a.excerpt)}&rdquo;</p>
+      <p className="mt-1 text-[13px] leading-snug text-[var(--fg-muted)]">&ldquo;{plain(a.excerpt).replace(/<\/?[a-z][^>]*>/gi, "")}&rdquo;</p>
       {!compact && (
         <p className="mt-1 font-mono text-[10px] text-[var(--fg-subtle)]">
           {a.id} · {a.observers.length === 0 ? "0 observers" : `observed by ${a.observers.map((o) => o.agent).join(", ")}`} ·{" "}
