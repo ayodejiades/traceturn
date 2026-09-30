@@ -2,7 +2,7 @@
 
 traceturn reads a multi-agent transcript, finds every number that three or more agents stated within 72 hours of each other, and classifies each agent's first statement of it: the origin, a check of the agent's own, a restatement that credits its source, or an echo with neither. It runs without a model, so every result below re-derives with `pnpm claim:verify`.
 
-We ran it on the AI Village chat (183,483 messages from 46 agents, April 2025 to September 2026) and on the German Wiki incident export from collusion.wiki (14,366 wiki edits by 3,195 account labels, May to July 2026). Five findings follow, then how accurate the classifier is and what it cannot see.
+We ran it on the AI Village chat (183,483 messages from 46 agents, April 2025 to September 2026) and on the German Wiki incident export from collusion.wiki (14,366 wiki edits by 3,195 account labels, May to July 2026). Six findings follow, then how accurate the classifier is and what it cannot see.
 
 ## 1. Wrong numbers spread before anyone checked
 
@@ -57,6 +57,18 @@ Repairs follow the same pattern. Of 119 times an agent said it had fixed somethi
 > Claude Opus 4: "I successfully fixed B-004 yesterday."
 > o3: "Incognito test of the new B-004 URL … still shows Google's 404."
 
+## 6. Agents acted on numbers nobody had checked
+
+Provenance says who first stated a number. The finding that matters is what the swarm then did with it. An act is an agent putting a shared number somewhere: submitting it as an answer, writing it into a file, commit or post, or handing it to another agent. It counts as grounded only if some agent had already reported checking that number. Otherwise it is ungrounded, and an act on a value another agent had already corrected is marked separately.
+
+In the AI Village, 1,551 acts were taken on 565 shared numbers. 1,364 had no reported check behind them and 185 did; 2 came after a correction. 40 of the 46 agents acted at least once on a number no agent had reported checking. 1,461 of the acts are shell commands and typed text from the 2.5 million computer-use turns (a command counts only if the number sits in text it writes: a redirect, commit message, in-place edit, or a script that writes a file), 53 are the agent saying so (on the wiki, "answered 9.90%"), and 37 are session goals.
+
+The widest case is `209 projects`. GPT-5.4 stated it first, on 4 June, and none of the six agents who stated it had reported checking it. Seven different agents then wrote it into a page, a summary or their notes, among them Gemini 3.1 Pro ("The MLF project count successfully converged to 209 projects") and Claude Opus 4.6 ("MLF still 209 projects"). About 23 hours after it first appeared, DeepSeek-V3.2 checked and found 44. Four more agents stated 209 afterwards.
+
+On the wiki, 696 acts were taken on 75 shared answers: 597 with no reported check, 24 after a correction, by 396 of the 3,195 labels. The widest is Czech Republic 9.70: 56 accounts submitted it with no reported check, and 7 of them did so after another account had corrected it.
+
+Every act carries a verbatim excerpt bound to its source record, and the act ledger in each report lets `pnpm claim:verify` re-derive these totals. The full list is under "Acts on the gap" at `/proof`.
+
 ## How accurate this is
 
 The classifier is deterministic phrase matching. We labelled a 100-item development sample, fixed the rules it exposed, froze them, then labelled a 99-item held-out sample drawn afterwards:
@@ -71,6 +83,8 @@ The labels are by Claude, the model that wrote the rules, so they are not indepe
 
 ## What this cannot see
 
+- Acts are found by phrase matching and are not hand-audited: no one has labelled a sample of them, so no precision is claimed. An act written through a variable or a later command is missed, and a private check an agent did not mention makes an act look ungrounded.
+- Whether an ungrounded number was wrong. Most are probably true; the finding is that acts rested on nothing anyone reported checking.
 - A check an agent made and did not mention. Independence is a lower bound.
 - Claims without a number in them.
 - On the wiki, which labels share an operator.
