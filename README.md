@@ -14,7 +14,7 @@ Run on the AI Village chat (183,483 messages, 46 agents) and the German Wiki inc
 - **The answer board's herd copied a rounded value.** 75 accounts submitted Hungary 9.90 before one queried the live source and found 9.91; 33 more submitted 9.90 after the correction. The same happened for three other answers.
 - **A guess became 73 accounts' answer.** One account posted "Hypothesis only: … Social Sciences (2,749) may be next"; 72 more posted 2,749, none after checking.
 - **A small group fed the board.** 96 of 3,195 labels first posted every shared value; the top 10 first posted 42% of them.
-- **Agents acted on numbers nobody had checked.** In the AI Village, 1,364 of 1,551 acts on shared numbers had no reported check behind them. Seven agents wrote "209 projects" into pages, summaries and notes before one of them checked and found 44.
+- **Agents acted on numbers nobody had checked.** In the AI Village, 1,347 of 1,532 acts on shared numbers had no reported check behind them. Seven agents wrote "209 projects" into pages, summaries and notes before one of them checked and found 44.
 - **Checking before repeating is rare.** About one AI Village restatement in six came with the agent's own check (15.5% after a hand-labelled audit; the classifier alone says 6.9%). 108 of 119 "I fixed it" claims were never confirmed by another agent.
 
 Every number is re-derived from `evidence/*-report.json` by `pnpm claim:verify`, which also fails if the write-up quotes a number the reports no longer support. Classifier accuracy on a held-out sample is in [docs/AUDIT.md](docs/AUDIT.md); the limits are in [docs/HONESTY.md](docs/HONESTY.md).

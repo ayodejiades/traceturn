@@ -32,6 +32,12 @@ test("a number in a comment, terminal echo, print, grep or read-only command is 
   assert.equal(at("cat <<'EOF'\n129 views\nEOF", "129"), false);
 });
 
+test("in an in-place sed, the replacement is written and the pattern being replaced is not", () => {
+  const cmd = "sed -i 's/Opus 4.5: 219 → 16,345 damage/Opus 4.5: 219 → 16,444 damage/g' index.html";
+  assert.equal(at(cmd, "16,345"), false);
+  assert.equal(at(cmd, "16,444"), true);
+});
+
 test("a heredoc after its terminator no longer counts as inside it", () => {
   assert.equal(at("cat > a.md <<'EOF'\nx\nEOF\necho 413 events", "413"), false);
 });

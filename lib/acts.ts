@@ -157,6 +157,14 @@ export function commandWritesAt(command: string, pos: number): boolean {
   }
   const line = lines[Math.min(idx, lines.length - 1)];
   if (/^[ \t]*#/.test(line)) return false;
+  // "sed -i 's/OLD/NEW/'" writes NEW; OLD is the pattern being replaced, not put anywhere.
+  if (/\b(?:sed|perl)\s+-[a-z]*i/.test(line)) {
+    const col = pos - offset;
+    for (const m of line.matchAll(/\bs(.)((?:\\.|(?!\1).)*)\1/g)) {
+      const from = m.index! + 2;
+      if (col >= from && col < from + m[2].length) return false;
+    }
+  }
   // The statement: this line and the lines it continues from with a trailing backslash.
   let from = idx;
   while (from > 0 && /\\\s*$/.test(lines[from - 1])) from--;
