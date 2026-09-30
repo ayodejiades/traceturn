@@ -213,7 +213,7 @@ export function SiteFooter() {
           ))}
         </div>
 
-        {/* Bottom Bar with clean circular icons without text label */}
+        {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 text-xs text-white/90">
           <div className="flex flex-wrap items-center gap-6">
             <span>© Traceturn 2026</span>
@@ -222,41 +222,6 @@ export function SiteFooter() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <a
-              href="https://claude.ai/new?q=Summarize+what+traceturn+does+for+deterministic+multi-agent+swarm+forensics"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Summarize with Claude"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface)]/20 backdrop-blur-md text-white transition-all hover:bg-[var(--surface)]/40 hover:scale-105"
-            >
-              <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
-              </svg>
-            </a>
-            <a
-              href="https://chatgpt.com/?q=Summarize+what+traceturn+does+for+deterministic+multi-agent+swarm+forensics"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Summarize with ChatGPT"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface)]/20 backdrop-blur-md text-white transition-all hover:bg-[var(--surface)]/40 hover:scale-105"
-            >
-              <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M20.5 10.5a4.5 4.5 0 0 0-3.5-4.4V5a5 5 0 0 0-8.8-3.2A4.5 4.5 0 0 0 4.5 5.5v1.1A4.5 4.5 0 0 0 3 14a4.5 4.5 0 0 0 3.5 4.4V19a5 5 0 0 0 8.8 3.2A4.5 4.5 0 0 0 19.5 18.5v-1.1A4.5 4.5 0 0 0 21 10a4.5 4.5 0 0 0-.5-.5z" />
-              </svg>
-            </a>
-            <a
-              href="https://gemini.google.com/app?q=Please+summarize+what+traceturn+does%2C+what+it+offers%2C+and+how+engineers+can+use+it+for+deterministic+agent+swarm+forensics"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Summarize with Gemini"
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface)]/20 backdrop-blur-md text-white transition-all hover:bg-[var(--surface)]/40 hover:scale-105"
-            >
-              <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M12 2C12 7.5 7.5 12 2 12C7.5 12 12 16.5 12 22C12 16.5 16.5 12 22 12C16.5 12 12 7.5 12 2Z" />
-              </svg>
-            </a>
-          </div>
         </div>
       </div>
     </footer>

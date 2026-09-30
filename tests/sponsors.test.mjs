@@ -52,6 +52,19 @@ test("No model is called anywhere in the attribution path", () => {
   }
 });
 
+test("No page or component links to a model vendor", () => {
+  const walk = (dir) =>
+    fs.readdirSync(path.join(root, dir), { withFileTypes: true }).flatMap((e) => {
+      const rel = path.join(dir, e.name);
+      return e.isDirectory() ? walk(rel) : /\.(?:tsx?|mjs)$/.test(e.name) ? [rel] : [];
+    });
+  // A link or call to a vendor, not a model's name: the AI Village corpus names its agents.
+  const VENDOR = /(?:claude\.ai|chatgpt\.com|chat\.openai\.com|gemini\.google\.com|perplexity\.ai|copilot\.microsoft\.com|grok\.com|api\.anthropic\.com|api\.openai\.com|generativelanguage\.googleapis\.com)|from\s+["'](?:@anthropic-ai|openai|@google\/generative-ai|@ai-sdk)|Summarize with/i;
+  for (const f of [...walk("app"), ...walk("components"), ...walk("lib"), ...walk("tools")]) {
+    assert.doesNotMatch(fs.readFileSync(path.join(root, f), "utf8"), VENDOR, `${f} must not depend on or link to a model vendor`);
+  }
+});
+
 test("Logged actions: tool calls and delegations are linked to the claim in their argument and graded", async () => {
   const { parseJsonl } = await import(path.join(root, "lib/transcript.ts"));
   const { analyzeLineage } = await import(path.join(root, "lib/lineage.ts"));
@@ -69,3 +82,4 @@ test("Logged actions: tool calls and delegations are linked to the claim in thei
   for (const a of acts) assert.equal(a.decision.excerptBound, true, `${a.id} excerpt must be verbatim in its source record`);
   assert.deepEqual(findActs(parsed.turns, parsed.sessions, parsed.actions, r.episodes, r.corrections, r.params).map((a) => a.id), acts.map((a) => a.id), "deterministic");
 });
+
