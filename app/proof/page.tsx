@@ -19,6 +19,7 @@ const NOT_CLAIMED = [
   "Most echoed numbers are probably true. What the report measures is how many speakers checked a number before repeating it.",
   "Claims are numbers: a quantity and what it counts in chat, a bare value on the wiki answer boards. Agreement with no number in it is out of scope.",
   "On the wiki, one account label is one speaker. Several labels may be one operator; the publishers redacted user names.",
+  "Acts are found by phrase matching too: a first-person past-tense verb (\"answered\", \"updated\") next to the number, a computer-session goal, or a logged tool call whose argument writes the number to a file, commit, post or POST body. An act is ungrounded when no agent had reported checking the number first; an agent that checked privately looks unobserved. A number written through a variable or a later command is missed, so the counts are lower bounds.",
   "The classifier is deterministic phrase matching, not a model. On a held-out, hand-labelled sample it agrees with the label 66% of the time (docs/AUDIT.md), and the labels are by the model that wrote the rules, not an independent annotator.",
 ];
 

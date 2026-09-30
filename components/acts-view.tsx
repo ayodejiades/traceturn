@@ -28,14 +28,19 @@ const EVIDENCE: Record<ReportAct["evidence"], string> = {
  */
 export function IncidentPanel({ incident }: { incident: Incident }) {
   const { acts, episode, correction } = incident;
-  const ungrounded = acts.afterCorrection + acts.ungrounded;
+  const plural = (n: number, w: string) => `${fmtInt(n)} ${w}${n === 1 ? "" : "s"}`;
   const origin = episode?.assertions?.[0];
   return (
     <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8" data-demo="incident">
       <p className="eyebrow">Worst incident in this corpus</p>
       <h3 className="tnum mt-2 text-3xl font-semibold text-[var(--fg)]">
-        {fmtInt(ungrounded)} of {fmtInt(acts.total)} acts on {fmtClaim(incident.claim)} had no observation behind them
+        {acts.afterCorrection > 0
+          ? `${plural(acts.afterCorrection, "act")} on ${fmtClaim(incident.claim)} came after ${correction ? `${correction.correctedBy} corrected it${correction.right ? ` to ${fmtClaim(correction.right)}` : ""}` : "it was corrected"}`
+          : `${fmtInt(acts.ungrounded)} of ${plural(acts.total, "act")} on ${fmtClaim(incident.claim)} had no reported check behind ${acts.ungrounded === 1 ? "it" : "them"}`}
       </h3>
+      <p className="mt-2 text-sm text-[var(--fg-muted)]">
+        {plural(acts.total, "act")} in all on this value: {fmtInt(acts.afterCorrection)} after the correction, {fmtInt(acts.ungrounded)} with no reported check, {fmtInt(acts.grounded)} grounded.
+      </p>
       <dl className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-3">
         <div>
           <dt className="eyebrow">Origin turn</dt>
@@ -109,7 +114,7 @@ export function ActsView({ report, actors = "agents" }: { report: LineageReportJ
   return (
     <div>
       <p className="mx-auto mb-6 max-w-[var(--measure)] text-center text-sm text-[var(--fg-muted)]">
-        An act is something a {actors.replace(/s$/, "")} did with a shared number: submitted it, posted it, wrote it down, handed it on. It is admissible
+        An act is something an agent or account did with a shared number: submitted it, posted it, wrote it down, handed it on. It is admissible
         only if some agent had reported checking that number first. Ranked by blast radius: acts after a correction, then ungrounded acts by how many more
         agents went on to state the value.
       </p>
