@@ -129,9 +129,57 @@ const FIRST_PERSON_RE = /\b(?:I|we)(?:'ve|'d|'m)?(?:\s+[\w-]+){0,3}\s*$/i;
 // A goal's verb is an imperative only at the start of its clause or after "to", "and",
 // "then": "Update the dashboard to 487 events", not "Final push to 10,200".
 const IMPERATIVE_LEAD_RE = /(?:^|\b(?:to|and|then|also|must|should|please))\s*$/i;
-// Read-only shell commands observe a number; they do not act on it.
-const WRITE_COMMAND_RE =
-  /(?:^|\s)(?:>{1,2}|tee\b|sed\s+-i|git\s+(?:commit|push|tag)|gh\s+(?:issue|pr|release|gist)\s+(?:create|comment|edit)|curl\b[^|]*-X\s*(?:POST|PUT|PATCH)|cp\b|mv\b|printf\b[^|]*>|echo\b[^|]*>)/i;
+// A shell statement that puts text somewhere: a redirect to a path or variable (not "->",
+// "2>&1", "<strong>" or a comparison), tee, sed -i, a commit or issue message, a POST body.
+const REDIRECT_RE = /\S\s*(?<![-=<\d&])>{1,2}\s*(?!\/dev\/null)(?:["'~$./][^\s"']*|[\w-]+\.\w{1,5}\b)/;
+const WRITE_STATEMENT_RE = new RegExp(
+  `${REDIRECT_RE.source}|\\btee\\b|\\b(?:sed|perl)\\s+-[a-z]*i|\\bgit\\s+(?:commit|tag)\\b|\\bgh\\s+(?:issue|pr|release|gist)\\s+(?:create|comment|edit)\\b|\\bcurl\\b[^\\n]*(?:-X\\s*(?:POST|PUT|PATCH)|--data|-d\\s)`,
+  "i",
+);
+// A script that writes a file or posts: its string literals are what it writes.
+const SCRIPT_WRITE_RE = /\.write(?:_text|_bytes)?\(|\bopen\([^)\n]*,\s*["'][wax]|\bjson\.dump\(|\bwriteFileSync\(|\brequests\.(?:post|put|patch)\(/;
+const TAG_RE = /<\/?[A-Za-z][^<>\n]*>/g;
+const HEREDOC_RE = /<<-?\s*(["']?)([A-Za-z_][\w]*)\1/g;
+
+/**
+ * Whether the character at `pos` of a shell command sits in text the command writes: on a
+ * statement with a redirect, tee, commit message or POST body, inside a heredoc whose
+ * opener writes or is a script that writes, or inside a script that writes. A number in a
+ * `print`, an `echo` to the terminal, a comment or a read-only command is observed, not put.
+ */
+export function commandWritesAt(command: string, pos: number): boolean {
+  const lines = command.split("\n");
+  let offset = 0;
+  let idx = 0;
+  for (; idx < lines.length; idx++) {
+    if (pos <= offset + lines[idx].length) break;
+    offset += lines[idx].length + 1;
+  }
+  const line = lines[Math.min(idx, lines.length - 1)];
+  if (/^[ \t]*#/.test(line)) return false;
+  // The statement: this line and the lines it continues from with a trailing backslash.
+  let from = idx;
+  while (from > 0 && /\\\s*$/.test(lines[from - 1])) from--;
+  if (WRITE_STATEMENT_RE.test(lines.slice(from, idx + 1).join(" ").replace(TAG_RE, " ")) || SCRIPT_WRITE_RE.test(line)) return true;
+  // Inside a quoted argument of an earlier write statement: a multi-line commit message or POST body.
+  for (let j = idx - 1; j >= 0 && j >= idx - 60; j--) {
+    if (!WRITE_STATEMENT_RE.test(lines[j].replace(TAG_RE, " ")) || /^[ \t]*#/.test(lines[j])) continue;
+    const upto = (lines.slice(j, idx).join("\n") + "\n" + line.slice(0, pos - offset)).replace(HEREDOC_RE, "").replace(TAG_RE, " ");
+    if ((upto.match(/(?<!\\)"/g)?.length ?? 0) % 2 === 1 || (upto.match(/(?<![\\\w])'/g)?.length ?? 0) % 2 === 1) return true;
+    break;
+  }
+  // Inside a heredoc: judged by its opener, or by the script it carries.
+  for (let i = 0; i < idx; i++) {
+    HEREDOC_RE.lastIndex = 0;
+    const m = HEREDOC_RE.exec(lines[i]);
+    if (!m) continue;
+    const end = lines.findIndex((l, j) => j > i && l.trim() === m[2]);
+    if (end !== -1 && end < idx) continue;
+    const body = lines.slice(i + 1, end === -1 ? lines.length : end).join("\n");
+    if (WRITE_STATEMENT_RE.test(lines[i]) || SCRIPT_WRITE_RE.test(body)) return true;
+  }
+  return false;
+}
 
 const clauseStart = (s: string) => Math.max(s.lastIndexOf(";"), s.lastIndexOf(":"), s.lastIndexOf(","), s.lastIndexOf("\n"), s.search(/[.!?]\s[^.!?]*$/));
 
@@ -165,7 +213,8 @@ function toolKind(a: ToolAction): ActKind | null {
   if (a.to || /delegat|hand_?off|assign|spawn|dispatch/.test(t)) return "handoff";
   if (/submit|answer|form/.test(t)) return "submit";
   if (/post|publish|send|email|tweet|reply|comment|message|chat/.test(t)) return "publish";
-  if (/^(?:bash|shell|sh|terminal|command|run|exec)/.test(t)) return WRITE_COMMAND_RE.test(a.argument) ? "write" : null;
+  // Whether a command writes depends on where the claim sits in it: see commandWritesAt.
+  if (/^(?:bash|shell|sh|terminal|command|run|exec)/.test(t)) return "write";
   // Typing and editing tools put the text somewhere; lookups and reads do not.
   if (/search|read|get|fetch|view|screenshot|click|scroll|mouse|open|navigate|browse|list|find|grep|query/.test(t)) return null;
   return "write";
@@ -286,8 +335,7 @@ export function findActs(
     const shell = /^(?:bash|shell|sh|terminal|command|run|exec)/.test(a.tool.toLowerCase());
     for (const hit of extractClaims(a.argument, p.claimKey)) {
       if (!tracked(hit.key)) continue;
-      // A shell comment narrates the command ("# Someone already pushed 413 events"); it is not run.
-      if (shell && /^[ \t]*#/.test(a.argument.slice(a.argument.lastIndexOf("\n", hit.start - 1) + 1, hit.start))) continue;
+      if (shell && !commandWritesAt(a.argument, hit.start)) continue;
       candidates.push({
         agent: a.agent,
         ts: a.ts,
