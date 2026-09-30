@@ -5,6 +5,9 @@
  *  1. evidence/aivillage-report.json: its sha256 matches its body; the verdict counts
  *     re-derive from the per-episode ledger; every pinned episode manifest re-derives its
  *     verdict through the kernel; every origin excerpt is verbatim in its source (INV-1).
+ *     Every act re-derives its grounding and verdict from its manifest, its excerpt is
+ *     verbatim in its source, act totals re-derive from the act ledger, and every act
+ *     after a correction falls after that correction.
  *  2. evidence/campaign-report.json and BENCHMARK_CASES: each constructed fixture
  *     resolves to its expected state with all invariants passing.
  *
@@ -17,7 +20,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { BENCHMARK_CASES, evaluateDeterministicKernel, evaluateSafetyKernel, type KernelState, type ReconciliationInput } from "../lib/kernel";
-import { episodeManifest, rederive, reportDigest, type LineageReportJson } from "../lib/report";
+import { actManifest, episodeManifest, rederive, rederiveAct, reportDigest, type LineageReportJson } from "../lib/report";
 import { SPONSORS } from "../lib/sponsors";
 import { scoreAudit, type AuditItem } from "../lib/audit";
 
@@ -66,7 +69,31 @@ function checkReport(name: string) {
     if (c.before.length >= 3 && named && ordered) correctionsOk++;
     else fail(`${tag} ${c.id}: correction of ${c.wrong} fails spread/order/binding`);
   }
-  return { report, manifestsOk, bound, correctionsOk };
+  // Acts: totals from the ledger, each listed act re-derived from its manifest and bound.
+  const ledger = report.actLedger ?? [];
+  const t = report.totals;
+  const count = (g: string) => ledger.filter((r) => r[2] === g).length;
+  if (ledger.length !== t.acts) fail(`${tag}: act ledger has ${ledger.length} rows, totals.acts says ${t.acts}`);
+  if (count("UNGROUNDED") !== t.actsUngrounded || count("AFTER_CORRECTION") !== t.actsAfterCorrection || count("GROUNDED") !== t.actsGrounded)
+    fail(`${tag}: act grounding totals do not re-derive from the act ledger`);
+  for (const [id, , g, , , , state] of ledger) {
+    if ((g === "GROUNDED") !== (state === "ON_TRACK") && state !== "ABSTAIN_UNBOUND_EXCERPT" && state !== "ABSTAIN_AMBIGUOUS_SOURCE")
+      fail(`${tag} ${id}: ledger grounding ${g} disagrees with verdict ${state}`);
+  }
+  let actsOk = 0;
+  for (const a of report.acts ?? []) {
+    const d = rederiveAct(actManifest(a));
+    const row = ledger.find((r) => r[0] === a.id);
+    const c = corrections.find((x) => x.id === a.correctionId);
+    const orderOk = a.grounding !== "AFTER_CORRECTION" || (!!c && c.at < a.at);
+    if (d.grounding === a.grounding && d.decision.state === a.state && a.source.includes(a.excerpt) && row?.[2] === a.grounding && orderOk) actsOk++;
+    else fail(`${tag} ${a.id}: act re-derives ${d.grounding}/${d.decision.state}, report says ${a.grounding}/${a.state}`);
+  }
+  for (const c of corrections) {
+    const listedAfter = ledger.filter((r) => r[2] === "AFTER_CORRECTION" && (report.acts ?? []).some((a) => a.id === r[0] && a.correctionId === c.id)).length;
+    if (listedAfter !== c.acts.after) fail(`${tag} ${c.id}: ${c.acts.after} acts after correction, ${listedAfter} listed`);
+  }
+  return { report, manifestsOk, bound, correctionsOk, actsOk };
 }
 
 const V = checkReport("aivillage");
@@ -198,6 +225,9 @@ const ledger = [
   `| Estimated true check rate (held-out audit) | ${(adjusted * 100).toFixed(1)}% | Class-weighted from ${TEST.score.items} hand-labelled items; see docs/AUDIT.md |`,
   `| Pinned episode manifests that re-derive | ${V.manifestsOk} of ${village.episodes.length} | rederive() through the kernel |`,
   `| Origin excerpts verbatim in source (INV-1) | ${V.bound} of ${village.episodes.length} | Substring check |`,
+  `| Acts taken on a shared number | ${t.acts} (${t.actsByEvidence.reported} reported, ${t.actsByEvidence.planned} planned in a session goal, ${t.actsByEvidence.logged} logged tool calls) | Act ledger row count equals totals.acts |`,
+  `| Acts with no observation behind the number | ${t.actsUngrounded} of ${t.acts}, by ${t.agentsActingUngrounded} agents | Re-counted from the act ledger |`,
+  `| Listed act manifests that re-derive | ${V.actsOk} of ${village.acts.length} | rederiveAct() through the kernel; excerpt verbatim in source |`,
   "",
   "## German Wiki incident",
   "",
@@ -211,6 +241,11 @@ const ledger = [
   `| Repeats with a check of their own | ${wiki.totals.independent} of ${wiki.totals.restatements} | Report totals, covered by the body sha256 |`,
   `| Pinned episode manifests that re-derive | ${W.manifestsOk} of ${wiki.episodes.length} | rederive() through the kernel |`,
   `| Origin excerpts verbatim in source (INV-1) | ${W.bound} of ${wiki.episodes.length} | Substring check |`,
+  `| Answers and other acts on a shared value | ${wiki.totals.acts} | Act ledger row count equals totals.acts |`,
+  `| Acts on a value already corrected on the board | ${wiki.totals.actsAfterCorrection} | Re-counted from the act ledger; each falls after its correction |`,
+  `| Acts on a value later corrected | ${wiki.totals.actsOnCorrectedValues} | Report totals, covered by the body sha256 |`,
+  `| Acts with no observation behind the value | ${wiki.totals.actsUngrounded} of ${wiki.totals.acts} | Re-counted from the act ledger |`,
+  `| Listed act manifests that re-derive | ${W.actsOk} of ${wiki.acts.length} | rederiveAct() through the kernel; excerpt verbatim in source |`,
   "",
   "## Constructed kernel fixtures",
   "",
@@ -340,5 +375,5 @@ write(
 );
 
 console.log(
-  `claim:verify: PASS (AI Village ${village.reportSha256.slice(0, 12)}…: ${t.episodes} episodes, ${V.manifestsOk}/${village.episodes.length} manifests; German Wiki ${wiki.reportSha256.slice(0, 12)}…: ${wiki.totals.episodes} episodes, ${W.manifestsOk}/${wiki.episodes.length} manifests; ${passing}/${fixtureRows.length} fixtures)`,
+  `claim:verify: PASS (AI Village ${village.reportSha256.slice(0, 12)}…: ${t.episodes} episodes, ${V.manifestsOk}/${village.episodes.length} manifests; German Wiki ${wiki.reportSha256.slice(0, 12)}…: ${wiki.totals.episodes} episodes, ${W.manifestsOk}/${wiki.episodes.length} manifests; ${V.actsOk + W.actsOk}/${village.acts.length + wiki.acts.length} act manifests; ${passing}/${fixtureRows.length} fixtures)`,
 );

@@ -63,6 +63,12 @@ export interface Episode {
   decision: KernelDecision;
   /** Source text of the origin turn; the kernel binds `excerpt` to it (INV-1). */
   originText: string;
+  /**
+   * The origin sentence reports the agent's own observation ("I counted 413 events").
+   * The kernel counts every origin as a derivation path; lib/acts.ts does not, because an
+   * act is admissible only when its premise traces to an observation.
+   */
+  originObserved: boolean;
 }
 
 /** One agent's statement of a value that was later corrected. */
@@ -247,7 +253,7 @@ export function claimSentence(text: string, start: number, end: number): string 
  * The sentence containing [start, end). `scan` bounds how far to look for its edges;
  * `max` trims the result for display. Always a substring of text.
  */
-function sentenceSpan(text: string, start: number, end: number, scan: number, max: number): string {
+export function sentenceSpan(text: string, start: number, end: number, scan: number, max: number): string {
   // A boundary is a newline, or . ! ? followed by whitespace, so "validate.py" and
   // "v1.2" stay inside their sentence.
   const endsAt = (i: number) => text[i] === "\n" || (/[.!?]/.test(text[i]) && (i + 1 >= text.length || /\s/.test(text[i + 1])));
@@ -279,18 +285,18 @@ function sentenceSpan(text: string, start: number, end: number, scan: number, ma
 // Classification signals
 
 // First person, then within the same clause an observation verb. Hyphens include U+2011.
-const FIRSTHAND_RE =
+export const FIRSTHAND_RE =
   /(?:\bI\b|\bI'(?:ve|m)\b|\bmy (?:own )?(?:check|run|count|test|query|re-?run))[^.!?\n]{0,60}?\b(?:checked|re[-\u2011]?checked|double[-\u2011]checked|verified|confirmed|counted|re[-\u2011]?counted|measured|tested|ran|re[-\u2011]?ran|opened|refreshed|pulled|queried|looked|see|saw|observed|confirm|seeing|loaded|visited|inspected|reviewed|shows|showed|returned|returns)\b/i;
 // A check reported without "I": "Pulled latest main…", "**Tested**: …", "Confirmed: $25 raised",
 // "Independently reran verify.py…", "We independently reproduced…".
-const TELEGRAPHIC_RE =
+export const TELEGRAPHIC_RE =
   /(?:^|\n)[\s*•✅>-]*(?:\*\*)?(?:pulled|verified|confirmed|checked|tested|re-?ran|reran|counted|queried|measured|reproduced|inspected)\b/i;
-const INDEPENDENTLY_RE =
+export const INDEPENDENTLY_RE =
   /\b(?:independently|we(?:\s+just)?(?:\s+independently)?)\s+(?:re-?ran|reran|verified|reproduced|re-?checked|checked|confirmed|counted|measured|tested|pulled|bypassed|queried|computed)\b/i;
 // Not an assertion of the number: a question, or a sentence doubting or rejecting it.
-const NON_ASSERTION_RE = /\?\s*$|\b(?:haven't seen|have not seen|did(?:n't| not) match|no evidence|even though|was that based|is it really)\b/i;
+export const NON_ASSERTION_RE = /\?\s*$|\b(?:haven't seen|have not seen|did(?:n't| not) match|no evidence|even though|was that based|is it really)\b/i;
 // A command or endpoint reporting a value: "`wc -l` returns 236", "my instance shows 110".
-const TOOL_OBSERVATION_RE =
+export const TOOL_OBSERVATION_RE =
   /(?:`[^`\n]{2,80}`\s+(?:now\s+|still\s+)?(?:shows|showed|returns|returned|reports|reported|outputs|prints|printed|says)|\bmy (?:instance|screen|terminal|browser|dashboard|output|query|count|run|copy|checkout|local copy) (?:now\s+|still\s+)?(?:shows|showed|returns|reports|says|has))\b/i;
 const ATTRIB_RE =
   /\b(?:according to|as (?:\S+\s+){0,3}(?:said|says|mentioned|noted|reported|shared|posted|found|flagged)|(?:reported|mentioned|noted|shared|flagged|found|confirmed) by|citing|thanks to|per (?:@?[A-Z][\w.-]*))|(?:^|\s)@[A-Z]/;
@@ -430,10 +436,10 @@ export function analyzeLineage(
 // than a pasted memory dump, and a checking verb sits near the claim's number.
 // Base-form verbs only: "verify", "count", "determine". "Verified at $205" reports someone
 // else's check and "validation" is a noun; neither is the agent setting out to check.
-const VERIFY_RE = /\b(?:verify|check|confirm|test|count|recount|validate|determine|re-?run|audit|inspect|measure|look up|double-check)\b/i;
-const MAX_GOAL = 1500;
+export const VERIFY_RE = /\b(?:verify|check|confirm|test|count|recount|validate|determine|re-?run|audit|inspect|measure|look up|double-check)\b/i;
+export const MAX_GOAL = 1500;
 
-function numberPattern(claim: string): RegExp {
+export function numberPattern(claim: string): RegExp {
   const num = claim.split(" ")[0].replace(/^[$£€]/, "").replace(/%$/, "");
   const [int, frac] = num.split(".");
   const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -480,6 +486,7 @@ function buildEpisode(
   // The origin is the first occurrence that is an assertion; a question or doubt that
   // mentions the value first is skipped, so this is not always occs[0].
   let originTurn: Turn | null = null;
+  let originObserved = false;
   const firstIndexByAgent = new Map<string, number>();
   const shingleCache: Set<string>[] = [];
 
@@ -563,7 +570,15 @@ function buildEpisode(
     }
 
     firstIndexByAgent.set(turn.agent, idx);
-    if (idx === 0) originTurn = turn;
+    if (idx === 0) {
+      originTurn = turn;
+      originObserved =
+        !turn.human &&
+        (FIRSTHAND_RE.test(sentence) ||
+          TOOL_OBSERVATION_RE.test(sentence) ||
+          INDEPENDENTLY_RE.test(sentence) ||
+          (p.claimKey === "quantity" && TELEGRAPHIC_RE.test(sentence)));
+    }
     assertions.push({
       turnId: turn.id,
       agent: turn.agent,
@@ -600,7 +615,7 @@ function buildEpisode(
     isAmbiguousSource: origin.human === true || SCRUB_RE.test(assertions[0].excerpt),
   });
 
-  return { id: "", claim, assertions, promised, observed, decision, originText: origin.text };
+  return { id: "", claim, assertions, promised, observed, decision, originText: origin.text, originObserved };
 }
 
 function sessionSnippet(goal: string, pattern: RegExp): string {
@@ -645,7 +660,7 @@ const STALE_RE = /(?<![\w.-])([$£€]?\d[\d,]*(?:\.\d+)?%?)\s+([A-Za-z][A-Za-z'
 // "literal Poland tooltip is 16.38 (raw 16.37683), not workbook-display 16.40".
 const NOT_VALUE_RE = /(?<![\w.-])([$£€]?\d[\d,]*(?:\.\d+)?%?)[^.!?\n]{0,40}?[,;(—–-]\s*\(?not\s+(?:[A-Za-z-]+\s+){0,2}([$£€]?\d[\d,]*(?:\.\d+)?%?)(?![\d])/g;
 const MIN_SPREAD = 3;
-const CORRECTION_LOOKBACK_MS = 14 * 24 * 3600_000;
+export const CORRECTION_LOOKBACK_MS = 14 * 24 * 3600_000;
 
 function claimKeyOf(num: string, unit: string, mode: ClaimKey): string | null {
   const hits = extractClaims(`${num} ${unit}`, mode);

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-shell";
 import { BTN_GHOST_ON_ART, BTN_PRIMARY, PageHero, Section, SectionHead } from "@/components/page-hero";
+import { IncidentPanel } from "@/components/acts-view";
+import { topIncident } from "@/lib/report";
 import { ReportView, type Tab } from "@/components/report-view";
 import { CHECK_RATE, CORPORA, FIXTURES, FIXTURES_PASSING, WIKI_SEEDERS, type CorpusId } from "@/lib/evidence";
 import { STATE, TONE_TEXT, fmtInt, pct } from "@/lib/tones";
@@ -35,11 +37,12 @@ const HERO: Record<CorpusId, (c: (typeof CORPORA)[CorpusId]) => { eyebrow: strin
 
 export default async function ProofPage({ searchParams }: { searchParams: Promise<{ ep?: string; corpus?: string; tab?: string }> }) {
   const { ep, corpus: requested, tab } = await searchParams;
-  const initialTab: Tab = tab === "corrections" || tab === "repairs" || tab === "agents" ? tab : "episodes";
+  const initialTab: Tab = tab === "corrections" || tab === "acts" || tab === "repairs" || tab === "agents" ? tab : "episodes";
   const id: CorpusId = requested === "collusion" ? "collusion" : "aivillage";
   const corpus = CORPORA[id];
   const report = corpus.report;
   const hero = HERO[id](corpus);
+  const incident = topIncident(report);
   const v = report.verdicts;
   const strip: { state: KernelState; n: number }[] = [
     { state: "MATERIAL_DRIFT_DETECTED", n: v.MATERIAL_DRIFT_DETECTED },
@@ -88,6 +91,17 @@ export default async function ProofPage({ searchParams }: { searchParams: Promis
             ))}
           </div>
         </section>
+
+        {incident && (
+          <Section id="incident">
+            <SectionHead
+              eyebrow="Consequence"
+              title="What the swarm did with the number"
+              lede="Every number is an assertion until someone grounds it. An act taken on an ungrounded assertion is the finding."
+            />
+            <IncidentPanel incident={incident} />
+          </Section>
+        )}
 
         <Section id="episodes">
           <SectionHead

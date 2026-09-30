@@ -13,6 +13,14 @@
  * and `computer_use_sessions` rows ({ agent_id, session_goal }) as sessions: evidence that an agent
  * set out to check something, which lib/lineage.ts can credit as an independent path.
  *
+ * Tool calls are kept as actions rather than dropped for having no prose, because an act
+ * taken on a number is what lib/acts.ts links back to the claim:
+ *  - AI Village `computer_use_turns` rows: { session_id, agent_action: { action, text | command } },
+ *    attributed through the session's agent.
+ *  - Generic tool or delegation records: { agent, tool | function | action, args | arguments | input,
+ *    to | target | assignee }, a `type` of tool_call / function_call / delegation / handoff, or an
+ *    chat-completions `tool_calls` array on a message row.
+ *
  * Pure and isomorphic: the browser drop zone and the CLI share this file.
  */
 
@@ -38,9 +46,24 @@ export interface Session {
   goal: string;
 }
 
+/** A logged tool call or delegation: an act, with the argument it was taken with. */
+export interface ToolAction {
+  id: string;
+  agent: string;
+  ts: number;
+  /** Tool or action name: "bash", "type", "submit_answer", "delegate". */
+  tool: string;
+  /** The argument as text: a command, typed text, or canonical JSON of structured args. */
+  argument: string;
+  /** Recipient of a delegation or handoff, when the record names one. */
+  to?: string;
+  line: number;
+}
+
 export interface ParseResult {
   turns: Turn[];
   sessions: Session[];
+  actions: ToolAction[];
   /** agent id -> display name, from any `agents` rows seen. */
   agentNames: Record<string, string>;
   format: "aivillage-chat" | "aivillage-events" | "collusion-wiki" | "generic" | "mixed" | "empty";
@@ -141,11 +164,80 @@ function asTurn(row: Row, line: number): { turn?: Turn; skip?: keyof ParseResult
   };
 }
 
+const argText = (v: unknown): string => {
+  if (v == null) return "";
+  if (typeof v === "string") return v;
+  if (typeof v === "number") return String(v);
+  try {
+    return JSON.stringify(v);
+  } catch {
+    return "";
+  }
+};
+
+const ACTION_TYPES = /^(?:tool_?call|function_?call|tool_?use|action|delegation|delegate|handoff|hand_off|task)$/i;
+
+/**
+ * Tool-call and delegation rows. Returns the actions a row carries (possibly none) and
+ * whether the row was an action record at all, so it is not also read as a chat turn.
+ */
+function asActions(row: Row, line: number): { actions: ToolAction[]; consumed: boolean } {
+  // AI Village computer_use_turns: the executed action of one computer-use step.
+  if ("session_id" in row && "agent_action" in row) {
+    const a = row.agent_action as Row | null;
+    if (!a || typeof a !== "object") return { actions: [], consumed: true };
+    const argument = str(a.text) || str(a.command) || argText(a.query) || "";
+    if (!argument.trim()) return { actions: [], consumed: true };
+    return {
+      consumed: true,
+      actions: [
+        {
+          id: str(row.id) || `L${line}`,
+          // Resolved to the session's agent after every file is read, in whatever order.
+          agent: str(row.session_id),
+          ts: parseTimestamp(row.created_at),
+          tool: str(a.action) || (a.command ? "bash" : "action"),
+          argument,
+          line,
+        },
+      ],
+    };
+  }
+
+  const agent = str(row.agent ?? row.speaker ?? row.author ?? row.from ?? row.caller);
+  const ts = parseTimestamp(row.timestamp ?? row.ts ?? row.time ?? row.created_at) || line;
+  const to = str(row.to ?? row.target ?? row.assignee ?? row.delegate_to ?? row.recipient) || undefined;
+
+  // Chat-completions assistant message with tool_calls: the calls are acts, the content a turn.
+  if (Array.isArray(row.tool_calls) && agent) {
+    const actions = (row.tool_calls as Row[]).flatMap((c, i) => {
+      const fn = (c.function ?? c) as Row;
+      const argument = argText(fn.arguments ?? fn.args ?? fn.input);
+      return argument ? [{ id: `${str(row.id) || `L${line}`}#${i}`, agent, ts, tool: str(fn.name) || "tool", argument, line }] : [];
+    });
+    return { actions, consumed: false };
+  }
+
+  const tool = str(row.tool ?? row.tool_name ?? row.function ?? row.function_name ?? (typeof row.action === "string" ? row.action : ""));
+  const args = row.args ?? row.arguments ?? row.input ?? row.params ?? row.parameters ?? row.task ?? row.instruction;
+  const typed = typeof row.type === "string" && ACTION_TYPES.test(row.type);
+  if (!agent || (!tool && !typed) || args === undefined) return { actions: [], consumed: typed };
+  const argument = argText(args);
+  return {
+    consumed: true,
+    actions: argument.trim()
+      ? [{ id: str(row.id) || `L${line}`, agent, ts, tool: tool || str(row.type), argument, ...(to ? { to } : {}), line }]
+      : [],
+  };
+}
+
 /** Parse one or more JSONL texts (e.g. agents.jsonl + chat_messages.jsonl) into ordered turns. */
 export function parseJsonl(...sources: string[]): ParseResult {
   const names: Record<string, string> = {};
   const turns: Turn[] = [];
   const sessions: Session[] = [];
+  const actions: ToolAction[] = [];
+  const sessionAgent = new Map<string, string>();
   const kinds = new Set<ParseResult["format"]>();
   const skipped = { malformed: 0, empty: 0, nonTalk: 0 };
 
@@ -176,8 +268,12 @@ export function parseJsonl(...sources: string[]): ParseResult {
       }
       if ("session_goal" in row && "agent_id" in row) {
         sessions.push({ id: str(row.id), agent: str(row.agent_id), ts: parseTimestamp(row.created_at), goal: str(row.session_goal) });
+        sessionAgent.set(str(row.id), str(row.agent_id));
         continue;
       }
+      const act = asActions(row, line);
+      actions.push(...act.actions);
+      if (act.consumed) continue;
       const r = asTurn(row, line);
       if (r.turn) {
         turns.push(r.turn);
@@ -189,10 +285,16 @@ export function parseJsonl(...sources: string[]): ParseResult {
   // Resolve ids to display names where an agents table was supplied.
   for (const t of turns) t.agent = names[t.agent] ?? t.agent;
   for (const s of sessions) s.agent = names[s.agent] ?? s.agent;
+  for (const a of actions) {
+    const agent = sessionAgent.get(a.agent) ?? a.agent;
+    a.agent = names[agent] ?? agent;
+    if (a.to) a.to = names[a.to] ?? a.to;
+  }
   sessions.sort((a, b) => a.ts - b.ts);
+  actions.sort((a, b) => a.ts - b.ts || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   // Canonical order: time, then source id as a stable tiebreak.
   turns.sort((a, b) => a.ts - b.ts || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
   const format = kinds.size === 0 ? "empty" : kinds.size === 1 ? [...kinds][0] : "mixed";
-  return { turns, sessions, agentNames: names, format, skipped };
+  return { turns, sessions, actions, agentNames: names, format, skipped };
 }

@@ -22,7 +22,7 @@ import path from "node:path";
 import zlib from "node:zlib";
 import { createHash } from "node:crypto";
 import { parseJsonl } from "../lib/transcript";
-import { buildReport } from "../lib/report";
+import { buildReport, topIncident } from "../lib/report";
 
 const root = process.cwd();
 const dataDir = path.join(root, "data", "aivillage");
@@ -103,6 +103,27 @@ const t = report.totals;
 console.log(`analyze: ${t.turns} turns, ${t.agents} agents, ${t.episodes} episodes, ${t.repairs} repair claims in ${Date.now() - t0}ms`);
 console.log(`analyze: verdicts ${JSON.stringify(report.verdicts)}`);
 console.log(`analyze: wrote ${path.relative(root, outPath)} (sha256 ${report.reportSha256.slice(0, 16)}…)`);
+console.log(`analyze: ${t.acts} acts on shared numbers: ${t.actsAfterCorrection} after a correction, ${t.actsUngrounded} with no observation behind them, ${t.actsGrounded} grounded`);
+
+// The incident, as an investigator reads it: which turn, how many paths, what was done.
+const inc = topIncident(report);
+if (inc) {
+  const clip = (s: string, n = 110) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
+  // An act sentence ends on the act ("…; answered 9.90% at +1s"), so keep its end.
+  const tail = (s: string, n = 90) => (s.length > n ? "…" + s.slice(s.length - n + 1) : s);
+  const origin = inc.episode?.assertions[0];
+  console.log(`\nincident: ${inc.claim}${inc.episode ? ` (${inc.episode.id})` : ""}`);
+  if (origin) console.log(`  origin      ${origin.agent} at ${origin.at}, turn ${origin.turnId}: "${clip(origin.excerpt ?? "(human message, not quoted)")}"`);
+  console.log(`  derivation  stated as known by ${inc.promised}; ${inc.observed - (inc.episode?.originObserved === false ? 1 : 0)} reported an observation of their own`);
+  if (inc.correction) {
+    const c = inc.correction;
+    console.log(`  corrected   by ${c.correctedBy} at ${c.at} to ${c.right ?? "(no value given)"}, ${c.hoursToCorrection}h after it first appeared; ${c.after.length} more stated it afterwards`);
+  }
+  console.log(`  acts        ${inc.acts.total} taken on it: ${inc.acts.afterCorrection} after the correction, ${inc.acts.ungrounded} with no observation behind it, ${inc.acts.grounded} grounded`);
+  for (const a of inc.top.slice(0, 5)) {
+    console.log(`    ${a.id}  ${a.grounding.padEnd(16)} ${a.kind.padEnd(7)} ${a.agent} at ${a.at}: "${tail(a.excerpt)}"`);
+  }
+}
 
 // The AI Village sponsor fixture is the report's first origin row; keep it in step so
 // tests/sponsors.test.mjs always checks the committed report, not an older one.

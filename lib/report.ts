@@ -3,6 +3,7 @@
  * (/dashboard) and the findings page (/proof). One shape, one builder, so a number on
  * the landing page and a number computed from a dropped file come from the same code.
  */
+import { findActs, type Act, type ActEvidence, type ActKind, type Grounding } from "./acts";
 import { SCRUB_RE, analyzeLineage, type Correction, type Episode, type LineageParams, type RepairClaim, type Role } from "./lineage";
 import { evaluateDeterministicKernel, type KernelState } from "./kernel";
 import { canonicalJson, sha256Hex } from "./sha256";
@@ -34,7 +35,35 @@ export interface ReportEpisode {
   link: string | null;
   /** Window of the origin turn the excerpt is bound to (INV-1). Null when the origin is human. */
   source: string | null;
+  /** The origin sentence reports the origin agent's own observation. */
+  originObserved: boolean;
+  /** Hours from the origin to the first reported observation; 0 when the origin observed; null when nobody did. */
+  hoursToFirstCheck: number | null;
   assertions: ReportAssertion[];
+}
+
+export interface ReportAct {
+  id: string;
+  agent: string;
+  at: string;
+  kind: ActKind;
+  evidence: ActEvidence;
+  verb: string;
+  claim: string;
+  sourceId: string;
+  to?: string;
+  excerpt: string;
+  /** Window of the source record the excerpt is bound to (INV-1). */
+  source: string;
+  episodeId: string | null;
+  correctionId: string | null;
+  observers: { agent: string; at: string }[];
+  selfObserved: boolean;
+  grounding: Grounding;
+  correctedAt: string | null;
+  reach: number;
+  state: KernelState;
+  link: string | null;
 }
 
 export interface ReportRepair {
@@ -62,6 +91,10 @@ export interface ReportCorrection {
   correctorChecked: boolean;
   /** Hours from the first statement of the wrong value to its correction. */
   hoursToCorrection: number;
+  /** Hours from the correction to the last time another agent restated the wrong value; null if none did. */
+  hoursPersisted: number | null;
+  /** Acts taken on the wrong value before and after the correction. */
+  acts: { before: number; after: number };
   link: string | null;
   before: { agent: string; turnId: string; at: string; excerpt: string; checked: boolean }[];
   after: { agent: string; turnId: string; at: string; excerpt: string }[];
@@ -101,6 +134,15 @@ export interface LineageReportJson {
     echoed: number;
     repairs: number;
     corrections: number;
+    acts: number;
+    actsUngrounded: number;
+    actsAfterCorrection: number;
+    actsGrounded: number;
+    /** Acts on a value that was corrected at some point, before or after the correction. */
+    actsOnCorrectedValues: number;
+    actsByEvidence: Record<ActEvidence, number>;
+    /** Distinct agents with at least one ungrounded or after-correction act. */
+    agentsActingUngrounded: number;
   };
   verdicts: Record<KernelState, number>;
   profiles: ReportProfile[];
@@ -112,6 +154,10 @@ export interface LineageReportJson {
   repairs: ReportRepair[];
   /** Every wrong value that spread to 3+ agents and was later corrected. */
   corrections: ReportCorrection[];
+  /** [id, claim, grounding, evidence, kind, reach, state] for every act, so totals can be re-derived. */
+  actLedger: [string, string, Grounding, ActEvidence, ActKind, number, KernelState][];
+  /** Acts ranked by blast radius (see lib/acts.ts); a curated slice unless `full`. */
+  acts: ReportAct[];
 }
 
 export interface BuildOptions {
@@ -141,8 +187,11 @@ export function villageLink(ts: number, dayByDate?: Map<string, number>): string
   return day ? `https://theaidigest.org/village?day=${day}&time=${ts}` : null;
 }
 
+const hours = (ms: number) => Math.round((ms / 3600_000) * 10) / 10;
+
 function exportEpisode(e: Episode, days?: Map<string, number>): ReportEpisode {
   const origin = e.assertions[0];
+  const firstCheck = e.originObserved ? origin : e.assertions.find((a) => a.role === "INDEPENDENT");
   return {
     id: e.id,
     claim: e.claim,
@@ -154,6 +203,8 @@ function exportEpisode(e: Episode, days?: Map<string, number>): ReportEpisode {
     invariants: e.decision.invariants.map((i) => ({ id: i.id, passed: i.passed })),
     link: villageLink(origin.ts, days),
     source: origin.human ? null : sourceWindow(e.originText, origin.excerpt),
+    originObserved: e.originObserved,
+    hoursToFirstCheck: firstCheck ? hours(firstCheck.ts - origin.ts) : null,
     assertions: e.assertions.map((a) => ({
       turnId: a.turnId,
       agent: a.human ? "human" : a.agent,
@@ -185,8 +236,35 @@ function exportRepair(r: RepairClaim, days?: Map<string, number>): ReportRepair 
   };
 }
 
-function exportCorrection(c: Correction, days?: Map<string, number>): ReportCorrection {
+function exportAct(a: Act, days?: Map<string, number>): ReportAct {
+  return {
+    id: a.id,
+    agent: a.agent,
+    at: iso(a.ts),
+    kind: a.kind,
+    evidence: a.evidence,
+    verb: a.verb,
+    claim: a.claim,
+    sourceId: a.sourceId,
+    ...(a.to ? { to: a.to } : {}),
+    excerpt: a.excerpt,
+    source: sourceWindow(a.sourceText, a.excerpt, 600),
+    episodeId: a.episodeId,
+    correctionId: a.correctionId,
+    observers: a.observers.map((o) => ({ agent: o.agent, at: iso(o.ts) })),
+    selfObserved: a.selfObserved,
+    grounding: a.grounding,
+    correctedAt: a.correctedAt === null ? null : iso(a.correctedAt),
+    reach: a.reach,
+    state: a.decision.state,
+    link: villageLink(a.ts, days),
+  };
+}
+
+function exportCorrection(c: Correction, acts: Act[], days?: Map<string, number>): ReportCorrection {
   const st = (w: Correction["before"][number]) => ({ agent: w.agent, turnId: w.turnId, at: iso(w.ts), excerpt: w.excerpt, checked: w.checked });
+  const mine = acts.filter((a) => a.correctionId === c.id);
+  const last = c.after[c.after.length - 1];
   return {
     id: c.id,
     wrong: c.wrong,
@@ -197,7 +275,9 @@ function exportCorrection(c: Correction, days?: Map<string, number>): ReportCorr
     at: iso(c.ts),
     excerpt: c.excerpt,
     correctorChecked: c.correctorChecked,
-    hoursToCorrection: Math.round(((c.ts - c.before[0].ts) / 3600_000) * 10) / 10,
+    hoursToCorrection: hours(c.ts - c.before[0].ts),
+    hoursPersisted: last ? hours(last.ts - c.ts) : null,
+    acts: { before: mine.filter((a) => a.grounding !== "AFTER_CORRECTION").length, after: mine.filter((a) => a.grounding === "AFTER_CORRECTION").length },
     link: villageLink(c.ts, days),
     before: c.before.map(st),
     after: c.after.map(({ agent, turnId, ts, excerpt }) => ({ agent, turnId, at: iso(ts), excerpt })),
@@ -230,6 +310,14 @@ export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageRep
         ...report.repairs.filter((r) => r.decision.state === "WAITING_TO_VERIFY" && !r.disputedBy).slice(0, 8),
       ];
 
+  const acts = findActs(parsed.turns, parsed.sessions, parsed.actions, report.episodes, report.corrections, report.params);
+  const actsIn = (g: Grounding) => acts.filter((a) => a.grounding === g);
+  // Curated slice: every act on a corrected value, the widest ungrounded ones, and
+  // grounded controls. The ledger keeps every act.
+  const actSlice = opts.full
+    ? acts
+    : [...actsIn("AFTER_CORRECTION"), ...actsIn("UNGROUNDED").slice(0, 40), ...actsIn("GROUNDED").slice(0, 8)];
+
   const restated = report.episodes.flatMap((e) => e.assertions.slice(1));
   const roleCount = (r: Role) => restated.filter((a) => a.role === r).length;
 
@@ -261,6 +349,17 @@ export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageRep
       echoed: roleCount("ECHO"),
       repairs: report.repairs.length,
       corrections: report.corrections.length,
+      acts: acts.length,
+      actsUngrounded: actsIn("UNGROUNDED").length,
+      actsAfterCorrection: actsIn("AFTER_CORRECTION").length,
+      actsGrounded: actsIn("GROUNDED").length,
+      actsOnCorrectedValues: acts.filter((a) => a.correctionId !== null).length,
+      actsByEvidence: {
+        logged: acts.filter((a) => a.evidence === "logged").length,
+        reported: acts.filter((a) => a.evidence === "reported").length,
+        planned: acts.filter((a) => a.evidence === "planned").length,
+      },
+      agentsActingUngrounded: new Set(acts.filter((a) => a.grounding !== "GROUNDED").map((a) => a.agent)).size,
     },
     verdicts: report.verdicts,
     profiles: report.profiles,
@@ -270,7 +369,11 @@ export function buildReport(parsed: ParseResult, opts: BuildOptions): LineageRep
     monthly: [...months.entries()].sort(([a], [b]) => (a < b ? -1 : 1)).map(([month, v]) => ({ month, ...v })),
     episodes: episodes.map((e) => exportEpisode(e, days)),
     repairs: repairs.map((r) => exportRepair(r, days)),
-    corrections: report.corrections.map((c) => exportCorrection(c, days)),
+    corrections: report.corrections.map((c) => exportCorrection(c, acts, days)),
+    actLedger: acts.map(
+      (a) => [a.id, a.claim, a.grounding, a.evidence, a.kind, a.reach, a.decision.state] as [string, string, Grounding, ActEvidence, ActKind, number, KernelState],
+    ),
+    acts: actSlice.map((a) => exportAct(a, days)),
   };
 
   return {
@@ -331,4 +434,96 @@ export function rederive(m: EpisodeManifest) {
     isCosmeticRewrite: echoes === 0 && independent === 0 && m.creditedRestatements > 0,
     isAmbiguousSource: m.source === null || SCRUB_RE.test(m.excerpt ?? ""),
   });
+}
+
+export interface ActManifest {
+  id: string;
+  claim: string;
+  agent: string;
+  at: string;
+  source: string;
+  excerpt: string;
+  /** Agents that had reported an observation of the claim by the time of the act. */
+  observers: number;
+  correctedAt: string | null;
+  grounding: Grounding;
+  verdict: KernelState;
+}
+
+/** Canonical manifest for one act: what /verify pins and re-derives. */
+export function actManifest(a: ReportAct): ActManifest {
+  return {
+    id: a.id,
+    claim: a.claim,
+    agent: a.agent,
+    at: a.at,
+    source: a.source,
+    excerpt: a.excerpt,
+    observers: a.observers.length,
+    correctedAt: a.correctedAt,
+    grounding: a.grounding,
+    verdict: a.state,
+  };
+}
+
+/**
+ * Re-derive an act's grounding and verdict from its own fields: corrected before the act
+ * wins, then any observer grounds it. Both must match what the manifest states.
+ */
+export function rederiveAct(m: ActManifest) {
+  const grounding: Grounding =
+    m.correctedAt !== null && m.correctedAt < m.at ? "AFTER_CORRECTION" : m.observers > 0 ? "GROUNDED" : "UNGROUNDED";
+  const decision = evaluateDeterministicKernel({
+    caseId: `act:${m.id}`,
+    sourceCaptureT0: m.source,
+    extractedExcerpt: m.excerpt,
+    promisedDerivations: 1,
+    observedDerivations: grounding === "GROUNDED" ? 1 : 0,
+    isAmbiguousSource: SCRUB_RE.test(m.excerpt),
+  });
+  return { grounding, decision };
+}
+
+export interface Incident {
+  claim: string;
+  /** The claim's episode, when the report lists it (a curated report may not). */
+  episode: ReportEpisode | null;
+  promised: number;
+  observed: number;
+  correction: ReportCorrection | null;
+  acts: { total: number; afterCorrection: number; ungrounded: number; grounded: number };
+  /** Listed acts on the claim, in blast-radius order. */
+  top: ReportAct[];
+}
+
+/**
+ * The report's worst incident: the claim with the most acts taken on it after a
+ * correction, then the most acts with no observation behind them. Null when no act was
+ * taken on a shared claim.
+ */
+export function topIncident(r: LineageReportJson): Incident | null {
+  const byClaim = new Map<string, { after: number; ungrounded: number; grounded: number }>();
+  for (const [, claim, g] of r.actLedger) {
+    const row = byClaim.get(claim) ?? { after: 0, ungrounded: 0, grounded: 0 };
+    if (g === "AFTER_CORRECTION") row.after++;
+    else if (g === "UNGROUNDED") row.ungrounded++;
+    else row.grounded++;
+    byClaim.set(claim, row);
+  }
+  const ranked = [...byClaim].sort(
+    ([a, x], [b, y]) => y.after - x.after || y.after + y.ungrounded - (x.after + x.ungrounded) || (a < b ? -1 : 1),
+  );
+  if (ranked.length === 0) return null;
+  const [claim, n] = ranked[0];
+  const episode = r.episodes.find((e) => e.claim === claim) ?? null;
+  const row = r.ledger.find((l) => l[1] === claim);
+  return {
+    claim,
+    episode,
+    promised: episode?.promised ?? row?.[3] ?? 0,
+    observed: episode?.observed ?? row?.[4] ?? 0,
+    correction: r.corrections.find((c) => c.wrong === claim) ?? null,
+    acts: { total: n.after + n.ungrounded + n.grounded, afterCorrection: n.after, ungrounded: n.ungrounded, grounded: n.grounded },
+    top: r.acts.filter((a) => a.claim === claim),
+  };
 }

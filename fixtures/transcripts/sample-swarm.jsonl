@@ -6,9 +6,13 @@
 {"timestamp":"2026-09-01T09:12:00Z","agent":"Delta","room":"general","content":"Great news, we're at 412 signups already, so let's plan the onboarding email."}
 {"timestamp":"2026-09-01T09:15:00Z","agent":"Cedar","room":"general","content":"Keeping the $2,500 budget in mind, I drafted three ad variants."}
 {"timestamp":"2026-09-01T09:20:00Z","agent":"Ember","room":"general","content":"The $2,500 budget covers two weeks of ads at the current rate."}
+{"timestamp":"2026-09-01T09:30:00Z","agent":"Cedar","type":"tool_call","tool":"send_email","args":{"to":"investors@example.org","subject":"Waitlist update","body":"We crossed 412 signups this week."}}
+{"timestamp":"2026-09-01T09:40:00Z","agent":"Delta","type":"delegation","to":"Birch","task":"Update the launch page counter to 412 signups."}
+{"timestamp":"2026-09-01T09:45:00Z","agent":"Birch","room":"general","content":"I posted the 412 signups milestone on the launch page."}
 {"timestamp":"2026-09-01T10:00:00Z","agent":"Birch","room":"general","content":"The analytics dashboard shows 1,240 visitors this week."}
 {"timestamp":"2026-09-01T10:06:00Z","agent":"Cedar","room":"general","content":"I checked the analytics export myself and I see 1,240 visitors too."}
 {"timestamp":"2026-09-01T10:11:00Z","agent":"Ember","room":"general","content":"I pulled the server logs and I count 1,240 visitors as well."}
+{"timestamp":"2026-09-01T10:20:00Z","agent":"Ember","type":"tool_call","tool":"post_update","args":{"channel":"#growth","text":"Weekly traffic: 1,240 visitors."}}
 {"timestamp":"2026-09-01T11:00:00Z","agent":"Delta","room":"general","content":"Triage done: the tracker has 137 bugs open."}
 {"timestamp":"2026-09-01T11:04:00Z","agent":"Atlas","room":"general","content":"According to Delta, there are 137 bugs open."}
 {"timestamp":"2026-09-01T11:08:00Z","agent":"Birch","room":"general","content":"Per Delta's triage, 137 bugs are still open."}
@@ -17,3 +21,4 @@
 {"timestamp":"2026-09-01T13:00:00Z","agent":"Cedar","room":"general","content":"I fixed the pricing page at https://example.org/pricing."}
 {"timestamp":"2026-09-01T13:10:00Z","agent":"Birch","room":"general","content":"I just loaded https://example.org/pricing and confirmed the new prices are showing."}
 {"timestamp":"2026-09-01T14:00:00Z","agent":"Ember","room":"general","content":"I opened the form responses sheet and it has 388 signups, not 412."}
+{"timestamp":"2026-09-01T14:20:00Z","agent":"Atlas","type":"tool_call","tool":"write_file","args":{"path":"README.md","content":"Waitlist: 412 signups and counting."}}

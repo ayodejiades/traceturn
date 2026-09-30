@@ -45,7 +45,7 @@ test("Grove Research: independent-derivation counting on the sample separates ch
 });
 
 test("No model is called anywhere in the attribution path", () => {
-  const files = ["lib/kernel.ts", "lib/lineage.ts", "lib/transcript.ts", "lib/report.ts", "lib/analyze.worker.ts"];
+  const files = ["lib/kernel.ts", "lib/lineage.ts", "lib/acts.ts", "lib/transcript.ts", "lib/report.ts", "lib/analyze.worker.ts"];
   for (const f of files) {
     const src = fs.readFileSync(path.join(root, f), "utf8");
     assert.doesNotMatch(src, /anthropic|openai|fetch\(/i, `${f} must stay a pure function of the transcript`);
