@@ -1,0 +1,11 @@
+{
+  "description": "Acts taken by tool call or delegation record in fixtures/transcripts/sample-swarm.jsonl, linked to the claim in their argument. Atlas's write_file comes after Ember's correction (388, not 412), so it is AFTER_CORRECTION; Cedar's post and Delta's delegation had no reported check behind them; Ember's post of 1240 visitors follows Cedar's and Ember's own reported checks.",
+  "transcript": "fixtures/transcripts/sample-swarm.jsonl",
+  "expected": [
+    { "agent": "Atlas", "kind": "write", "evidence": "logged", "claim": "412 signups", "grounding": "AFTER_CORRECTION", "observers": [], "state": "MATERIAL_DRIFT_DETECTED" },
+    { "agent": "Cedar", "kind": "publish", "evidence": "logged", "claim": "412 signups", "grounding": "UNGROUNDED", "observers": [], "state": "MATERIAL_DRIFT_DETECTED" },
+    { "agent": "Delta", "kind": "handoff", "evidence": "logged", "claim": "412 signups", "grounding": "UNGROUNDED", "observers": [], "state": "MATERIAL_DRIFT_DETECTED" },
+    { "agent": "Birch", "kind": "publish", "evidence": "reported", "claim": "412 signups", "grounding": "UNGROUNDED", "observers": [], "state": "MATERIAL_DRIFT_DETECTED" },
+    { "agent": "Ember", "kind": "publish", "evidence": "logged", "claim": "1240 visitors", "grounding": "GROUNDED", "observers": ["Cedar", "Ember"], "state": "ON_TRACK" }
+  ]
+}

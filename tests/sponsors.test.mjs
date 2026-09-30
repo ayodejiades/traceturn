@@ -51,3 +51,21 @@ test("No model is called anywhere in the attribution path", () => {
     assert.doesNotMatch(src, /anthropic|openai|fetch\(/i, `${f} must stay a pure function of the transcript`);
   }
 });
+
+test("Logged actions: tool calls and delegations are linked to the claim in their argument and graded", async () => {
+  const { parseJsonl } = await import(path.join(root, "lib/transcript.ts"));
+  const { analyzeLineage } = await import(path.join(root, "lib/lineage.ts"));
+  const { findActs } = await import(path.join(root, "lib/acts.ts"));
+  const fx = JSON.parse(fs.readFileSync(path.join(root, "fixtures/acts/logged-acts.json"), "utf8"));
+  const parsed = parseJsonl(fs.readFileSync(path.join(root, fx.transcript), "utf8"));
+  assert.ok(parsed.actions.length > 0, "tool-call rows must be kept as actions, not dropped as prose-less");
+  const r = analyzeLineage(parsed.turns, undefined, parsed.sessions);
+  const acts = findActs(parsed.turns, parsed.sessions, parsed.actions, r.episodes, r.corrections, r.params);
+  const got = acts.map((a) => ({
+    agent: a.agent, kind: a.kind, evidence: a.evidence, claim: a.claim, grounding: a.grounding,
+    observers: a.observers.map((o) => o.agent), state: a.decision.state,
+  }));
+  assert.deepEqual(got, fx.expected);
+  for (const a of acts) assert.equal(a.decision.excerptBound, true, `${a.id} excerpt must be verbatim in its source record`);
+  assert.deepEqual(findActs(parsed.turns, parsed.sessions, parsed.actions, r.episodes, r.corrections, r.params).map((a) => a.id), acts.map((a) => a.id), "deterministic");
+});
