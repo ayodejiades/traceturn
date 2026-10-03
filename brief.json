@@ -1,6 +1,6 @@
 {
   "project": "traceturn",
-  "idea": "traceturn — slopvestigation forensics for autonomous agent swarms. Ingests massive multi-agent JSONL transcripts (AI Village >170k turns, Hugging Face incident, collusion.wiki) and builds two interlocking deterministic graphs: a Causal Blame DAG that isolates the exact turn where a failure originated, and a Claim Lineage graph that traces how a single unverified premise propagated until it became swarm consensus with zero independent corroboration. Runs a standardized 5-probe investigator audit in under 2 seconds with zero LLM hallucinations in the attribution kernel.",
+  "idea": "traceturn is deterministic forensics for multi-agent transcripts. It finds the agent that first stated each shared number, counts how many later statements were independent checks versus echoes, finds wrong numbers that spread before anyone corrected them, and links the acts agents took on a number (submitted, posted, wrote, handed off) back to whether anyone had reported checking it. No model reads the transcript, so every result re-derives offline and can be tamper-checked in the browser. Run on the AI Village chat and computer-use logs and the German Wiki incident export.",
   "track": "web2",
   "team": 1,
   "event": {
@@ -33,7 +33,7 @@
     },
     {
       "name": "Anthropic",
-      "chosen": true
+      "chosen": false
     }
   ],
   "theme": "terminal",
@@ -46,8 +46,8 @@
     "sector": "AI SAFETY · Autonomous Swarm Forensics, Causal Blame & Claim-Lineage Analysis",
     "target_user": "Incident investigator, AI safety researcher, or trust & security engineer auditing out-of-control multi-agent swarms under incident pressure",
     "painful_moment": "Facing 200,000 turns of multi-agent tool logs and message threads during a cascading agent runaway, collusion, or benchmark cheating incident with a post-mortem deadline measured in hours, not weeks — and no way to tell which bad action caused the damage versus how a single false premise convinced the whole group it was legitimate.",
-    "unusual_constraint": "Zero LLM hallucinations in the blame attribution layer; deterministic causal graph AND independent-derivation counting reconstructed with sub-second execution over 10,000+ turns and 100% offline capability (DEMO_MODE=true).",
-    "proof_metric": "Processes 10,000 multi-agent turns in under 1.5 seconds, isolates ground-truth failure inflection turn with 100% precision and 0 false positives across committed incident test fixtures, AND reports the independent-derivation count for any claim (a premise cited N times tracing to 1 origin with 0 independent verifications is flagged as synthetic consensus).",
+    "unusual_constraint": "No model in the attribution path: the kernel is a pure function of the transcript, so every result re-derives offline.",
+    "proof_metric": "Every verdict re-derives byte-identical offline from the transcript: `pnpm claim:verify` re-derives all report totals, every pinned manifest and every act manifest, and `/verify` re-runs the kernel in the browser. Accuracy is measured on hand-labelled held-out samples (docs/AUDIT.md, docs/ACT_AUDIT.md).",
     "essential_sponsor": "Anthropic",
     "essential_sponsor_role": "High-level semantic intent classification and intent-drift scoring on flagged DAG subtrees, with deterministic heuristic fallback when offline.",
     "adversarial_critique": {

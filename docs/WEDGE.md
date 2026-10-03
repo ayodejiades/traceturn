@@ -6,7 +6,7 @@
 * **Target User:** Incident investigator, AI safety researcher, or trust & security engineer auditing out-of-control multi-agent swarms under incident pressure
 * **Painful Crisis Moment:** Facing 200,000 turns of multi-agent tool logs and message threads during a cascading agent runaway, collusion, or benchmark cheating incident with a post-mortem deadline measured in hours, not weeks — and no way to tell which bad action caused the damage versus how a single false premise convinced the whole group it was legitimate.
 * **Unusual Constraint:** Zero LLM hallucinations in the blame attribution layer. Both the causal blame DAG and the independent-derivation count are pure functions of the transcript, so every verdict reproduces byte-identically offline.
-* **Verifiable Proof Metric:** Processes 10,000 multi-agent turns in under 1.5 seconds, isolates the ground-truth failure inflection turn with 100% precision and 0 false positives across committed incident fixtures, and reports the independent-derivation count for any claim.
+* **Verifiable Proof Metric:** Every verdict re-derives byte-identical offline from the transcript: `pnpm claim:verify` re-derives all report totals, every pinned manifest and every act manifest, and `/verify` re-runs the kernel in the browser. Accuracy is measured on hand-labelled held-out samples (docs/AUDIT.md, docs/ACT_AUDIT.md).
 * **Essential Sponsor Technology:** Anthropic — semantic intent classification on DAG subtrees the deterministic kernel has already isolated, with a deterministic heuristic fallback when offline.
 * **UI Archetype:** `developer-console`
 

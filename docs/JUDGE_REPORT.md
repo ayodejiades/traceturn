@@ -1,30 +1,27 @@
-# Adversarial Judge Report: traceturn
+# Adversarial review: traceturn
 
-**Verdict:** `WINNER` (Score: **88/100**)
-**Evaluation Mode:** Adversarial DevRel & Technical Track Scout (Provider: `none`)
+Written 2026-10-03 by the language model that wrote the code and the audit rules. It is one opinion, not an independent judgement, and it replaces an earlier template-generated report (no model provider was configured) that praised features this project does not have. No score is given because there is no rubric to score against: the event publishes no judging criteria.
 
-## Executive Summary
-traceturn demonstrates defensible execution with deterministic offline fallbacks and verified latency bounds under 850ms. The web2 architecture prioritizes load-bearing primitives over superficial wrapper patterns.
+## Fit
 
-## Scoring Rubric Breakdown
-| Criteria | Score | Evaluation & Critique |
-|---|---|---|
-| **Technical Depth** | 23/25 | Deterministic validation and circuit breaker guards prevent cascade failures during live evaluation. |
-| **Execution & Polish** | 22/25 | The 3-stage demo path executes with seeded mock fixtures and instant 1-click judge bypass. |
-| **Novelty & Differentiation** | 21/25 | Sharp operational wedge addressing acute crisis friction with quantifiable verification metrics. |
-| **Sponsor Alignment** | 22/25 | Core sponsor primitives are architecturally load-bearing rather than decorative read-only calls. |
+The event asks for tools to understand agent swarms and lists "information spread tracing within groups" and "digital forensics-based investigation". traceturn traces how a number spreads through a swarm, who checked it, and what agents did with it, on the host's own AI Village data plus the German Wiki incident export, with no model in the attribution path.
 
-## Hour-8 Kill Milestone
-- **Milestone Test:** End-to-end execution of primary pipeline on local seeded fixture with 0 errors.
-- **Status:** PASS
-- **Downside Risk:** Upstream schema drift or network dependency failure.
+## The strongest objections
 
-## Adversarial Probe Questions (Judge Q&A Defense)
-1. How does the system handle Byzantine packet drops or upstream 503 timeouts during heavy load?
-2. What prevents an adversarial user from bypassing the deterministic runtime guardrail?
-3. What exact gas overhead or inference latency degradation occurs at 10x throughput?
+1. **The accuracy numbers are self-graded.** Classifier agreement (66%) and act precision (80%) were labelled by the model that wrote the rules. Disclosed in docs/AUDIT.md and docs/ACT_AUDIT.md; an independent annotator is the real fix.
+2. **"Ungrounded" is a lower bound on unchecked work.** An agent that checked privately and did not say so looks unobserved. The counts measure acts with no *reported* check, not acts that were wrong.
+3. **The harm story is thin on the AI Village.** Only 2 acts came after a correction there, and most acts on `209 projects` are agents writing down another agent's report. The wiki case is stronger, but a wiki act is an edit reporting an answer, so its timing is the report's.
+4. **Phrase matching on numbers only.** 12 of the 22 held-out act failures were the claim extractor reading a name or id as a quantity.
+5. **Exploration.** The event asks for tools to explore trajectories; a lineage view alone is thin.
 
-## Recommendations to Secure Placement
-- [ ] Ensure live telemetry is visible directly in the Judge HUD without opening browser devtools.
-- [ ] Document the failure mode and circuit breaker trip explicitly in docs/FAILURE_CASE.md.
-- [ ] Pre-warm all local caches and verify the testnet contract address on the block explorer.
+## What holds up
+
+- Real, gated data, and a verdict that re-derives byte-identical offline and can be tamper-checked in the browser.
+- Limits stated on the page: lower bounds, 66% classifier agreement, wiki timing, ungrounded counts as an upper bound.
+- A test that no page or library depends on or links to a model vendor.
+
+## Questions a judge should ask
+
+1. How were the acts found, and how many are real? (docs/ACT_AUDIT.md: 86 of 108 held-out items; AI Village 46 of 68, 82% weighted; wiki 40 of 40; labels not independent.)
+2. If an agent checked privately, what happens? (It looks ungrounded; the report says so.)
+3. What would change the findings? (Independent relabelling; an extractor that stops reading ids as quantities.)
