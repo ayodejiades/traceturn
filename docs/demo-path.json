@@ -6,59 +6,68 @@
   },
   "steps": [
     {
-      "say": "When a swarm of AI agents agrees on a number, traceturn asks two questions: who actually checked it, and what did the swarm do with it?",
-      "goto": "/"
+      "goto": "/",
+      "waitMs": 9000
     },
     {
-      "say": "In the AI Village, eight agents repeated that the event log had four hundred and thirteen events. None of them had opened it. Twenty hours later, GPT five point two pulled the repository and counted four hundred and nine.",
-      "waitMs": 2500
+      "goto": "/#wrong-number",
+      "waitMs": 13500
     },
     {
-      "say": "Every wrong number that spread is traced like this: who said it first, who repeated it, who finally checked, and who kept repeating it anyway.",
-      "goto": "/proof?corpus=aivillage&tab=corrections"
+      "say": "Every wrong number that spread gets a trail: who said it first, who repeated it, who finally checked.",
+      "goto": "/proof?corpus=aivillage&tab=corrections",
+      "waitMs": 7000
     },
     {
-      "say": "The same engine runs on the German Wiki incident, where agents used a public wiki as an answer board.",
-      "click": "[data-demo='corpus-collusion']"
+      "click": "[data-demo='corpus-collusion']",
+      "waitMs": 1500
     },
     {
-      "say": "Seventy-five accounts submitted Hungary nine point nine zero. The source said nine point nine one. The board had copied a rounded display value, and thirty-three more accounts submitted it after the correction.",
-      "click": "[data-demo='tab-corrections']"
+      "say": "On the German Wiki board, seventy-five accounts submitted Hungary nine point nine zero. The source said nine point nine one. Thirty-three more submitted it afterwards.",
+      "click": "[data-demo='tab-corrections']",
+      "waitMs": 16000
     },
     {
-      "say": "Then the question that matters: what did the swarm do with a number nobody had checked? Two hundred and nine projects. Seven agents wrote it into pages, notes and summaries. None had reported checking it. A day later, DeepSeek found forty-four.",
+      "say": "Then the question that matters: what did the swarm do with it? Seven agents wrote two hundred and nine projects into pages and notes. None had reported checking. DeepSeek found forty-four a day later.",
       "goto": "/incident/aivillage/EP-0021",
       "waitFor": "[data-demo='incident-facts']",
-      "waitMs": 3000
+      "waitMs": 19500
     },
     {
-      "say": "Each row is an agent. Circles are statements, diamonds are acts, and the dashed line is the correction. Seven acts, all before anyone checked.",
+      "say": "Each row is an agent. Diamonds are acts. The dashed line is the correction. Every act came before it.",
       "goto": "/incident/aivillage/EP-0021#timeline",
-      "waitMs": 3500
+      "waitMs": 8500
     },
     {
-      "say": "Every verdict ships with a manifest. Your browser recomputes its hash and re-runs the kernel. Change one count and it is rejected.",
-      "goto": "/verify"
+      "goto": "/verify",
+      "waitMs": 1000
     },
     {
-      "say": "Add one echo that was never there.",
-      "click": "[data-demo='tamper-add-one-more-echo']"
+      "say": "Every verdict ships with a manifest. Your browser re-runs the kernel. Add one echo, and it rejects the change.",
+      "click": "[data-demo='tamper-add-one-more-echo']",
+      "waitMs": 13000
     },
     {
-      "say": "Acts are checked the same way. Try to launder one: claim someone checked first, and drop the correction. The grade no longer re-derives.",
+      "say": "Acts verify the same way. Claim someone checked first, drop the correction, and the grade no longer re-derives.",
       "goto": "/verify#acts",
       "waitFor": "[data-demo='act-verifier']",
-      "click": "[data-demo='act-tamper-pretend-someone-checked-it-first']"
+      "waitMs": 1200
     },
     {
-      "say": "And it runs on your own transcript, in the browser, with nothing uploaded. Here, an agent wrote the wrong signup count into a README after another had corrected it.",
+      "click": "[data-demo='act-tamper-pretend-someone-checked-it-first']",
+      "waitMs": 9500
+    },
+    {
       "goto": "/dashboard",
       "waitMs": 1500
     },
     {
-      "say": "Acts are found by phrase matching, and about four in five are real. The rest of the limits are on the page. No model reads the transcript, so every number re-derives offline. That is traceturn.",
+      "say": "It runs on your own transcript, in the browser, uploading nothing. Here, an agent wrote a wrong signup count after a correction.",
       "click": "[data-demo='load-sample']",
-      "waitMs": 3500
+      "waitMs": 12500
+    },
+    {
+      "waitMs": 16000
     }
   ]
 }

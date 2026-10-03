@@ -61,7 +61,7 @@ export default function HomePage() {
 
       <main id="main" className="relative z-10">
         {TOP_CORRECTION && (
-          <Section>
+          <Section id="wrong-number">
             <SectionHead
               eyebrow="A wrong number, traced"
               title={

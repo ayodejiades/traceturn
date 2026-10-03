@@ -1,0 +1,120 @@
+{
+  "recordedAt": "2026-10-03T17:51:16.878+00:00",
+  "baseUrl": "http://localhost:3300",
+  "demoMode": false,
+  "durationSeconds": 149.2,
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "steps": [
+    {
+      "index": 0,
+      "atSeconds": 0
+    },
+    {
+      "index": 1,
+      "atSeconds": 10.323
+    },
+    {
+      "index": 2,
+      "atSeconds": 25.035,
+      "say": "Every wrong number that spread gets a trail: who said it first, who repeated it, who finally checked."
+    },
+    {
+      "index": 3,
+      "atSeconds": 33.31
+    },
+    {
+      "index": 4,
+      "atSeconds": 36.087,
+      "say": "On the German Wiki board, seventy-five accounts submitted Hungary nine point nine zero. The source said nine point nine one. Thirty-three more submitted it afterwards."
+    },
+    {
+      "index": 5,
+      "atSeconds": 53.341,
+      "say": "Then the question that matters: what did the swarm do with it? Seven agents wrote two hundred and nine projects into pages and notes. None had reported checking. DeepSeek found forty-four a day later."
+    },
+    {
+      "index": 6,
+      "atSeconds": 74.194,
+      "say": "Each row is an agent. Diamonds are acts. The dashed line is the correction. Every act came before it."
+    },
+    {
+      "index": 7,
+      "atSeconds": 83.894
+    },
+    {
+      "index": 8,
+      "atSeconds": 86.231,
+      "say": "Every verdict ships with a manifest. Your browser re-runs the kernel. Add one echo, and it rejects the change."
+    },
+    {
+      "index": 9,
+      "atSeconds": 100.519,
+      "say": "Acts verify the same way. Claim someone checked first, drop the correction, and the grade no longer re-derives."
+    },
+    {
+      "index": 10,
+      "atSeconds": 102.937
+    },
+    {
+      "index": 11,
+      "atSeconds": 113.633
+    },
+    {
+      "index": 12,
+      "atSeconds": 116.329,
+      "say": "It runs on your own transcript, in the browser, uploading nothing. Here, an agent wrote a wrong signup count after a correction."
+    },
+    {
+      "index": 13,
+      "atSeconds": 130.029
+    }
+  ],
+  "clicks": [
+    {
+      "atSeconds": 33.35,
+      "to": [
+        0.5264119466145833,
+        0.45379050925925923
+      ],
+      "selector": "[data-demo='corpus-collusion']"
+    },
+    {
+      "atSeconds": 36.094,
+      "to": [
+        0.4236368815104167,
+        0.23129340277777777
+      ],
+      "selector": "[data-demo='tab-corrections']",
+      "say": "On the German Wiki board, seventy-five accounts submitted Hungary nine point nine zero. The source said nine point nine one. Thirty-three more submitted it afterwards."
+    },
+    {
+      "atSeconds": 86.285,
+      "to": [
+        0.218994140625,
+        0.9630063657407407
+      ],
+      "selector": "[data-demo='tamper-add-one-more-echo']",
+      "say": "Every verdict ships with a manifest. Your browser re-runs the kernel. Add one echo, and it rejects the change."
+    },
+    {
+      "atSeconds": 102.955,
+      "to": [
+        0.26069742838541665,
+        0.7558304398148148
+      ],
+      "selector": "[data-demo='act-tamper-pretend-someone-checked-it-first']"
+    },
+    {
+      "atSeconds": 116.366,
+      "to": [
+        0.505078125,
+        0.6060619212962963
+      ],
+      "selector": "[data-demo='load-sample']",
+      "say": "It runs on your own transcript, in the browser, uploading nothing. Here, an agent wrote a wrong signup count after a correction."
+    }
+  ]
+}

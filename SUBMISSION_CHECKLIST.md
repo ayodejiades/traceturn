@@ -1,12 +1,14 @@
 # Submission checklist
 
-Deadline (America/Los_Angeles): Oct 4, 2026, 9:00 PM
-Deadline (Africa/Lagos): Oct 5, 2026, 5:00 AM
-Hours left: 198.3
+Event page (swarmchasing.com): **submissions due Sunday Oct 4, 2026, 5:00 PM PT** (= Oct 5, 01:00 in Lagos). `docs/HOURS.md` and `brief.json` say 9:00 PM PT; plan for the earlier time.
 
-Current milestone: **h8 (kill criterion)** — 8 hours in: Is this still worth finishing? Compare progress against the bounty scoring table.
+- [x] GitHub repo exists and is public, with an MIT license: https://github.com/ayodejiades/traceturn
+- [x] Written explanation: docs/FINDINGS.md (plus README and SUBMISSION.md)
+- [x] SUBMISSION.md describes the current product and its limits
+- [ ] Production deploy is current: https://traceturn.vercel.app must show "Acts on the gap" on `/proof`, the incident pages, and no "Summarize with" links (deploys are manual; the Vercel CLI is not installed here)
+- [ ] Demo video rendered (`/Users/mac/Hackathons/traceturn-demo/out/demo.mp4`, 180 s max), uploaded, and its URL pasted below
+- [ ] `pnpm test`, `pnpm claim:verify`, `pnpm verify:design`, `npx tsc --noEmit` all pass on the commit being submitted
+- [ ] Submit on the event platform (https://swarmchasing.com/) before the deadline
+- [ ] Optional: a second annotator labels `evidence/act-audit-labelsheet.csv` (docs/LABELLING.md) and the result goes into the docs
 
-- [ ] Upload the demo video and paste its URL into SUBMISSION.md
-- [ ] Create the GitHub repo and paste its URL into SUBMISSION.md
-- [ ] Submit on the event platform before the deadline below
-- [ ] Double check every checkbox in this file before submitting
+Video URL: _paste here_
