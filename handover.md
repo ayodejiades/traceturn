@@ -125,7 +125,7 @@ Weak spots to be honest about: the AI Village has only 2 after-correction acts; 
 Deadline per the event page (swarmchasing.com): **Sunday 2026-10-04 5:00 PM PT** (= 01:00 Lagos on 10-05), earlier than the 9:00 PM PT in `HOURS.md`/`brief.json`. Plan for the earlier one.
 
 1. **Deploy** (user action; see section 4). Until then judges see the old site.
-2. **The demo video.** The pipeline is in `/Users/mac/Hackathons/traceturn-demo` (a Remotion project reused from the old product; its old outputs are in `out-old-sep27/` and `public/audio-old-sep27/`). Status and quirks are in section 13. A finished `out/demo.mp4` (180 s max) must be uploaded somewhere and its URL pasted into `SUBMISSION_CHECKLIST.md`/the submission form. If the video cannot be finished, the written explanation is accepted by the event page ("short written explanation or video").
+2. **Upload the demo video.** It is rendered: `/Users/mac/Hackathons/traceturn-demo/out/demo.mp4` (89.7 s, 1080p60, -16 LUFS, verified), plus `cover.png`, `demo.gif`, `narration.srt`, `youtube.txt`. It is not committed (33 MB). The user must upload it and paste the URL into `SUBMISSION_CHECKLIST.md` and the submission form. Its closing card shows https://traceturn.vercel.app, so deploy first. To change the video, edit `docs/demo-path.json` and the demo project's `story/story.json` (section 13) and rebuild.
 3. **Submit on https://swarmchasing.com/** (only the user can).
 4. **Push** the local commits when the user says so (`git push origin main`; a normal push, never force without a fresh go-ahead).
 5. **Independent labelling** (section 7): the best answer to "your accuracy is self-graded".
