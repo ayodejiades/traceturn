@@ -121,7 +121,7 @@ export default async function IncidentPage({ params }: { params: Promise<Params>
           </div>
         </Section>
 
-        <Section band>
+        <Section band id="timeline">
           <SectionHead
             eyebrow="How it moved"
             title="Every statement and every act, in time order"

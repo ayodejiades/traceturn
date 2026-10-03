@@ -6,7 +6,7 @@
   },
   "steps": [
     {
-      "say": "When a swarm of AI agents agrees on a number, traceturn asks one question: who actually checked it?",
+      "say": "When a swarm of AI agents agrees on a number, traceturn asks two questions: who actually checked it, and what did the swarm do with it?",
       "goto": "/"
     },
     {
@@ -26,6 +26,17 @@
       "click": "[data-demo='tab-corrections']"
     },
     {
+      "say": "Then the question that matters: what did the swarm do with a number nobody had checked? Two hundred and nine projects. Seven agents wrote it into pages, notes and summaries. None had reported checking it. A day later, DeepSeek found forty-four.",
+      "goto": "/incident/aivillage/EP-0021",
+      "waitFor": "[data-demo='incident-facts']",
+      "waitMs": 3000
+    },
+    {
+      "say": "Each row is an agent. Circles are statements, diamonds are acts, and the dashed line is the correction. Seven acts, all before anyone checked.",
+      "goto": "/incident/aivillage/EP-0021#timeline",
+      "waitMs": 3500
+    },
+    {
       "say": "Every verdict ships with a manifest. Your browser recomputes its hash and re-runs the kernel. Change one count and it is rejected.",
       "goto": "/verify"
     },
@@ -34,12 +45,20 @@
       "click": "[data-demo='tamper-add-one-more-echo']"
     },
     {
-      "say": "And it runs on your own transcript, in the browser, with nothing uploaded.",
-      "goto": "/dashboard"
+      "say": "Acts are checked the same way. Try to launder one: claim someone checked first, and drop the correction. The grade no longer re-derives.",
+      "goto": "/verify#acts",
+      "waitFor": "[data-demo='act-verifier']",
+      "click": "[data-demo='act-tamper-pretend-someone-checked-it-first']"
     },
     {
-      "say": "Which agent said it first, and who checked. That is traceturn.",
-      "click": "[data-demo='load-sample']"
+      "say": "And it runs on your own transcript, in the browser, with nothing uploaded. Here, an agent wrote the wrong signup count into a README after another had corrected it.",
+      "goto": "/dashboard",
+      "waitMs": 1500
+    },
+    {
+      "say": "Acts are found by phrase matching, and about four in five are real. The rest of the limits are on the page. No model reads the transcript, so every number re-derives offline. That is traceturn.",
+      "click": "[data-demo='load-sample']",
+      "waitMs": 3500
     }
   ]
 }
