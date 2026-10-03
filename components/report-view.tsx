@@ -58,7 +58,7 @@ function SourceBinding({ episode }: { episode: ReportEpisode }) {
 
 const ROW_LIMIT = 12;
 
-function EpisodeDetail({ episode, verifyHref }: { episode: ReportEpisode; verifyHref?: string }) {
+function EpisodeDetail({ episode, verifyHref, incidentHref }: { episode: ReportEpisode; verifyHref?: string; incidentHref?: string }) {
   const [all, setAll] = useState(false);
   const hidden = episode.assertions.length - ROW_LIMIT;
   return (
@@ -81,6 +81,11 @@ function EpisodeDetail({ episode, verifyHref }: { episode: ReportEpisode; verify
             <a href={episode.link} target="_blank" rel="noopener noreferrer" className="inline-block py-1 text-[var(--accent)] hover:underline">
               Open this moment in the village ↗
             </a>
+          )}
+          {incidentHref && (
+            <Link href={incidentHref} className="inline-block py-1 text-[var(--accent)] hover:underline" data-demo="open-incident">
+              Open the incident report →
+            </Link>
           )}
           {verifyHref && (
             <Link href={verifyHref} className="inline-block py-1 text-[var(--accent)] hover:underline">
@@ -229,7 +234,7 @@ export function ReportView({
           </div>
           <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 sm:p-6 lg:col-span-7">
             {episode ? (
-              <EpisodeDetail key={episode.id} episode={episode} verifyHref={verifyCorpus ? `/verify?corpus=${verifyCorpus}&ep=${episode.id}` : undefined} />
+              <EpisodeDetail key={episode.id} episode={episode} verifyHref={verifyCorpus ? `/verify?corpus=${verifyCorpus}&ep=${episode.id}` : undefined} incidentHref={verifyCorpus ? `/incident/${verifyCorpus}/${episode.id}` : undefined} />
             ) : (
               <p className="py-10 text-center text-sm text-[var(--fg-muted)]">
                 No claim was stated by {report.params.minSpeakers} or more agents within {report.params.episodeGapHours} hours of each

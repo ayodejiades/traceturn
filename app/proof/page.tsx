@@ -100,7 +100,7 @@ export default async function ProofPage({ searchParams }: { searchParams: Promis
               title="What the swarm did with the number"
               lede="Every number is an assertion until someone grounds it. An act taken on an ungrounded assertion is the finding."
             />
-            <IncidentPanel incident={incident} />
+            <IncidentPanel incident={incident} href={incident.episode ? `/incident/${id}/${incident.episode.id}` : undefined} />
           </Section>
         )}
 

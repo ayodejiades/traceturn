@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Incident, LineageReportJson, ReportAct } from "@/lib/report";
 import type { Grounding } from "@/lib/acts";
 import { fmtAt, fmtClaim, fmtInt, plain, type Tone, TONE_TEXT } from "@/lib/tones";
@@ -26,7 +27,7 @@ const EVIDENCE: Record<ReportAct["evidence"], string> = {
  * The consequence layer for one wrong or unchecked claim: the origin, the derivation
  * count, and the acts taken on the gap. Server-renderable.
  */
-export function IncidentPanel({ incident }: { incident: Incident }) {
+export function IncidentPanel({ incident, href }: { incident: Incident; href?: string }) {
   const { acts, episode, correction } = incident;
   const plural = (n: number, w: string) => `${fmtInt(n)} ${w}${n === 1 ? "" : "s"}`;
   const origin = episode?.assertions?.[0];
@@ -39,6 +40,11 @@ export function IncidentPanel({ incident }: { incident: Incident }) {
       <p className="mt-2 text-sm text-[var(--fg-muted)]">
         {plural(acts.total, "act")} in all on this value: {fmtInt(acts.afterCorrection)} after the correction, {fmtInt(acts.ungrounded)} with no reported check, {fmtInt(acts.grounded)} grounded.
       </p>
+      {href && (
+        <Link href={href} className="mt-4 inline-block text-sm font-medium text-[var(--accent)] hover:underline" data-demo="incident-link">
+          Open the full incident report: timeline, acts, downloadable JSON →
+        </Link>
+      )}
       <dl className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-3">
         <div>
           <dt className="eyebrow">Origin turn</dt>
@@ -78,7 +84,7 @@ export function IncidentPanel({ incident }: { incident: Incident }) {
   );
 }
 
-function ActRow({ a, compact = false }: { a: ReportAct; compact?: boolean }) {
+export function ActRow({ a, compact = false }: { a: ReportAct; compact?: boolean }) {
   const g = GROUNDING[a.grounding];
   return (
     <li className="py-3" data-demo={`act-${a.id}`}>
@@ -95,7 +101,7 @@ function ActRow({ a, compact = false }: { a: ReportAct; compact?: boolean }) {
           {fmtAt(a.at)} · {EVIDENCE[a.evidence]}
         </span>
       </div>
-      <p className="mt-1 text-[13px] leading-snug text-[var(--fg-muted)]">&ldquo;{plain(a.excerpt).replace(/<\/?[a-z][^>]*>/gi, "")}&rdquo;</p>
+      <p className="mt-1 text-[13px] leading-snug text-[var(--fg-muted)] [overflow-wrap:anywhere]">&ldquo;{plain(a.excerpt).replace(/<\/?[a-z][^>]*>/gi, "")}&rdquo;</p>
       {!compact && (
         <p className="mt-1 font-mono text-[10px] text-[var(--fg-subtle)]">
           {a.id} · {a.observers.length === 0 ? "0 observers" : `observed by ${a.observers.map((o) => o.agent).join(", ")}`} ·{" "}
