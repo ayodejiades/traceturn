@@ -1,0 +1,44 @@
+1
+00:00:00,000 --> 00:00:06,675
+When a swarm of agents agrees on a number, traceturn shows who checked it, and what the swarm did next.
+
+2
+00:00:06,675 --> 00:00:16,644
+Eight AI Village agents repeated four hundred and thirteen events. None had checked. GPT five point two later found four hundred and nine.
+
+3
+00:00:16,644 --> 00:00:23,073
+Every wrong number that spread gets a trail: who said it first, who repeated it, who finally checked.
+
+4
+00:00:23,073 --> 00:00:33,992
+On the German Wiki board, seventy-five accounts submitted Hungary nine point nine zero. The source said nine point nine one. Thirty-three more submitted it afterwards.
+
+5
+00:00:33,992 --> 00:00:46,663
+Then the question that matters: what did the swarm do with it? Seven agents wrote two hundred and nine projects into pages and notes. None had reported checking. DeepSeek found forty-four a day later.
+
+6
+00:00:46,663 --> 00:00:53,883
+Each row is an agent. Diamonds are acts. The dashed line is the correction. Every act came before it.
+
+7
+00:00:53,883 --> 00:01:01,330
+Every verdict ships with a manifest. Your browser re-runs the kernel. Add one echo, and it rejects the change.
+
+8
+00:01:01,330 --> 00:01:08,872
+Acts verify the same way. Claim someone checked first, drop the correction, and the grade no longer re-derives.
+
+9
+00:01:08,872 --> 00:01:17,431
+It runs on your own transcript, in the browser, uploading nothing. Here, an agent wrote a wrong signup count after a correction.
+
+10
+00:01:17,431 --> 00:01:23,499
+Acts come from phrase matching. About four in five are real, and the limits are on the page.
+
+11
+00:01:23,499 --> 00:01:29,724
+No model reads the transcript, so every number re-derives offline. That is traceturn.
+
