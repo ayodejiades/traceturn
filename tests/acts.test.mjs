@@ -77,3 +77,12 @@ test("ranking: grounded acts do not count toward breadth, and ties fall to after
   assert.deepEqual(r.map((x) => x.claim), ["y", "z", "x"]);
   assert.equal(r.find((x) => x.claim === "x").agents, 1);
 });
+
+test("the sample the workspace loads is the fixture the tests pin", async () => {
+  const fs = await import("node:fs");
+  assert.equal(
+    fs.readFileSync(path.join(root, "public/samples/sample-swarm.jsonl"), "utf8"),
+    fs.readFileSync(path.join(root, "fixtures/transcripts/sample-swarm.jsonl"), "utf8"),
+    "copy fixtures/transcripts/sample-swarm.jsonl to public/samples/ when the fixture changes",
+  );
+});

@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ReportView } from "@/components/report-view";
 import { BTN_PRIMARY, BTN_SECONDARY } from "@/components/page-hero";
-import type { LineageReportJson } from "@/lib/report";
+import { IncidentPanel } from "@/components/acts-view";
+import { SwarmTimeline } from "@/components/swarm-timeline";
+import { topIncident, type LineageReportJson } from "@/lib/report";
 import type { WorkerRequest, WorkerResponse } from "@/lib/analyze.worker";
 import { fmtInt, pct } from "@/lib/tones";
 
@@ -161,11 +163,24 @@ export function Workspace() {
       {status.kind === "done" && (
         <div ref={resultRef} className="scroll-mt-6">
           <Summary report={status.report} ms={status.ms} onDownload={() => download(status.report)} />
+          <WorkspaceIncident report={status.report} />
           <div className="mt-8">
             <ReportView report={status.report} />
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/** The worst incident in the dropped transcript: who acted on an unchecked number, and when. */
+function WorkspaceIncident({ report }: { report: LineageReportJson }) {
+  const incident = topIncident(report);
+  if (!incident) return null;
+  return (
+    <div className="mt-8 flex flex-col gap-6" data-demo="workspace-incident">
+      <IncidentPanel incident={incident} />
+      {incident.episode && incident.top.length > 0 && <SwarmTimeline episode={incident.episode} acts={incident.top} correction={incident.correction} maxRows={20} />}
     </div>
   );
 }

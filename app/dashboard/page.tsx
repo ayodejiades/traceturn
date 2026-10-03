@@ -21,6 +21,11 @@ const FORMATS = [
     note: "Same messages as chat, from the activity timeline.",
   },
   {
+    name: "Tool calls and delegations",
+    shape: '{"agent", "type":"tool_call", "tool", "args"} · {"type":"delegation", "to", "task"}',
+    note: "Kept as acts, not dropped for having no prose. Each call is linked to the number in its arguments, and the workspace shows which acts rested on a number nobody had reported checking. Also reads chat-completions tool_calls arrays and AI Village computer_use_turns rows (use pnpm analyze for the 2.5 GB file).",
+  },
+  {
     name: "Any agent log",
     shape: '{"agent", "content", "timestamp", "room"?}',
     note: "Also reads speaker/author/name, text/message/body, ts/time/created_at. user/human rows are kept but never blamed.",
@@ -33,7 +38,7 @@ export default function WorkspacePage() {
       <PageHero
         eyebrow="Workspace · runs offline"
         title="Trace the claims in your own transcript"
-        lede="The same engine that produced the AI Village findings, running in this tab. Drop a log, or start with the sample."
+        lede="The same engine that produced the AI Village findings, running in this tab. Drop a log, or start with the sample, which includes tool calls so you can see acts taken on a number nobody checked."
       />
       <main id="main" className="relative z-10">
         <Section>
@@ -41,7 +46,7 @@ export default function WorkspacePage() {
         </Section>
         <Section band>
           <SectionHead eyebrow="Accepted formats" title="What the workspace reads" />
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {FORMATS.map((f) => (
               <div key={f.name} className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
                 <div className="text-base font-semibold text-[var(--fg)]">{f.name}</div>
