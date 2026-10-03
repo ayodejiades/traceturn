@@ -36,6 +36,10 @@ Weighted to each stratum's population: aivillage 82%, collusion 100%.
 
 Label counts: N 10, Q 12, Y 80, YC 4, YT 2.
 
+## Independent check
+
+A second annotator can label a blind sheet of these items and be scored against the first with Cohen's kappa; see docs/LABELLING.md (`pnpm audit:sheet`, `pnpm audit:compare`). No independent labelling is included in these numbers.
+
 ## What goes wrong
 
 - **Q** (12 held-out items): Not the same quantity: the "quantity" is a name, id, title or a different amount (`311 data`, `805 poster`, `374 FALSE`).

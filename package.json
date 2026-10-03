@@ -17,7 +17,9 @@
     "db:migrate": "drizzle-kit migrate",
     "analyze": "tsx tools/analyze.ts",
     "audit:sample": "tsx tools/audit-sample.ts",
-    "audit:acts": "tsx tools/audit-acts.ts"
+    "audit:acts": "tsx tools/audit-acts.ts",
+    "audit:sheet": "tsx tools/audit-label-sheet.ts",
+    "audit:compare": "tsx tools/audit-compare.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
