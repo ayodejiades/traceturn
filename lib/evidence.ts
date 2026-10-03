@@ -13,8 +13,9 @@ import villageJson from "@/evidence/aivillage-report.json";
 import collusionJson from "@/evidence/collusion-report.json";
 import campaignJson from "@/evidence/campaign-report.json";
 import auditJson from "@/evidence/audit-results.json";
+import actAuditJson from "@/evidence/act-audit-results.json";
 import { BENCHMARK_CASES, evaluateDeterministicKernel, evaluateSafetyKernel, type ReconciliationInput } from "./kernel";
-import type { LineageReportJson } from "./report";
+import { topIncident, type LineageReportJson } from "./report";
 
 export const VILLAGE = villageJson as unknown as LineageReportJson;
 export const COLLUSION = collusionJson as unknown as LineageReportJson;
@@ -149,3 +150,14 @@ export const FIXTURES = [
 ];
 
 export const FIXTURES_PASSING = FIXTURES.filter((f) => f.pass).length;
+
+/** The worst incident in each committed corpus (see rankIncidents in lib/report.ts). */
+export const VILLAGE_INCIDENT = topIncident(VILLAGE);
+export const WIKI_INCIDENT = topIncident(COLLUSION);
+
+/** Held-out act precision, from evidence/act-audit-results.json (docs/ACT_AUDIT.md). */
+export const ACT_PRECISION = (() => {
+  const t = actAuditJson.test;
+  const n = t.items - t.unclear;
+  return { real: t.real, n, rate: t.real / n, village: t.weighted.aivillage as number, wiki: t.weighted.collusion as number };
+})();

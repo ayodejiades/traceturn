@@ -6,6 +6,7 @@ import { BTN_GHOST_ON_ART, BTN_PRIMARY, BTN_SECONDARY, PageHero, Section, Sectio
 import { ActRow } from "@/components/acts-view";
 import { SwarmTimeline } from "@/components/swarm-timeline";
 import { loadIncident } from "@/lib/incident";
+import { ACT_PRECISION } from "@/lib/evidence";
 import { ROLE, STATE, TONE_TEXT, fmtAt, fmtClaim, fmtInt, plain } from "@/lib/tones";
 
 type Params = { corpus: string; id: string };
@@ -194,7 +195,7 @@ export default async function IncidentPage({ params }: { params: Promise<Params>
               <ul className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--fg-muted)]">
                 <li>Absence of a reported check is a lower bound. An agent that checked privately and did not say so looks unobserved.</li>
                 <li>An act with no reported check is not claimed to be wrong. Most such numbers are probably true.</li>
-                <li>Acts are found by phrase matching; on a hand-labelled sample about four in five were real acts on the number (docs/ACT_AUDIT.md), labelled by the model that wrote the rules.</li>
+                <li>Acts are found by phrase matching; on a hand-labelled sample {ACT_PRECISION.real} of {ACT_PRECISION.n} were real acts on the number (docs/ACT_AUDIT.md), labelled by the model that wrote the rules.</li>
               </ul>
             </div>
           </div>
